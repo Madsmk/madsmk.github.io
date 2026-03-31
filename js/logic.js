@@ -198,6 +198,33 @@ function getTeamRankedThreeFromGroup(group) {
     return teams.length >= 3 ? teams[2] : null;
 }
 
+function addThirdPlaceEventListeners(thirdPlaceTeams) {
+    document.querySelectorAll('.rangeringAllTeams .opp, .rangeringAllTeams .ned').forEach(link => {
+        link.addEventListener('click', function (event) {
+            handleThirdPlaceLinkClick(event, thirdPlaceTeams);
+        });
+    });
+}
+
+function swapThirdPlaceElements(index1, index2, thirdPlaceTeams) {
+    [thirdPlaceTeams[index1], thirdPlaceTeams[index2]] = [thirdPlaceTeams[index2], thirdPlaceTeams[index1]];
+}
+
+function handleThirdPlaceLinkClick(evt, thirdPlaceTeams) {
+    evt.preventDefault();
+    const index = parseInt(evt.target.dataset.index);
+    const direction = evt.target.dataset.direction;
+    
+    if (direction === 'opp' && index > 0) {
+        swapThirdPlaceElements(index, index - 1, thirdPlaceTeams);
+    } else if (direction === 'ned' && index < thirdPlaceTeams.length - 1) {
+        swapThirdPlaceElements(index, index + 1, thirdPlaceTeams);
+    }
+
+    updateOverallRankingTable(thirdPlaceTeams);
+    populateSluttspillTable();
+}
+
 export function updateThirdPlacedTeamsRanking() {
     console.log('updateThirdPlacedTeamsRanking')
     const thirdPlaceTeams = [];
@@ -243,6 +270,62 @@ export function updateThirdPlacedTeamsRanking() {
         addThirdPlaceEventListeners(thirdPlaceTeams);
     }
 }
+
+function getAllTeamsFromGroups() {
+    const allTeams = [];
+
+    ['A', 'B', 'C', 'D', 'E', 'F'].forEach(group => {
+        const teamRows = document.querySelectorAll(`.rangering${group} .rad`);
+        
+        teamRows.forEach(row => {
+            const teamName = row.querySelector('.land').textContent.replace(/\(opp\)|\(ned\)/g, '').trim();
+            const points = parseFloat(row.querySelector('.poeng').textContent);
+            allTeams.push({
+                team: teamName,
+                group: group,
+                points: points
+            });
+        });
+    });
+
+    return allTeams;
+}
+
+function updateOverallRankingTable(thirdPlaceTeams) {
+    const rankingTable = document.querySelector('.rangeringAllTeams');
+    const allTeams = getAllTeamsFromGroups();
+    console.log('RangeringAllTeams')
+    if (rankingTable) {
+        rankingTable.innerHTML = `
+            <div class="rangOverskrift">
+                <div class="cell">Plass</div>
+                <div class="cell">Land</div>
+                <div class="cell">Forventet poeng</div>
+            </div>
+        `;
+
+        thirdPlaceTeams.forEach(({ team, points }, index) => {
+            let actionsHTML = `${team}`;
+            if (index > 0 && points === thirdPlaceTeams[index - 1].points) {
+                actionsHTML += ` <a href="#" class="opp" data-index="${index}" data-direction="opp">(opp)</a>`;
+            }
+            if (index < thirdPlaceTeams.length - 1 && points === thirdPlaceTeams[index + 1].points) {
+                actionsHTML += ` <a href="#" class="ned" data-index="${index}" data-direction="ned">(ned)</a>`;
+            }
+            rankingTable.innerHTML += `
+                <div class="rad">
+                    <div class="cell plass">${index + 1}</div>
+                    <div class="cell land">${actionsHTML}</div>
+                    <div class="cell poeng">${points.toFixed(1)}</div>
+                </div>
+            `;
+        });
+
+        addThirdPlaceEventListeners(thirdPlaceTeams);
+        generatePlayoffTree(allTeams);
+    }
+}
+
 export function populateSluttspillTable() {
     const sluttspillTeams = [];
 
