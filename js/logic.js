@@ -191,6 +191,13 @@ export function updateRankingTable(group) {
         });
     }
 }
+
+// Function to get the third ranked team from a group
+function getTeamRankedThreeFromGroup(group) {
+    const teams = groups[group].teams;
+    return teams.length >= 3 ? teams[2] : null;
+}
+
 export function updateThirdPlacedTeamsRanking() {
     console.log('updateThirdPlacedTeamsRanking')
     const thirdPlaceTeams = [];
