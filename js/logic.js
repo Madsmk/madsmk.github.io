@@ -468,6 +468,87 @@ function populateNextRounds(round16Container, quarterfinalsContainer, semifinals
     }
 }
 
+function getTopFourThirdPlacedTeams() {
+    const topFourTeams = [];
+    const sluttspillTeamRows = document.querySelectorAll('.rangeringAllTeams .rad');
+
+    const teamsData = [];
+    sluttspillTeamRows.forEach(row => {
+        const teamName = row.querySelector('.land').textContent.replace(/\(opp\)|\(ned\)/g, '').trim();
+        const points = parseFloat(row.querySelector('.poeng').textContent);
+
+        const teamKey = Object.keys(teamMap).find(key => teamMap[key].name === teamName);
+        if (teamKey) {
+            teamsData.push({
+                teamKey: teamKey,
+                points: points
+            });
+        }
+    });
+
+    teamsData.sort((a, b) => b.points - a.points);
+
+    for (let i = 0; i < Math.min(4, teamsData.length); i++) {
+        topFourTeams.push({
+            team: teamsData[i].teamKey,
+            name: teamMap[teamsData[i].teamKey].name,
+            points: teamsData[i].points,
+            group: teamMap[teamsData[i].teamKey].group
+        });
+    }
+
+    return topFourTeams;
+}
+
+// Map groups to matches based on predefined rules
+function mapGroupsToMatches(groups) {
+    const table = {
+        'A B C D': ['A', 'C', 'B', 'D'],
+        'A B C E': ['A', 'C', 'B', 'E'],
+        'A B C F': ['A', 'C', 'B', 'F'],
+        'A B D E': ['A', 'D', 'B', 'E'],
+        'A B D F': ['A', 'D', 'B', 'F'],
+        'A B E F': ['A', 'E', 'B', 'F'],
+        'A C D E': ['A', 'D', 'C', 'E'],
+        'A C D F': ['A', 'D', 'C', 'F'],
+        'A C E F': ['A', 'E', 'C', 'F'],
+        'A D E F': ['A', 'E', 'D', 'F'],
+        'B C D E': ['B', 'D', 'C', 'E'],
+        'B C D F': ['B', 'D', 'C', 'F'],
+        'B C E F': ['B', 'E', 'C', 'F'],
+        'B D E F': ['B', 'E', 'D', 'F'],
+        'C D E F': ['C', 'E', 'D', 'F']
+    };
+    
+    return table[groups.join(' ')] || ['A', 'A', 'C', 'D']; // Return default order if mapping fails
+}
+
+// Get team ranking based on position in sluttspillTeams
+function getTeamRanking(teamName) {
+    const teamRows = document.querySelectorAll('.sluttspillTable .rad');
+    for (const row of teamRows) {
+        const landCell = row.querySelector('.land');
+        if (landCell && landCell.textContent.includes(teamName)) {
+            const rankingCell = row.querySelector('.plass');
+            return rankingCell ? rankingCell.textContent.trim() : 'N/A';
+        }
+    }
+    return 'N/A';
+}
+
+// Create HTML for matches with team names and rankings
+function createMatchHTML(team1, team2, matchId, ranking1 = '', ranking2 = '') {
+    ranking1 = ranking1 ? `(${ranking1})` : '';
+    ranking2 = ranking2 ? `(${ranking2})` : '';
+    
+    return `
+        <div class="match" id="${matchId}">
+            <div class="team" data-team="${team1}">${team1} ${ranking1}</div>
+            <div class="team" data-team="${team2}">${team2} ${ranking2}</div>
+        </div>
+    `;
+}
+
     // Generate the initial playoff tree
 function generatePlayoffTree() {
     console.log('Generating playoff tree');
