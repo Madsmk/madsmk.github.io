@@ -454,3 +454,190 @@ export function populateSluttspillTable() {
     
         generatePlayoffTree(sluttspillTeams); // Generate playoff tree after populating the table
     }
+
+// Populate the next rounds of the playoff tree including the quarter-finals
+function populateNextRounds(round16Container, quarterfinalsContainer, semifinalsContainer, finalContainer, initialRankings) {
+    const advanceTeams = (matches) => {
+        const winners = [];
+        matches.forEach(match => {
+            const team1Element = match.querySelector('.team:nth-child(1)');
+            const team2Element = match.querySelector('.team:nth-child(2)');
+
+            const team1 = team1Element ? team1Element.getAttribute('data-team') : '';
+            const team2 = team2Element ? team2Element.getAttribute('data-team') : '';
+
+            const team1Ranking = initialRankings[team1];
+            const team2Ranking = initialRankings[team2];
+
+            console.log(`Comparing ${team1} (Ranking: ${team1Ranking}) vs ${team2} (Ranking: ${team2Ranking})`);
+            
+            if (team1 && team2) {
+                if (team1Ranking < team2Ranking) {
+                    team1Element.classList.add('winner');
+                    team2Element.classList.add('loser');
+                    winners.push({ team: team1, ranking: team1Ranking });
+                    console.log(`${team1} wins`);
+                } else {
+                    team1Element.classList.add('loser');
+                    team2Element.classList.add('winner');
+                    winners.push({ team: team2, ranking: team2Ranking });
+                    console.log(`${team2} wins`);
+                }
+            }
+        });
+        return winners;
+    };
+
+    const nextRound = (winners, container, roundName) => {
+        container.innerHTML = ''; // Clear previous content
+        for (let i = 0; i < winners.length; i += 2) {
+            const matchId = `${roundName}${Math.floor(i / 2) + 1}`;
+            const team1 = winners[i] ? winners[i].team : '';
+            const ranking1 = winners[i] ? winners[i].ranking : '';
+            const team2 = winners[i + 1] ? winners[i + 1].team : '';
+            const ranking2 = winners[i + 1] ? winners[i + 1].ranking : '';
+
+            const matchHTML = createMatchHTML(team1, team2, matchId, ranking1, ranking2);
+            container.innerHTML += matchHTML;
+        }
+    };
+
+    const round16Winners = advanceTeams(round16Container.querySelectorAll('.match'));
+    nextRound(round16Winners, quarterfinalsContainer, 'QF');
+
+    const quarterfinalWinners = advanceTeams(quarterfinalsContainer.querySelectorAll('.match'));
+    nextRound(quarterfinalWinners, semifinalsContainer, 'SF');
+
+    const semifinalWinners = advanceTeams(semifinalsContainer.querySelectorAll('.match'));
+    // Directly manage marking winner and loser for the final match here
+    if (semifinalWinners.length >= 2) {
+        const finalMatchId = 'Final1';
+        const finalTeam1 = semifinalWinners[0].team;
+        const finalRanking1 = semifinalWinners[0].ranking;
+        const finalTeam2 = semifinalWinners[1].team;
+        const finalRanking2 = semifinalWinners[1].ranking;
+
+        const finalMatchHTML = createMatchHTML(finalTeam1, finalTeam2, finalMatchId, finalRanking1, finalRanking2);
+        finalContainer.innerHTML += finalMatchHTML;
+
+        const finalMatchElement = finalContainer.querySelector('.match');
+        const finalTeam1Element = finalMatchElement.querySelector('.team:nth-child(1)');
+        const finalTeam2Element = finalMatchElement.querySelector('.team:nth-child(2)');
+
+        if (finalRanking1 < finalRanking2) {
+            finalTeam1Element.classList.add('winner');
+            finalTeam2Element.classList.add('loser');
+        } else {
+            finalTeam1Element.classList.add('loser');
+            finalTeam2Element.classList.add('winner');
+        }
+    }
+}
+
+    // Generate the initial playoff tree
+function generatePlayoffTree() {
+    console.log('Generating playoff tree');
+
+    const round16Container = document.querySelector('.sluttspillTreTable .round16');
+    const quarterfinalsContainer = document.querySelector('.sluttspillTreTable .quarterfinals');
+    const semifinalsContainer = document.querySelector('.sluttspillTreTable .semifinals');
+    const finalContainer = document.querySelector('.sluttspillTreTable .final');
+    
+    if (!round16Container || !quarterfinalsContainer || !semifinalsContainer || !finalContainer) {
+        console.error("Containers for playoff tree not found.");
+        return;
+    }
+
+    // Clear previous tree content
+    round16Container.innerHTML = '';
+    quarterfinalsContainer.innerHTML = '';
+    semifinalsContainer.innerHTML = '';
+    finalContainer.innerHTML = '';
+
+    const groupLetters = ['A', 'B', 'C', 'D', 'E', 'F'];
+    const groupPositions = {};
+
+    groupLetters.forEach(group => {
+        const rankingTable = document.querySelector(`.rangering${group}`);
+        if (!rankingTable) return;
+
+        const teamRows = rankingTable.querySelectorAll('.rad .land');
+        groupPositions[group] = {};
+
+        teamRows.forEach(row => {
+            const place = parseInt(row.closest('.rad').querySelector('.plass').textContent, 10);
+            const team = row.textContent.replace(/\s*\(.*?\)\s*/g, '').trim();
+            groupPositions[group][place] = team;
+        });
+    });
+
+    console.log('Group Positions:', groupPositions);
+
+    const matchups = [
+        { group1: 'B', place1: 1, group2: 'C', place2: 3 },
+        { group1: 'A', place1: 1, group2: 'C', place2: 2 },
+        { group1: 'F', place1: 1, group2: 'C', place2: 3 },
+        { group1: 'D', place1: 2, group2: 'E', place2: 2 },
+        { group1: 'E', place1: 1, group2: 'C', place2: 3 },
+        { group1: 'D', place1: 1, group2: 'F', place2: 2 },
+        { group1: 'C', place1: 1, group2: 'C', place2: 3 },
+        { group1: 'A', place1: 2, group2: 'B', place2: 2 }
+    ];
+
+    const topFourThirdPlaced = getTopFourThirdPlacedTeams();
+    console.log('Top four third-placed teams:', topFourThirdPlaced);
+    
+    if (topFourThirdPlaced.length < 4) {
+        console.error("Not enough third-placed teams for the playoff.", topFourThirdPlaced);
+        return;
+    }
+
+    const topFourGroups = topFourThirdPlaced.map((team) => team.group).sort();
+    console.log('test', topFourThirdPlaced, topFourGroups);
+
+    const mappedGroups = mapGroupsToMatches(topFourGroups);
+    console.log('Mapped groups:', mappedGroups);
+
+    const thirdPlaceMappings = [
+        { matchIndex: 0, mappedGroupIndex: 0 },
+        { matchIndex: 2, mappedGroupIndex: 1 },
+        { matchIndex: 4, mappedGroupIndex: 2 },
+        { matchIndex: 6, mappedGroupIndex: 3 }
+    ];
+
+    thirdPlaceMappings.forEach((mapping) => {
+        const matchIndex = mapping.matchIndex;
+        const mappedGroupIndex = mapping.mappedGroupIndex;
+        const group = mappedGroups[mappedGroupIndex];
+        matchups[matchIndex].group2 = group;
+        matchups[matchIndex].place2 = 3;
+    });
+
+    console.log('Updated matchups:', matchups);
+
+    const initialRankings = {};
+
+    // Capture initial rankings for all teams
+    matchups.forEach((matchup, index) => {
+        const team1 = getTeamFromRankingTable(matchup.group1, matchup.place1);
+        const team2 = getTeamFromRankingTable(matchup.group2, matchup.place2);
+
+        const ranking1 = parseInt(getTeamRanking(team1), 10);
+        const ranking2 = parseInt(getTeamRanking(team2), 10);
+
+        initialRankings[team1] = ranking1;
+        initialRankings[team2] = ranking2;
+
+        console.log(`Match ${index + 1}: ${team1} (${ranking1}) vs ${team2} (${ranking2})`);
+
+        if (team1 && team2) {
+            const matchId = `RO16${index + 1}`;
+            const matchHTML = createMatchHTML(team1, team2, matchId, ranking1, ranking2);
+            round16Container.innerHTML += matchHTML;
+        } else {
+            console.error(`Could not find teams for match ${index + 1}.`);
+        }
+    });
+
+    populateNextRounds(round16Container, quarterfinalsContainer, semifinalsContainer, finalContainer, initialRankings);
+}
