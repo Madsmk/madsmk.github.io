@@ -122,6 +122,22 @@ export function updatePoints(group) {
         }
     });
 }
+
+function handleLinkClick(event, group) {
+    event.preventDefault();
+    const index = parseInt(event.target.dataset.index);
+    const direction = event.target.dataset.direction;
+    if (direction === 'opp' && index > 0) {
+        swapTeams(index, index - 1, groups[group].teams);
+    } else if (direction === 'ned' && index < groups[group].teams.length - 1) {
+        swapTeams(index, index + 1, groups[group].teams);
+    }
+
+    updateRankingTable(group);
+    updateThirdPlacedTeamsRanking();
+    populateSluttspillTable();
+}
+
 export function updateRankingTable(group) {
     groups[group].teams.forEach(team => groups[group].teamPoints[team] = 0);
 
@@ -372,6 +388,11 @@ function renderSluttspillTable(sluttspillTeams) {
         console.error('Sluttspill table not found.');
     }
 }
+
+function swapTeams(index1, index2, teams) {
+    [teams[index1], teams[index2]] = [teams[index2], teams[index1]];
+}
+
 
 // Handle click event on "(opp)" or "(ned)" links in the sluttspill table
 function handleSluttspillLinkClick(event, sluttspillTeams) {
