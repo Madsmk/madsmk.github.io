@@ -1,5 +1,9 @@
 import { teamMap } from './data.js';
 
+export function getTeamName(teamID) {
+    return teamMap?.[teamID]?.name ?? '';
+}
+
 export const groups = {};
 
 export function initializeGroups() {

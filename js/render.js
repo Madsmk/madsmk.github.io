@@ -5,7 +5,7 @@ export function renderGroup(groupLetter, mountId = null) {
     console.error(`Fant ikke #${rootId} i HTML`);
     return;
   }
-
+  console.log("renderGroup:", groupLetter, "rootId:", rootId);
   const containerClass = `container${groupLetter}`;
 
   // Bygg kamp-rader 01-06

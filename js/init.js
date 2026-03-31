@@ -13,7 +13,7 @@ import {
 import { initSubmit } from './submit.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-  ['A','B','C','D','E','F'].forEach(renderGroup);
+  ['A','B','C','D','E','F'].forEach(g => renderGroup(g));
 
   initializeGroups();
   fillAllCells();
