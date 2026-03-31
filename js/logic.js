@@ -72,16 +72,30 @@ function calculatePoints(isCheckedH, isCheckedU, isCheckedB, isRadioChecked, typ
     if (checkedCount === 0) return 0;
 
     if (checkedCount === 1) {
-        if (checked[type]) {
+        const guessed = Object.keys(checked).find(k => checked[k]); // 'H' | 'U' | 'B'
+
+        // Riktig utfall
+        if (guessed === type) {
             return isRadioChecked
             ? POINT_RULES.singleDouble[type]
-            : POINT_RULES.single[type];
+            : POINT_RULES.single[type];            
         }
+        
+        // Feil utfall
+        if (isRadioChecked) {
+            // Dobling: feil gir trekk
+            return POINT_RULES.penalty.double;
+        }
+        
+        // Ikke dobling
+        const pos = { H: 0, U: 1, B: 2 };
+        const diff = Math.abs(pos[guessed] - pos[type]);
 
-        // Feil utfall - straff
-        return isRadioChecked
-            ? POINT_RULES.penalty.double
-            : POINT_RULES.penalty.single;
+        // 1 plass feil => 0
+        if (diff === 1) return POINT_RULES.penalty.singleAdjacent;
+
+        // 2 plasser feil
+        return POINT_RULES.penalty.singleTwoSteps;
     }
 
     // Halvgardering

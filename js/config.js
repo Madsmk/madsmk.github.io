@@ -20,7 +20,8 @@ export const POINT_RULES = {
         double: 2
     },
     penalty: {
-        single: -2,
+        singleAdjacent: 0,
+        singleTwoSteps: -2,
         double: -16
     },
     bonus: {
