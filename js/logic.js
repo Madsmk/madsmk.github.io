@@ -389,72 +389,6 @@ function handleSluttspillLinkClick(event, sluttspillTeams) {
     generatePlayoffTree(sluttspillTeams); // Update the playoff tree after the click event
 }
 
-export function populateSluttspillTable() {
-    const sluttspillTeams = [];
-
-    ['A', 'B', 'C', 'D', 'E', 'F'].forEach(group => {
-        const teams = groups[group].teams;
-        if (teams.length >= 2) {
-            sluttspillTeams.push({
-                team: teams[0],
-                points: groups[group].teamPoints[teams[0]],
-                groupPosition: 1
-            });
-            sluttspillTeams.push({
-                team: teams[1],
-                points: groups[group].teamPoints[teams[1]],
-                groupPosition: 2
-            });
-        }
-    });
-
-    const rankingTable = document.querySelector('.rangeringAllTeams');
-    if (rankingTable) {
-        const thirdPlaceTeams = Array.from(rankingTable.querySelectorAll('.rad')).slice(0, 4);
-        thirdPlaceTeams.forEach(row => {
-            sluttspillTeams.push({
-                team: row.querySelector('.land').textContent.replace(/\s*\(opp\)\s*|\s*\(ned\)\s*/g, ''),
-                points: parseFloat(row.querySelector('.poeng').textContent),
-                groupPosition: 3
-            });
-        });
-    }
-
-    const sluttspillTable = document.querySelector('.sluttspillTable');
-    if (sluttspillTable) {
-        sluttspillTable.innerHTML = `
-            <div class="rangOverskrift">
-                <div class="cell">Rangering</div>
-                <div class="cell">Land</div>
-                <div class="cell">Forventet poeng</div>
-                </div>
-            `;
-    
-            sluttspillTeams.forEach((team, index) => {
-                let actionsHTML = `${team.team}`;
-                if (index > 0) {
-                    actionsHTML += ` <a href="#" class="opp" data-index="${index}" data-direction="opp">(opp)</a>`;
-                }
-                if (index < sluttspillTeams.length - 1) {
-                    actionsHTML += ` <a href="#" class="ned" data-index="${index}" data-direction="ned">(ned)</a>`;
-                }
-                sluttspillTable.innerHTML += `
-                    <div class="rad">
-                        <div class="cell plass">${index + 1}</div>
-                        <div class="cell land">${actionsHTML}</div>
-                        <div class="cell poeng">${team.points.toFixed(1)}</div>
-                    </div>
-                `;
-            });
-    
-            addSluttspillEventListeners(sluttspillTeams);
-        } else {
-            console.error('Sluttspill table not found.');
-        }
-    
-        generatePlayoffTree(sluttspillTeams); // Generate playoff tree after populating the table
-    }
-
 // Populate the next rounds of the playoff tree including the quarter-finals
 function populateNextRounds(round16Container, quarterfinalsContainer, semifinalsContainer, finalContainer, initialRankings) {
     const advanceTeams = (matches) => {
@@ -641,3 +575,70 @@ function generatePlayoffTree() {
 
     populateNextRounds(round16Container, quarterfinalsContainer, semifinalsContainer, finalContainer, initialRankings);
 }
+
+export function populateSluttspillTable() {
+    const sluttspillTeams = [];
+
+    ['A', 'B', 'C', 'D', 'E', 'F'].forEach(group => {
+        const teams = groups[group].teams;
+        if (teams.length >= 2) {
+            sluttspillTeams.push({
+                team: teams[0],
+                points: groups[group].teamPoints[teams[0]],
+                groupPosition: 1
+            });
+            sluttspillTeams.push({
+                team: teams[1],
+                points: groups[group].teamPoints[teams[1]],
+                groupPosition: 2
+            });
+        }
+    });
+
+    const rankingTable = document.querySelector('.rangeringAllTeams');
+    if (rankingTable) {
+        const thirdPlaceTeams = Array.from(rankingTable.querySelectorAll('.rad')).slice(0, 4);
+        thirdPlaceTeams.forEach(row => {
+            sluttspillTeams.push({
+                team: row.querySelector('.land').textContent.replace(/\s*\(opp\)\s*|\s*\(ned\)\s*/g, ''),
+                points: parseFloat(row.querySelector('.poeng').textContent),
+                groupPosition: 3
+            });
+        });
+    }
+
+    const sluttspillTable = document.querySelector('.sluttspillTable');
+    if (sluttspillTable) {
+        sluttspillTable.innerHTML = `
+            <div class="rangOverskrift">
+                <div class="cell">Rangering</div>
+                <div class="cell">Land</div>
+                <div class="cell">Forventet poeng</div>
+                </div>
+            `;
+    
+            sluttspillTeams.forEach((team, index) => {
+                let actionsHTML = `${team.team}`;
+                if (index > 0) {
+                    actionsHTML += ` <a href="#" class="opp" data-index="${index}" data-direction="opp">(opp)</a>`;
+                }
+                if (index < sluttspillTeams.length - 1) {
+                    actionsHTML += ` <a href="#" class="ned" data-index="${index}" data-direction="ned">(ned)</a>`;
+                }
+                sluttspillTable.innerHTML += `
+                    <div class="rad">
+                        <div class="cell plass">${index + 1}</div>
+                        <div class="cell land">${actionsHTML}</div>
+                        <div class="cell poeng">${team.points.toFixed(1)}</div>
+                    </div>
+                `;
+            });
+    
+            addSluttspillEventListeners(sluttspillTeams);
+        } else {
+            console.error('Sluttspill table not found.');
+        }
+    
+        generatePlayoffTree(sluttspillTeams); // Generate playoff tree after populating the table
+    }
+
