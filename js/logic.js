@@ -52,6 +52,42 @@ export function fillAllCells() {
         });
     });
 }
+
+function calculatePoints(isCheckedH, isCheckedU, isCheckedB, isRadioChecked, type) {
+    const checkedCount = [isCheckedH, isCheckedU, isCheckedB].filter(checked => checked).length;
+
+    if (checkedCount === 1) {
+        if ((type === "H" && isCheckedH) || (type === "U" && isCheckedU) || (type === "B" && isCheckedB)) {
+            if (type === "U" && isCheckedU) {
+                return isRadioChecked ? 18 : 9;
+            } else {
+                return isRadioChecked ? 16 : 8;
+            }
+        } else {
+            if ((type === "H" || type === "B") && isCheckedU === false) {
+                return isRadioChecked ? -16 : -2;
+            } else {
+                return isRadioChecked ? -16 : 0;
+            }
+        }
+    } else if (checkedCount === 2) {
+        if ((type === "H" && isCheckedH) || (type === "U" && isCheckedU) || (type === "B" && isCheckedB)) {
+            return isRadioChecked ? 8 : 4;
+        } else {
+            return isRadioChecked ? -8 : -4;
+        }
+    } else if (checkedCount === 3) {
+        return isRadioChecked ? 2 : 1;
+    } else {
+        return 0;
+    }
+}
+
+function calculateBonus(isCheckedH, isCheckedU, isCheckedB) {
+    const checkedCount = [isCheckedH, isCheckedU, isCheckedB].filter(Boolean).length;
+    return checkedCount === 1 ? 6 : checkedCount === 2 ? 3 : 0;
+}
+
 export function updatePoints(group) {
     const matches = [
         [1, 2, '01'],
