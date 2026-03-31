@@ -24,3 +24,30 @@ export const teamMap = {
   teamF3: { name: 'Georgia', group: 'F' },
   teamF4: { name: 'Tsjekkia', group: 'F' }
 };
+
+// Derivert struktur (en sannhet for lag)
+export const TOURNAMENT = {
+    groups: buildGroupsFromTeamMap(teamMap),
+
+    matches: [
+        [0,1],
+        [2,3],
+        [0,2],
+        [3,1],
+        [1,2],
+        [3,0]
+    ]
+};
+
+function buildGroupsFromTeamMap(teamMap) {
+    const groups = {};
+
+    Object.values(teamMap).forEach(({ name, group}) => {
+        if (!groups[group]) {
+            groups[group] = [];
+        }
+        groups[group].push(name);
+    });
+
+    return groups;
+}

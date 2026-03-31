@@ -1,4 +1,11 @@
+const DEBUG = false;
+
+function log(...args) {
+    if (DEBUG) console.log(...args);
+}
+
 import { teamMap } from './data.js';
+import { POINT_RULES, GROUPS } from './config.js';
 
 export function getTeamName(teamID) {
     return teamMap?.[teamID]?.name ?? '';
@@ -28,7 +35,7 @@ export function initializeGroups() {
     console.log('Groups initialized:', groups); // Debugging log
 }
 export function fillAllCells() {
-    console.log('Filling all cells');
+    log('Filling all cells');
     Object.keys(groups).forEach(group => {
         const matches = [
             [1, 2, '01'],
@@ -54,38 +61,58 @@ export function fillAllCells() {
 }
 
 function calculatePoints(isCheckedH, isCheckedU, isCheckedB, isRadioChecked, type) {
-    const checkedCount = [isCheckedH, isCheckedU, isCheckedB].filter(checked => checked).length;
+    const checked = {
+        H: isCheckedH,
+        U: isCheckedU,
+        B: isCheckedB
+    };
+    const checkedCount = Object.values(checked).filter(Boolean).length;
+
+    //Ingen valg
+    if (checkedCount === 0) return 0;
 
     if (checkedCount === 1) {
-        if ((type === "H" && isCheckedH) || (type === "U" && isCheckedU) || (type === "B" && isCheckedB)) {
-            if (type === "U" && isCheckedU) {
-                return isRadioChecked ? 18 : 9;
-            } else {
-                return isRadioChecked ? 16 : 8;
-            }
-        } else {
-            if ((type === "H" || type === "B") && isCheckedU === false) {
-                return isRadioChecked ? -16 : -2;
-            } else {
-                return isRadioChecked ? -16 : 0;
-            }
+        if (checked[type]) {
+            return isRadioChecked
+            ? POINT_RULES.singleDouble[type]
+            : POINT_RULES.single[type];
         }
-    } else if (checkedCount === 2) {
-        if ((type === "H" && isCheckedH) || (type === "U" && isCheckedU) || (type === "B" && isCheckedB)) {
-            return isRadioChecked ? 8 : 4;
-        } else {
-            return isRadioChecked ? -8 : -4;
-        }
-    } else if (checkedCount === 3) {
-        return isRadioChecked ? 2 : 1;
-    } else {
-        return 0;
+
+        // Feil utfall - straff
+        return isRadioChecked
+            ? POINT_RULES.penalty.double
+            : POINT_RULES.penalty.single;
     }
+
+    // Halvgardering
+    if (checkedCount === 2) {
+        if (checked[type]) {
+            return isRadioChecked
+            ? POINT_RULES.half.double
+            : POINT_RULES.half.points;
+        }
+        
+        return isRadioChecked
+            ? POINT_RULES.half.double * -1
+            : POINT_RULES.half.points * -1;        
+    }
+
+    // Helgardering
+    if (checkedCount === 3) {
+        return isRadioChecked
+            ? POINT_RULES.full.double
+            : POINT_RULES.full.points;        
+    }
+
+    return 0;
 }
 
 function calculateBonus(isCheckedH, isCheckedU, isCheckedB) {
     const checkedCount = [isCheckedH, isCheckedU, isCheckedB].filter(Boolean).length;
-    return checkedCount === 1 ? 6 : checkedCount === 2 ? 3 : 0;
+    
+    if (checkedCount === 1) return POINT_RULES.bonus.single;
+    if (checkedCount === 2) return POINT_RULES.bonus.half;
+    return 0;
 }
 
 export function updatePoints(group) {
@@ -290,7 +317,7 @@ export function updateThirdPlacedTeamsRanking() {
 function getAllTeamsFromGroups() {
     const allTeams = [];
 
-    ['A', 'B', 'C', 'D', 'E', 'F'].forEach(group => {
+    GROUPS.forEach(group => {
         const teamRows = document.querySelectorAll(`.rangering${group} .rad`);
         
         teamRows.forEach(row => {
@@ -392,7 +419,6 @@ function renderSluttspillTable(sluttspillTeams) {
 function swapTeams(index1, index2, teams) {
     [teams[index1], teams[index2]] = [teams[index2], teams[index1]];
 }
-
 
 // Handle click event on "(opp)" or "(ned)" links in the sluttspill table
 function handleSluttspillLinkClick(event, sluttspillTeams) {
@@ -699,7 +725,7 @@ function generatePlayoffTree() {
 export function populateSluttspillTable() {
     const sluttspillTeams = [];
 
-    ['A', 'B', 'C', 'D', 'E', 'F'].forEach(group => {
+    GROUPS.forEach(group => {
         const teams = groups[group].teams;
         if (teams.length >= 2) {
             sluttspillTeams.push({

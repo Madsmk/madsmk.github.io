@@ -28,20 +28,20 @@ export function renderGroup(groupLetter, mountId = null) {
           <div class="tips">
             <label class="tip-option">
               <input type="checkbox" name="match${groupLetter}${id}" id="${homeId}">
-              <span class="dot one"></span>
               <span class="utfall">H</span>
+              <span class="dot one"></span>
             </label>
 
             <label class="tip-option">
               <input type="checkbox" name="match${groupLetter}${id}" id="${drawId}">
-              <span class="dot two"></span>
               <span class="utfall">U</span>
+              <span class="dot two"></span>
             </label>
 
             <label class="tip-option">
               <input type="checkbox" name="match${groupLetter}${id}" id="${awayId}">
-              <span class="dot three"></span>
               <span class="utfall">B</span>
+              <span class="dot three"></span>
             </label>
           </div>
         </div>
