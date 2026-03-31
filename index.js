@@ -82,25 +82,23 @@ function getTeamName(teamID) {
 }
 
 function initializeGroups() {
-    const groupCount = 6;
+    const groupLetters = 'ABCDEFGHIJKL'.split(''); // 12 grupper
     const teamCountPerGroup = 4;
-    for (let groupCharCode = 'A'.charCodeAt(0); groupCharCode < 'A'.charCodeAt(0) + groupCount; groupCharCode++) {
-        let group = String.fromCharCode(groupCharCode);
-        groups[group] = {
-            teams: [],
-            teamPoints: {}
-        };
+
+    groupLetters.forEach(group => {
+        groups[group] = { teams: [], teamPoints: {} };
 
         for (let i = 1; i <= teamCountPerGroup; i++) {
-            let teamID = `team${group}${i}`;
-            let teamName = teamMap[teamID]?.name || '';
+            const teamID = `team${group}${i}`;
+            const teamName = teamMap[teamID]?.name || '';
             if (teamName) {
                 groups[group].teams.push(teamName);
                 groups[group].teamPoints[teamName] = 0;
             }
         }
-    }
-    console.log('Groups initialized:', groups); // Debugging log
+    });
+
+    console.log('Groups initialized:', groups);
 }
 
 function fillAllCells() {
@@ -165,28 +163,16 @@ function updatePoints(group) {
 }
 
 function calculatePoints(isCheckedH, isCheckedU, isCheckedB, isRadioChecked, type) {
-    const checkedCount = [isCheckedH, isCheckedU, isCheckedB].filter(checked => checked).length;
+    const checkedCount = [isCheckedH, isCheckedU, isCheckedB].filter(Boolean).length;
 
     if (checkedCount === 1) {
         if ((type === "H" && isCheckedH) || (type === "U" && isCheckedU) || (type === "B" && isCheckedB)) {
-            if (type === "U" && isCheckedU) {
-                return isRadioChecked ? 18 : 9;
-            } else {
-                return isRadioChecked ? 16 : 8;
-            }
+            return isRadioChecked ? (type === "U" ? 18 : 16) : (type === "U" ? 9 : 8);
         } else {
-            if ((type === "H" || type === "B") && isCheckedU === false) {
-                return isRadioChecked ? -16 : -2;
-            } else {
-                return isRadioChecked ? -16 : 0;
-            }
+            return isRadioChecked ? -16 : (type === "U" ? 0 : -2);
         }
     } else if (checkedCount === 2) {
-        if ((type === "H" && isCheckedH) || (type === "U" && isCheckedU) || (type === "B" && isCheckedB)) {
-            return isRadioChecked ? 8 : 4;
-        } else {
-            return isRadioChecked ? -8 : -4;
-        }
+        return isRadioChecked ? 8 : 4;
     } else if (checkedCount === 3) {
         return isRadioChecked ? 2 : 1;
     } else {
@@ -295,49 +281,53 @@ function getTeamRankedThreeFromGroup(group) {
 }
 
 function updateThirdPlacedTeamsRanking() {
-    console.log('updateThirdPlacedTeamsRanking')
+    console.log('updateThirdPlacedTeamsRanking');
+
     const thirdPlaceTeams = [];
-    ['A', 'B', 'C', 'D', 'E', 'F'].forEach(group => {
+    const groupLetters = 'ABCDEFGHIJKL'.split('');
+
+    groupLetters.forEach(group => {
         const team = getTeamRankedThreeFromGroup(group);
         if (team) {
-            thirdPlaceTeams.push({
-                team: team,
-                points: groups[group].teamPoints[team]
-            });
+            thirdPlaceTeams.push({ team, points: groups[group].teamPoints[team], group });
         }
     });
 
     thirdPlaceTeams.sort((a, b) => b.points - a.points);
 
     const rankingTable = document.querySelector('.rangeringAllTeams');
-    if (rankingTable) {
-        rankingTable.innerHTML = `
-            <div class="rangOverskrift">
-                <div class="cell">Plass</div>
-                <div class="cell">Land</div>
-                <div class="cell">Forventet poeng</div>
+    if (!rankingTable) return;
+
+    rankingTable.innerHTML = `
+        <div class="rangOverskrift">
+            <div class="cell">Plass</div>
+            <div class="cell">Land</div>
+            <div class="cell">Forventet poeng</div>
+        </div>
+    `;
+
+    thirdPlaceTeams.forEach(({ team, points }, index) => {
+        let actionsHTML = `${team}`;
+        if (index > 0 && points === thirdPlaceTeams[index - 1].points) {
+            actionsHTML += ` <a href="#" class="opp" data-index="${index}" data-direction="opp">(opp)</a>`;
+        }
+        if (index < thirdPlaceTeams.length - 1 && points === thirdPlaceTeams[index + 1].points) {
+            actionsHTML += ` <a href="#" class="ned" data-index="${index}" data-direction="ned">(ned)</a>`;
+        }
+
+        rankingTable.innerHTML += `
+            <div class="rad" data-group="${thirdPlaceTeams[index].group}">
+                <div class="cell plass">${index + 1}</div>
+                <div class="cell land">${actionsHTML}</div>
+                <div class="cell poeng">${points.toFixed(1)}</div>
             </div>
         `;
+    });
 
-        thirdPlaceTeams.forEach(({ team, points }, index) => {
-            let actionsHTML = `${team}`;
-            if (index > 0 && points === thirdPlaceTeams[index - 1].points) {
-                actionsHTML += ` <a href="#" class="opp" data-index="${index}" data-direction="opp">(opp)</a>`;
-            }
-            if (index < thirdPlaceTeams.length - 1 && points === thirdPlaceTeams[index + 1].points) {
-                actionsHTML += ` <a href="#" class="ned" data-index="${index}" data-direction="ned">(ned)</a>`;
-            }
-            rankingTable.innerHTML += `
-                <div class="rad">
-                    <div class="cell plass">${index + 1}</div>
-                    <div class="cell land">${actionsHTML}</div>
-                    <div class="cell poeng">${points.toFixed(1)}</div>
-                </div>
-            `;
-        });
-        console.log(thirdPlaceTeams)
-        addThirdPlaceEventListeners(thirdPlaceTeams);
-    }
+    addThirdPlaceEventListeners(thirdPlaceTeams);
+
+    // Viktig: send videre tredjeplass-liste slik at sluttspill kan ta topp 8
+    window.__thirdPlaceTeams = thirdPlaceTeams;
 }
 
 function addThirdPlaceEventListeners(thirdPlaceTeams) {
@@ -443,7 +433,7 @@ function populateSluttspillTable() {
 
     const rankingTable = document.querySelector('.rangeringAllTeams');
     if (rankingTable) {
-        const thirdPlaceTeams = Array.from(rankingTable.querySelectorAll('.rad')).slice(0, 4);
+        const thirdPlaceTeams = Array.from(rankingTable.querySelectorAll('.rad')).slice(0, 8);
         thirdPlaceTeams.forEach(row => {
             sluttspillTeams.push({
                 team: row.querySelector('.land').textContent.replace(/\s*\(opp\)\s*|\s*\(ned\)\s*/g, ''),
@@ -850,107 +840,58 @@ function populateNextRounds(round16Container, quarterfinalsContainer, semifinals
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    emailjs.init({
-        publicKey: "h9CcX5Ytepi9higkh",// Replace with your EmailJS user ID
-    }); 
-
     const tipsForm = document.getElementById('tipsForm');
 
-    tipsForm.addEventListener('submit', function (event) {
+    tipsForm.addEventListener('submit', function(event) {
         event.preventDefault();
-
+        
         const fullName = document.getElementById('fullName').value;
         const email = document.getElementById('email').value;
-
+        
         const checkedCheckboxes = document.querySelectorAll('input[type="checkbox"]:checked');
         const checkedRadioButtons = document.querySelectorAll('input[type="radio"]:checked');
 
-        const deriveTeams = (id) => {
-            const match = id.match(/(\w)(\d{2})/);
-            if (!match) return { homeTeam: undefined, awayTeam: undefined };
-
-            const group = match[1];
-            const matchNumber = match[2];
-
-            const homeTeamElement = document.querySelector(`.row.match${group}${matchNumber} .cell.home`);
-            const awayTeamElement = document.querySelector(`.row.match${group}${matchNumber} .cell.away`);
-
-            const homeTeam = homeTeamElement ? homeTeamElement.textContent.trim() : "";
-            const awayTeam = awayTeamElement ? awayTeamElement.textContent.trim() : "";
-
-            return { homeTeam, awayTeam };
-        };
-
         let checkboxData = [];
         checkedCheckboxes.forEach(checkbox => {
-            const { homeTeam, awayTeam } = deriveTeams(checkbox.id);
             checkboxData.push({
                 id: checkbox.id,
-                homeTeam: homeTeam,
-                awayTeam: awayTeam
+                homeTeam: checkbox.dataset.home,
+                awayTeam: checkbox.dataset.away
             });
         });
 
         let radioButtonData = [];
         checkedRadioButtons.forEach(radioButton => {
-            const { homeTeam, awayTeam } = deriveTeams(radioButton.id);
             radioButtonData.push({
                 id: radioButton.id,
-                homeTeam: homeTeam,
-                awayTeam: awayTeam
+                homeTeam: radioButton.dataset.home,
+                awayTeam: radioButton.dataset.away
             });
         });
-
-        const getPlassAndTeams = (selector) => {
-            const rows = document.querySelectorAll(selector + ' .rad');
-            let data = [];
-            rows.forEach(row => {
-                const plass = row.querySelector('.plass') ? row.querySelector('.plass').textContent.trim() : "";
-                let team = row.querySelector('.land') ? row.querySelector('.land').textContent.trim() : "";
-                team = team.replace(/\(opp\)|\(ned\)/g, '').trim();
-                data.push({ plass, team });
-            });
-            return data;
-        };
-
-        const plassAndTeams = {};
-        ['A', 'B', 'C', 'D', 'E', 'F'].forEach(group => {
-            plassAndTeams[group] = getPlassAndTeams(`.rangering${group}`);
-        });
-        const allTeamsRanking = getPlassAndTeams('.rangeringAllTeams');
-        const playoffRanking = getPlassAndTeams('.sluttspillTable');
 
         const data = {
             fullName: fullName,
             email: email,
             checkboxData: checkboxData,
-            radioButtonData: radioButtonData,
-            plassAndTeams: plassAndTeams,
-            allTeamsRanking: allTeamsRanking,
-            playoffRanking: playoffRanking
+            radioButtonData: radioButtonData
         };
 
-        // Check the size of data
-        const dataSize = new Blob([JSON.stringify(data)]).size;
-        console.log('Data size:', dataSize, 'bytes');
-
-        if (dataSize > 50000) {
-            console.error('Data exceeds the 50KB limit for EmailJS');
-            alert('Form data is too large to be sent.');
-            return;
-        }
-
-        // Log to see the structured data before sending
-        console.log('Data to be sent:', JSON.stringify(data, null, 2));
-
-
-        emailjs.send('contact_service', 'contact_form', data)
-        .then((response) => {
-            console.log('Email sent successfully!', response.status, response.text);
-            alert('Det tips er registrert. Lykke til!');
-        }, (err) => {
-            console.error('Failed to send email:', err);
-            alert('Ditt tips ble ikke registrert. Vennligst ta kontakt med Mads');
+        fetch('https://your-email-script-endpoint.com/send-email', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ to: 'madsmk_lyn@hotmail.com', data: data })
+        })
+        .then(response => {
+            if (response.ok) {
+                console.log('Form data sent successfully!');
+            } else {
+                console.error('Failed to send form data.');
+            }
+        })
+        .catch(error => {
+            console.error('An error occurred while sending form data:', error);
         });
     });
 });

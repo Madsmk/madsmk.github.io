@@ -10,7 +10,7 @@
     <header>
         <nav>
             <ul>
-                <li><a href="index.html">Tips</a></li>
+                <li><a href="tips.html">Tips</a></li>
                 <li><a href="regler.html">Regler</a></li>
                 <li><a href="https://inside.fifa.com/fifa-world-ranking/men" target="_blank">FIFA-ranking</a></li>
             </ul>
@@ -19,7 +19,7 @@
 
     <div class="containerUserDetails">
         <h2>Send inn ditt tips</h2>
-        <form id="tipsForm">
+        <form id="tipsForm" action="#" method="POST">
             <label for="fullName">Fullt navn:</label>
             <input type="text" id="fullName" name="fullName" required>
     
@@ -30,24 +30,15 @@
         </form>
     </div>
 
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-    <script type="text/javascript">
-        (function() {
-            // https://dashboard.emailjs.com/admin/account
-            emailjs.init({
-              publicKey: "h9CcX5Ytepi9higkh",// Replace with your EmailJS user ID
-            });
-        })();
-    </script>
     <section class="instructions">
         <h2>Instruksjoner</h2>
         <p>
-            Velkommen til tippekonkurransen for fotball EM 2024! 
+            Velkommen til tippekonkurransen for fotball EM 2024! Here’s how you can use this table to participate in the competition:
         </p>
-        <p>Tippekonkurransen går ut på å velge utfall (hjemme, uavgjort og borte) i alle kamper i gruppespillet, og det er mulig å både halvgardere og helgardere seg (men med færre poeng ved riktig utfall). Det er også mulig å doble poeng i en kamp per gruppe, men da med sjanse for å miste en del del poeng dersom tipset ikke er riktig. Man må også rangere land ved poenglikhet da det avgjør hvilke land som går videre til sluttspillet.</p>
-        <p>NB! Husk å fylle inn tips i alle gruppespillkampene!</p>
-        <p>Når du er fornøyd med tipset ditt, legger du inn navn og epost i feltet øverst og trykker "Send inn ditt tips"</p>
-        <p>Vi sier lykke til og måtte den beste vinne!</p>
+        <ol>
+            <ul>Use the checkboxes in the 'Tips' column to indicate your prediction for each match (H for Home win, U for Draw, B for Away win).</ul>
+        </ol>
+        <p>Good luck, and may the best predictor win!</p>
     </section>
        <div class="containerA">
         <div class="title">Gruppe A</div>
@@ -78,32 +69,31 @@
                                 <div class="cell home" id="teamA${i}"></div>
                                 <div class="cell away" id="teamA${i + 1}"></div>
                                 <div class="cell">
-                                    <input type="checkbox" name="matchA${id}" id="${homeId}">
-                                    <input type="checkbox" name="matchA${id}" id="${drawId}">
-                                    <input type="checkbox" name="matchA${id}" id="${awayId}">
                                     <div class="tips">
-                                        <label for="${homeId}">
-                                            <span class="dot one"></span>
-                                            <span class="utfall">H</span>
+                                        <label class="tip-option">
+                                          <input type="checkbox" name="matchA${id}" id="${homeId}">
+                                          <span class="dot one"></span>
+                                          <span class="utfall">H</span>
                                         </label>
-                                        <label for="${drawId}">
+    
+                                        <label class="tip-option">
+                                            <input type="checkbox" name="matchA${id}" id="${drawId}">
                                             <span class="dot two"></span>
                                             <span class="utfall">U</span>
                                         </label>
-                                        <label for="${awayId}">
+    
+                                        <label class="tip-option">
+                                            <input type="checkbox" name="matchA${id}" id="${awayId}">
                                             <span class="dot three"></span>
                                             <span class="utfall">B</span>
                                         </label>
                                     </div>
                                 </div>
                                 <div class="cell">
-                                    <input type="radio" name="gruppeA" id="XA${id}" class="radio-option">
-                                    <div class="dobling">
-                                        <label for="XA${id}">
-                                            <span class="radio matchA${i}"></span>
-                                            <span class="utvalgt"></span>
-                                        </label>
-                                    </div>
+                                    <label class="double-option">
+                                        <input type="radio" name="gruppeA" id="XA${id}" class="radio-option">
+                                    <span class="radio"></span>
+                                    </label>
                                 </div>
                                 <div class="cell poeng-h matchA${id}"></div>
                                 <div class="cell poeng-u matchA${id}"></div>
@@ -193,32 +183,31 @@
                                 <div class="cell home" id="teamB${i}"></div>
                                 <div class="cell away" id="teamB${i + 1}"></div>
                                 <div class="cell">
-                                    <input type="checkbox" name="matchB${id}" id="${homeId}">
-                                    <input type="checkbox" name="matchB${id}" id="${drawId}">
-                                    <input type="checkbox" name="matchB${id}" id="${awayId}">
                                     <div class="tips">
-                                        <label for="${homeId}">
-                                            <span class="dot one"></span>
-                                            <span class="utfall">H</span>
+                                        <label class="tip-option">
+                                          <input type="checkbox" name="matchB${id}" id="${homeId}">
+                                          <span class="dot one"></span>
+                                          <span class="utfall">H</span>
                                         </label>
-                                        <label for="${drawId}">
+    
+                                        <label class="tip-option">
+                                            <input type="checkbox" name="matchB${id}" id="${drawId}">
                                             <span class="dot two"></span>
                                             <span class="utfall">U</span>
                                         </label>
-                                        <label for="${awayId}">
+    
+                                        <label class="tip-option">
+                                            <input type="checkbox" name="matchB${id}" id="${awayId}">
                                             <span class="dot three"></span>
                                             <span class="utfall">B</span>
                                         </label>
                                     </div>
                                 </div>
                                 <div class="cell">
-                                    <input type="radio" name="gruppeB" id="XB${id}" class="radio-option">
-                                    <div class="dobling">
-                                        <label for="XB${id}">
-                                            <span class="radio matchB${i}"></span>
-                                            <span class="utvalgt"></span>
-                                        </label>
-                                    </div>
+                                    <label class="double-option">
+                                        <input type="radio" name="gruppeB" id="XB${id}" class="radio-option">
+                                    <span class="radio"></span>
+                                    </label>
                                 </div>
                                 <div class="cell poeng-h matchB${id}"></div>
                                 <div class="cell poeng-u matchB${id}"></div>
@@ -308,32 +297,31 @@
                                 <div class="cell home" id="teamC${i}"></div>
                                 <div class="cell away" id="teamC${i + 1}"></div>
                                 <div class="cell">
-                                    <input type="checkbox" name="matchC${id}" id="${homeId}">
-                                    <input type="checkbox" name="matchC${id}" id="${drawId}">
-                                    <input type="checkbox" name="matchC${id}" id="${awayId}">
                                     <div class="tips">
-                                        <label for="${homeId}">
-                                            <span class="dot one"></span>
-                                            <span class="utfall">H</span>
+                                        <label class="tip-option">
+                                          <input type="checkbox" name="matchC${id}" id="${homeId}">
+                                          <span class="dot one"></span>
+                                          <span class="utfall">H</span>
                                         </label>
-                                        <label for="${drawId}">
+    
+                                        <label class="tip-option">
+                                            <input type="checkbox" name="matchC${id}" id="${drawId}">
                                             <span class="dot two"></span>
                                             <span class="utfall">U</span>
                                         </label>
-                                        <label for="${awayId}">
+    
+                                        <label class="tip-option">
+                                            <input type="checkbox" name="matchC${id}" id="${awayId}">
                                             <span class="dot three"></span>
                                             <span class="utfall">B</span>
                                         </label>
                                     </div>
                                 </div>
                                 <div class="cell">
-                                    <input type="radio" name="gruppeC" id="XC${id}" class="radio-option">
-                                    <div class="dobling">
-                                        <label for="XC${id}">
-                                            <span class="radio matchC${i}"></span>
-                                            <span class="utvalgt"></span>
-                                        </label>
-                                    </div>
+                                    <label class="double-option">
+                                        <input type="radio" name="gruppeC" id="XC${id}" class="radio-option">
+                                    <span class="radio"></span>
+                                    </label>
                                 </div>
                                 <div class="cell poeng-h matchC${id}"></div>
                                 <div class="cell poeng-u matchC${id}"></div>
@@ -423,32 +411,31 @@
                                 <div class="cell home" id="teamD${i}"></div>
                                 <div class="cell away" id="teamD${i + 1}"></div>
                                 <div class="cell">
-                                    <input type="checkbox" name="matchD${id}" id="${homeId}">
-                                    <input type="checkbox" name="matchD${id}" id="${drawId}">
-                                    <input type="checkbox" name="matchD${id}" id="${awayId}">
                                     <div class="tips">
-                                        <label for="${homeId}">
-                                            <span class="dot one"></span>
-                                            <span class="utfall">H</span>
+                                        <label class="tip-option">
+                                          <input type="checkbox" name="matchD${id}" id="${homeId}">
+                                          <span class="dot one"></span>
+                                          <span class="utfall">H</span>
                                         </label>
-                                        <label for="${drawId}">
+    
+                                        <label class="tip-option">
+                                            <input type="checkbox" name="matchD${id}" id="${drawId}">
                                             <span class="dot two"></span>
                                             <span class="utfall">U</span>
                                         </label>
-                                        <label for="${awayId}">
+    
+                                        <label class="tip-option">
+                                            <input type="checkbox" name="matchD${id}" id="${awayId}">
                                             <span class="dot three"></span>
                                             <span class="utfall">B</span>
                                         </label>
                                     </div>
                                 </div>
                                 <div class="cell">
-                                    <input type="radio" name="gruppeD" id="XD${id}" class="radio-option">
-                                    <div class="dobling">
-                                        <label for="XD${id}">
-                                            <span class="radio matchD${i}"></span>
-                                            <span class="utvalgt"></span>
-                                        </label>
-                                    </div>
+                                    <label class="double-option">
+                                        <input type="radio" name="gruppeD" id="XD${id}" class="radio-option">
+                                    <span class="radio"></span>
+                                    </label>
                                 </div>
                                 <div class="cell poeng-h matchD${id}"></div>
                                 <div class="cell poeng-u matchD${id}"></div>
@@ -538,32 +525,31 @@
                                 <div class="cell home" id="teamE${i}"></div>
                                 <div class="cell away" id="teamE${i + 1}"></div>
                                 <div class="cell">
-                                    <input type="checkbox" name="matchE${id}" id="${homeId}">
-                                    <input type="checkbox" name="matchE${id}" id="${drawId}">
-                                    <input type="checkbox" name="matchE${id}" id="${awayId}">
                                     <div class="tips">
-                                        <label for="${homeId}">
-                                            <span class="dot one"></span>
-                                            <span class="utfall">H</span>
+                                        <label class="tip-option">
+                                          <input type="checkbox" name="matchE${id}" id="${homeId}">
+                                          <span class="dot one"></span>
+                                          <span class="utfall">H</span>
                                         </label>
-                                        <label for="${drawId}">
+    
+                                        <label class="tip-option">
+                                            <input type="checkbox" name="matchE${id}" id="${drawId}">
                                             <span class="dot two"></span>
                                             <span class="utfall">U</span>
                                         </label>
-                                        <label for="${awayId}">
+    
+                                        <label class="tip-option">
+                                            <input type="checkbox" name="matchE${id}" id="${awayId}">
                                             <span class="dot three"></span>
                                             <span class="utfall">B</span>
                                         </label>
                                     </div>
                                 </div>
                                 <div class="cell">
-                                    <input type="radio" name="gruppeE" id="XE${id}" class="radio-option">
-                                    <div class="dobling">
-                                        <label for="XE${id}">
-                                            <span class="radio matchE${i}"></span>
-                                            <span class="utvalgt"></span>
-                                        </label>
-                                    </div>
+                                    <label class="double-option">
+                                        <input type="radio" name="gruppeE" id="XE${id}" class="radio-option">
+                                    <span class="radio"></span>
+                                    </label>
                                 </div>
                                 <div class="cell poeng-h matchE${id}"></div>
                                 <div class="cell poeng-u matchE${id}"></div>
@@ -653,32 +639,31 @@
                                 <div class="cell home" id="teamF${i}"></div>
                                 <div class="cell away" id="teamF${i + 1}"></div>
                                 <div class="cell">
-                                    <input type="checkbox" name="matchF${id}" id="${homeId}">
-                                    <input type="checkbox" name="matchF${id}" id="${drawId}">
-                                    <input type="checkbox" name="matchF${id}" id="${awayId}">
                                     <div class="tips">
-                                        <label for="${homeId}">
-                                            <span class="dot one"></span>
-                                            <span class="utfall">H</span>
+                                        <label class="tip-option">
+                                          <input type="checkbox" name="matchF${id}" id="${homeId}">
+                                          <span class="dot one"></span>
+                                          <span class="utfall">H</span>
                                         </label>
-                                        <label for="${drawId}">
+    
+                                        <label class="tip-option">
+                                            <input type="checkbox" name="matchF${id}" id="${drawId}">
                                             <span class="dot two"></span>
                                             <span class="utfall">U</span>
                                         </label>
-                                        <label for="${awayId}">
+    
+                                        <label class="tip-option">
+                                            <input type="checkbox" name="matchF${id}" id="${awayId}">
                                             <span class="dot three"></span>
                                             <span class="utfall">B</span>
                                         </label>
                                     </div>
                                 </div>
                                 <div class="cell">
-                                    <input type="radio" name="gruppeF" id="XF${id}" class="radio-option">
-                                    <div class="dobling">
-                                        <label for="XF${id}">
-                                            <span class="radio matchF${i}"></span>
-                                            <span class="utvalgt"></span>
-                                        </label>
-                                    </div>
+                                    <label class="double-option">
+                                        <input type="radio" name="gruppeF" id="XF${id}" class="radio-option">
+                                    <span class="radio"></span>
+                                    </label>
                                 </div>
                                 <div class="cell poeng-h matchF${id}"></div>
                                 <div class="cell poeng-u matchF${id}"></div>
@@ -750,8 +735,8 @@
         </div>
     
         <div class="instructions">
-            <h2>Instruksjoner</h2>
-            <p>Rangering av landene som ender på tredjeplass. De fire beste landene går videre til sluttspillet. Det baseres på antall poeng oppnådd i gruppespillet, så du har kun mulighet til å endre rekkefølgen ved poenglikhet</p>
+            <h2>Instructions</h2>
+            <p>Here you can add your instructions content...</p>
         </div>
     </div>
 
@@ -766,45 +751,30 @@
         </div>
 
         <div class="instructions">
-            <h2>Instruksjoner</h2>
-            <p>Basert på tipsene dine er dette listen over de 16 landene du mener kommer til sluttspillet. Her må du rangere landene ut i fra styrkeforhold. Det landert som rangeres høyest er det landet du tror kommer til å vinne EM. Dersom to land møtes til en sluttspillkamp er det det landet du har rangert høyest, du tror kommer til å vinne kampen.</p> 
-            <p>Se regler og forklaring ved å trykke på linken "Regler" i menyen øverst.</p>
+            <h2>Sluttspill Instructions</h2>
+            <p>Here you can add your sluttspill instructions content...</p>
         </div>
     </div>
 
     <div class="containerSluttspillTre">
-        <div class="title">Sluttspill visualisert</div>
-        <div class="sluttspillTreTable">
-            <div class="round16">
-                <div class="top-half">
-                    <!-- top half matches for round 16 -->
+        <div class="sluttspillTreWrapper">
+            <div class="title">Sluttspillet visualisert</div>
+            <div class="sluttspillTreTable">
+                <div class="column round16">
+                    <h3>8. delsfinale</h3>
+                    <!-- Round of 16 matches will be populated here -->
                 </div>
-                <div class="bottom-half">
-                    <!-- bottom half matches for round 16 -->
+                <div class="column quarterfinals">
+                    <h3>Kvartfinale</h3>
+                    <!-- Quarterfinals matches will be populated here -->
                 </div>
-            </div>
-            <div class="quarterfinals">
-                <div class="top-half">
-                    <!-- top half matches for quarterfinals -->
+                <div class="column semifinals">
+                    <h3>Semifinale</h3>
+                    <!-- Semifinals matches will be populated here -->
                 </div>
-                <div class="bottom-half">
-                    <!-- bottom half matches for quarterfinals -->
-                </div>
-            </div>
-            <div class="semifinals">
-                <div class="top-half">
-                    <!-- top half matches for semifinals -->
-                </div>
-                <div class="bottom-half">
-                    <!-- bottom half matches for semifinals -->
-                </div>
-            </div>
-            <div class="final">
-                <div class="top-half">
-                    <!-- top half match for the final -->
-                </div>
-                <div class="bottom-half">
-                    <!-- possible bottom half match for the final, e.g., 3rd place match -->
+                <div class="column final">
+                    <h3>Finale</h3>
+                    <!-- Final match will be populated here -->
                 </div>
             </div>
         </div>
