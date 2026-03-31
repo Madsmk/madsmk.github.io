@@ -326,6 +326,69 @@ function updateOverallRankingTable(thirdPlaceTeams) {
     }
 }
 
+
+
+// Add event listeners for match ranking manipulation in the sluttspill table
+function addSluttspillEventListeners(sluttspillTeams) {
+    document.querySelectorAll('.sluttspillTable .opp, .sluttspillTable .ned').forEach(link => {
+        link.addEventListener('click', function (event) {
+            console.log('Sluttspill link clicked:', event.target); // Log link click
+            handleSluttspillLinkClick(event, sluttspillTeams);
+        });
+    });
+}
+
+// Render the ranking table for the playoff teams
+function renderSluttspillTable(sluttspillTeams) {
+    const sluttspillTable = document.querySelector('.sluttspillTable');
+    if (sluttspillTable) {
+        sluttspillTable.innerHTML = `
+            <div class="rangOverskrift">
+                <div class="cell">Rangering</div>
+                <div class="cell">Land</div>
+                <div class="cell">Forventet poeng</div>
+            </div>
+        `;
+
+        sluttspillTeams.forEach((team, index) => {
+            let actionsHTML = `${team.team}`;
+            if (index > 0) {
+                actionsHTML += ` <a href="#" class="opp" data-index="${index}" data-direction="opp">(opp)</a>`;
+            }
+            if (index < sluttspillTeams.length - 1) {
+                actionsHTML += ` <a href="#" class="ned" data-index="${index}" data-direction="ned">(ned)</a>`;
+            }
+            sluttspillTable.innerHTML += `
+                <div class="rad">
+                    <div class="cell plass">${index + 1}</div>
+                    <div class="cell land">${actionsHTML}</div>
+                    <div class="cell poeng">${team.points.toFixed(1)}</div>
+                </div>
+            `;
+        });
+
+        addSluttspillEventListeners(sluttspillTeams);
+    } else {
+        console.error('Sluttspill table not found.');
+    }
+}
+
+// Handle click event on "(opp)" or "(ned)" links in the sluttspill table
+function handleSluttspillLinkClick(event, sluttspillTeams) {
+    event.preventDefault();
+    const index = parseInt(event.target.dataset.index);
+    const direction = event.target.dataset.direction;
+    console.log('Handling sluttspill link click:', event.target.dataset); // Log handling details
+    if (direction === 'opp' && index > 0) {
+        swapTeams(index, index - 1, sluttspillTeams);
+    } else if (direction === 'ned' && index < sluttspillTeams.length - 1) {
+        swapTeams(index, index + 1, sluttspillTeams);
+    }
+
+    renderSluttspillTable(sluttspillTeams);
+    generatePlayoffTree(sluttspillTeams); // Update the playoff tree after the click event
+}
+
 export function populateSluttspillTable() {
     const sluttspillTeams = [];
 
