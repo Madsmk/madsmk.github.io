@@ -629,49 +629,30 @@ form input[type="radio"]:checked + label .radio {
     padding: 25px;
     border-radius: 15px;
     margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-.title {
-    font-size: 2.5em; /* Make the title larger */
+.containerSluttspillTre .title {
+    font-size: 2.5em;
     font-weight: bold;
     text-align: center;
     margin-bottom: 20px;
-    text-transform: uppercase; /* Transform text to uppercase for a bold effect */
-    letter-spacing: 2px; /* Add spacing between letters */
-    background: linear-gradient(45deg, #ff6b6b, #f8e9a1); /* Add a gradient background */
-    -webkit-background-clip: text; /* Use the background as text color */
-    background-clip: text; /* Standard property */
-    -webkit-text-fill-color: transparent; /* Make text transparent to show gradient */
-    color: transparent; /* Fallback for text-fill-color */
-}
-
-.sluttspillTreWrapper {
-    display: flex;
-    gap: 2rem; /* Adjust the gap as needed */
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    background: linear-gradient(45deg, #ff6b6b, #f8e9a1);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
 }
 
 .sluttspillTreTable {
-    display: flex;
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 columns for each round */
+    gap: 20px;
     width: 100%;
-}
-
-.column {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-.column h3 {
-    text-align: center;
-}
-
-.match {
-    margin: 10px 0;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    text-align: center;
 }
 
 html, body, .sluttspillTreTable, .round16, .quarterfinals, .semifinals, .final {
@@ -680,33 +661,84 @@ html, body, .sluttspillTreTable, .round16, .quarterfinals, .semifinals, .final {
     box-sizing: border-box;
 }
 
-/* Container styles for the playoff tree */
-.sluttspillTreTable {
-    display: flex;
-    justify-content: space-between;
-    padding: 20px;
-    gap: 20px; /* Horizontal gap between rounds */
-}
-
-/* Each round will be a column */
-.round16, .quarterfinals, .semifinals, .final {
+.round, .semifinal, .final {
     display: flex;
     flex-direction: column;
-    align-items: center; /* Center align horizontally */
-    flex-grow: 1;
+    align-items: center;
 }
 
-/* Styling for match elements */
-.match {
+.round .match, .semifinal .match, .final .match {
     display: flex;
     flex-direction: column;
-    align-items: center; /* Center align horizontally */
-    justify-content: center; /* Center align vertically */
-    margin: 20px 0; /* Vertical gap between match elements */
+    align-items: center;
+    justify-content: center;
+    margin: 10px 0;
     padding: 10px;
     border: 1px solid #000;
     border-radius: 5px;
-    background-color: #f8f8f8;
+    background-color: #e0ff34;
+    width: 150px;
+}
+
+.round16 {
+    grid-column: 1 / 2;
+    display: grid;
+    grid-template-rows: repeat(8, 1fr); /* 8 matches */
+    gap: 20px;
+}
+
+.quarterfinals {
+    grid-column: 2 / 3;
+    display: grid;
+    grid-template-rows: repeat(4, 1fr); /* 4 matches, each spanning 2 rows of round 16 */
+    gap: 40px;
+}
+
+.semifinals {
+    grid-column: 3 / 4;
+    display: grid;
+    grid-template-rows: repeat(2, 1fr); /* 2 matches, each spanning 2 rows of quarterfinals */
+    gap: 80px;
+}
+
+.final {
+    grid-column: 4 / 5;
+    display: grid;
+    grid-template-rows: 1fr; /* 1 match, spanning 2 rows of semifinals */
+    gap: 160px;
+    align-items: center; /* Center align the content */
+}
+
+.final .match {
+    height: 200px; /* Adjust this value to make the final match box bigger */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/*.round16, .quarterfinals, .semifinals, .final {
+    display: grid;
+    grid-template-rows: repeat(2, 1fr); /* Two rows for splitting matches 
+    gap: 20px;
+    flex-grow: 1;
+}
+
+.top-half, .bottom-half {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}*/
+
+.match {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #000;
+    border-radius: 5px;
+    background-color: #c5bfbf;
     width: 150px;
 }
 
