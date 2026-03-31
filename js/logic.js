@@ -549,6 +549,24 @@ function createMatchHTML(team1, team2, matchId, ranking1 = '', ranking2 = '') {
     `;
 }
 
+function getTeamFromRankingTable(group, position) {
+    const rankingTable = document.querySelector(`.rangering${group}`);
+    if (!rankingTable) {
+        console.error(`Ranking table for group ${group} not found.`);
+        return '';
+    }
+
+    const teamRows = rankingTable.querySelectorAll('.rad .land');
+    if (position < 1 || position > teamRows.length) {
+        console.error(`Invalid position ${position} for group ${group}.`);
+        return '';
+    }
+
+    const cleanTeamName = teamRows[position - 1].textContent.trim().replace(/\s*\(.*?\)\s*/g, '');
+
+    return cleanTeamName;
+}
+
     // Generate the initial playoff tree
 function generatePlayoffTree() {
     console.log('Generating playoff tree');
