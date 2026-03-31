@@ -301,168 +301,6 @@ form input[type="radio"]:checked + label .radio {
 .rangeringA .rad:nth-child(4), .rangeringB .rad:nth-child(4), .rangeringC .rad:nth-child(4), .rangeringD .rad:nth-child(4), .rangeringE .rad:nth-child(4), .rangeringF .rad:nth-child(4) {
     background-color: #bddbfa; /* Light blue for rank 3 */
 }
-
-#HA01:checked ~ .tips label .one,
-#UA01:checked ~ .tips label .two,
-#BA01:checked ~ .tips label .three,
-#HA02:checked ~ .tips label .one,
-#UA02:checked ~ .tips label .two,
-#BA02:checked ~ .tips label .three,
-#HA03:checked ~ .tips label .one,
-#UA03:checked ~ .tips label .two,
-#BA03:checked ~ .tips label .three,
-#HA04:checked ~ .tips label .one,
-#UA04:checked ~ .tips label .two,
-#BA04:checked ~ .tips label .three,
-#HA05:checked ~ .tips label .one,
-#UA05:checked ~ .tips label .two,
-#BA05:checked ~ .tips label .three,
-#HA06:checked ~ .tips label .one,
-#UA06:checked ~ .tips label .two,
-#BA06:checked ~ .tips label .three,
-#HB01:checked ~ .tips label .one,
-#UB01:checked ~ .tips label .two,
-#BB01:checked ~ .tips label .three,
-#HB02:checked ~ .tips label .one,
-#UB02:checked ~ .tips label .two,
-#BB02:checked ~ .tips label .three,
-#HB03:checked ~ .tips label .one,
-#UB03:checked ~ .tips label .two,
-#BB03:checked ~ .tips label .three,
-#HB04:checked ~ .tips label .one,
-#UB04:checked ~ .tips label .two,
-#BB04:checked ~ .tips label .three,
-#HB05:checked ~ .tips label .one,
-#UB05:checked ~ .tips label .two,
-#BB05:checked ~ .tips label .three,
-#HB06:checked ~ .tips label .one,
-#UB06:checked ~ .tips label .two,
-#BB06:checked ~ .tips label .three,
-
-#HC01:checked ~ .tips label .one,
-#UC01:checked ~ .tips label .two,
-#BC01:checked ~ .tips label .three,
-#HC02:checked ~ .tips label .one,
-#UC02:checked ~ .tips label .two,
-#BC02:checked ~ .tips label .three,
-#HC03:checked ~ .tips label .one,
-#UC03:checked ~ .tips label .two,
-#BC03:checked ~ .tips label .three,
-#HC04:checked ~ .tips label .one,
-#UC04:checked ~ .tips label .two,
-#BC04:checked ~ .tips label .three,
-#HC05:checked ~ .tips label .one,
-#UC05:checked ~ .tips label .two,
-#BC05:checked ~ .tips label .three,
-#HC06:checked ~ .tips label .one,
-#UC06:checked ~ .tips label .two,
-#BC06:checked ~ .tips label .three,
-
-#HD01:checked ~ .tips label .one,
-#UD01:checked ~ .tips label .two,
-#BD01:checked ~ .tips label .three,
-#HD02:checked ~ .tips label .one,
-#UD02:checked ~ .tips label .two,
-#BD02:checked ~ .tips label .three,
-#HD03:checked ~ .tips label .one,
-#UD03:checked ~ .tips label .two,
-#BD03:checked ~ .tips label .three,
-#HD04:checked ~ .tips label .one,
-#UD04:checked ~ .tips label .two,
-#BD04:checked ~ .tips label .three,
-#HD05:checked ~ .tips label .one,
-#UD05:checked ~ .tips label .two,
-#BD05:checked ~ .tips label .three,
-#HD06:checked ~ .tips label .one,
-#UD06:checked ~ .tips label .two,
-#BD06:checked ~ .tips label .three,
-
-#HE01:checked ~ .tips label .one,
-#UE01:checked ~ .tips label .two,
-#BE01:checked ~ .tips label .three,
-#HE02:checked ~ .tips label .one,
-#UE02:checked ~ .tips label .two,
-#BE02:checked ~ .tips label .three,
-#HE03:checked ~ .tips label .one,
-#UE03:checked ~ .tips label .two,
-#BE03:checked ~ .tips label .three,
-#HE04:checked ~ .tips label .one,
-#UE04:checked ~ .tips label .two,
-#BE04:checked ~ .tips label .three,
-#HE05:checked ~ .tips label .one,
-#UE05:checked ~ .tips label .two,
-#BE05:checked ~ .tips label .three,
-#HE06:checked ~ .tips label .one,
-#UE06:checked ~ .tips label .two,
-#BE06:checked ~ .tips label .three,
-
-#HF01:checked ~ .tips label .one,
-#UF01:checked ~ .tips label .two,
-#BF01:checked ~ .tips label .three,
-#HF02:checked ~ .tips label .one,
-#UF02:checked ~ .tips label .two,
-#BF02:checked ~ .tips label .three,
-#HF03:checked ~ .tips label .one,
-#UF03:checked ~ .tips label .two,
-#BF03:checked ~ .tips label .three,
-#HF04:checked ~ .tips label .one,
-#UF04:checked ~ .tips label .two,
-#BF04:checked ~ .tips label .three,
-#HF05:checked ~ .tips label .one,
-#UF05:checked ~ .tips label .two,
-#BF05:checked ~ .tips label .three,
-#HF06:checked ~ .tips label .one,
-#UF06:checked ~ .tips label .two,
-#BF06:checked ~ .tips label .three{
-    border-color: #d9d9d9;
-    background: #176f08;
-}
-
-#XA01:checked ~ .dobling label .radio,
-#XA02:checked ~ .dobling label .radio,
-#XA03:checked ~ .dobling label .radio,
-#XA04:checked ~ .dobling label .radio,
-#XA05:checked ~ .dobling label .radio,
-#XA06:checked ~ .dobling label .radio,
-#XA07:checked ~ .dobling label .radio,
-#XB01:checked ~ .dobling label .radio,
-#XB02:checked ~ .dobling label .radio,
-#XB03:checked ~ .dobling label .radio,
-#XB04:checked ~ .dobling label .radio,
-#XB05:checked ~ .dobling label .radio,
-#XB06:checked ~ .dobling label .radio,
-#XB07:checked ~ .dobling label .radio,
-#XC01:checked ~ .dobling label .radio,
-#XC02:checked ~ .dobling label .radio,
-#XC03:checked ~ .dobling label .radio,
-#XC04:checked ~ .dobling label .radio,
-#XC05:checked ~ .dobling label .radio,
-#XC06:checked ~ .dobling label .radio,
-#XC07:checked ~ .dobling label .radio, 
-#XD01:checked ~ .dobling label .radio,
-#XD02:checked ~ .dobling label .radio,
-#XD03:checked ~ .dobling label .radio,
-#XD04:checked ~ .dobling label .radio,
-#XD05:checked ~ .dobling label .radio,
-#XD06:checked ~ .dobling label .radio,
-#XD07:checked ~ .dobling label .radio, 
-#XE01:checked ~ .dobling label .radio,
-#XE02:checked ~ .dobling label .radio,
-#XE03:checked ~ .dobling label .radio,
-#XE04:checked ~ .dobling label .radio,
-#XE05:checked ~ .dobling label .radio,
-#XE06:checked ~ .dobling label .radio,
-#XE07:checked ~ .dobling label .radio, 
-#XF01:checked ~ .dobling label .radio,
-#XF02:checked ~ .dobling label .radio,
-#XF03:checked ~ .dobling label .radio,
-#XF04:checked ~ .dobling label .radio,
-#XF05:checked ~ .dobling label .radio,
-#XF06:checked ~ .dobling label .radio,
-#XF07:checked ~ .dobling label .radio {
-    border-color: #d9d9d9;
-    background: #176f08;
-}
     
 .containerThirdPlaceRanking {
     max-width: 1100px;
@@ -760,4 +598,43 @@ html, body, .sluttspillTreTable, .round16, .quarterfinals, .semifinals, .final {
 .ranking {
     font-style: italic;
     font-size: smaller;
+}
+
+/* ---- Modernisert: label-wrap for tips ---- */
+.tip-option input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* Når checkbox er checked, style dot (input ligger rett før .dot) */
+.tip-option input:checked + .dot {
+  border-color: #176f08;
+  background: #176f08;
+}
+
+/* Behold layouten du allerede har på tips */
+.tip-option {
+  display: flex;
+  align-items: center;
+}
+
+/* ---- Modernisert: label-wrap for dobling ---- */
+.double-option input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.double-option {
+  display: flex;
+  align-items: center;
+}
+
+/* Når radio er checked, style radio (input ligger rett før .radio) */
+.double-option input:checked + .radio {
+  border-color: #176f08;
+  background: #176f08;
 }

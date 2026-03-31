@@ -29,41 +29,49 @@ function updateAll() {
     populateSluttspillTable();
 }
 
-function renderGroupA() {
-  const root = document.getElementById("groupA-root");
+function renderGroup(groupLetter, mountId = null) {
+  const rootId = mountId || `group${groupLetter}-root`;
+  const root = document.getElementById(rootId);
+
   if (!root) {
-    console.error("Fant ikke #groupA-root i index.html");
+    console.error(`Fant ikke #${rootId} i HTML`);
     return;
   }
 
-  // Bygg kamp-rader 01-06 (samme ID-konvensjon som før: HA01, UA01, BA01, XA01 ...)
+  const containerClass = `container${groupLetter}`;
+
+  // Bygg kamp-rader 01-06
   let matchRows = "";
   for (let i = 1; i <= 6; i++) {
     const id = String(i).padStart(2, "0");
-    const homeId = `HA${id}`;
-    const drawId = `UA${id}`;
-    const awayId = `BA${id}`;
+
+    // ID-konvensjonene dine (viktig for updatePoints/updateRankingTable)
+    const homeId  = `H${groupLetter}${id}`;  // HA01
+    const drawId  = `U${groupLetter}${id}`;  // UA01
+    const awayId  = `B${groupLetter}${id}`;  // BA01
+    const radioId = `X${groupLetter}${id}`;  // XA01
 
     matchRows += `
-      <div class="row matchA${id}">
+      <div class="row match${groupLetter}${id}">
         <div class="cell home"></div>
         <div class="cell away"></div>
 
         <div class="cell">
-          <input type="checkbox" name="matchA${id}" id="${homeId}">
-          <input type="checkbox" name="matchA${id}" id="${drawId}">
-          <input type="checkbox" name="matchA${id}" id="${awayId}">
-
           <div class="tips">
-            <label for="${homeId}">
+            <label class="tip-option">
+              <input type="checkbox" name="match${groupLetter}${id}" id="${homeId}">
               <span class="dot one"></span>
               <span class="utfall">H</span>
             </label>
-            <label for="${drawId}">
+
+            <label class="tip-option">
+              <input type="checkbox" name="match${groupLetter}${id}" id="${drawId}">
               <span class="dot two"></span>
               <span class="utfall">U</span>
             </label>
-            <label for="${awayId}">
+
+            <label class="tip-option">
+              <input type="checkbox" name="match${groupLetter}${id}" id="${awayId}">
               <span class="dot three"></span>
               <span class="utfall">B</span>
             </label>
@@ -71,37 +79,35 @@ function renderGroupA() {
         </div>
 
         <div class="cell">
-          <input type="radio" name="gruppeA" id="XA${id}" class="radio-option">
           <div class="dobling">
-            <label for="XA${id}">
-              <span class="radio matchA${i}"></span>
+            <label class="double-option">
+              <input type="radio" name="gruppe${groupLetter}" id="${radioId}" class="radio-option">
+              <span class="radio match${groupLetter}${i}"></span>
               <span class="utvalgt"></span>
             </label>
           </div>
         </div>
 
-        <div class="cell poeng-h matchA${id}"></div>
-        <div class="cell poeng-u matchA${id}"></div>
-        <div class="cell poeng-b matchA${id}"></div>
-        <div class="cell poeng-bp matchA${id}"></div>
+        <div class="cell poeng-h match${groupLetter}${id}"></div>
+        <div class="cell poeng-u match${groupLetter}${id}"></div>
+        <div class="cell poeng-b match${groupLetter}${id}"></div>
+        <div class="cell poeng-bp match${groupLetter}${id}"></div>
       </div>
     `;
   }
 
-  // Viktig forbedring: lag "Ingen dobling" som en faktisk matchA07-rad,
-  // slik at EmailJS deriveTeams() ikke prøver å slå opp en ikke-eksisterende matchA07.
-  // (Din nåværende deriveTeams() søker .row.matchA07 når radio-id er XA07) [2](https://phoenixonline-my.sharepoint.com/personal/mads_kjeldsberg_apotek1_no/Documents/Microsoft%20Copilot-chatfiler/index%20(1).js)[1](https://phoenixonline-my.sharepoint.com/personal/mads_kjeldsberg_apotek1_no/Documents/Microsoft%20Copilot-chatfiler/index.html)
+  // "Ingen dobling" (07) – vi lager også match${group}07 slik at deriveTeams() finner den
   const noDoublingRow = `
-    <div class="row matchA07">
+    <div class="row match${groupLetter}07">
       <div class="cell home"></div>
       <div class="cell away"></div>
       <div class="cell">Ingen dobling -></div>
 
       <div class="cell">
-        <input type="radio" name="gruppeA" id="XA07" class="radio-option">
         <div class="dobling">
-          <label for="XA07">
-            <span class="radio matchA7"></span>
+          <label class="double-option">
+            <input type="radio" name="gruppe${groupLetter}" id="X${groupLetter}07" class="radio-option">
+            <span class="radio match${groupLetter}7"></span>
             <span class="utvalgt"></span>
           </label>
         </div>
@@ -114,41 +120,13 @@ function renderGroupA() {
     </div>
   `;
 
-  // Rangeringstabellen (du bruker .rangeringA i JS: document.querySelector('.rangering' + group)) [2](https://phoenixonline-my.sharepoint.com/personal/mads_kjeldsberg_apotek1_no/Documents/Microsoft%20Copilot-chatfiler/index%20(1).js)
-  const rankingBlock = `
-    <div class="rangeringA">
-      <div class="rangOverskrift">
-        <div class="cell">Plass</div>
-        <div class="cell">Land</div>
-        <div class="cell">Forventet poeng</div>
-      </div>
-      <div class="rad land01">
-        <div class="cell plass01">1</div>
-        <div class="cell land land01"></div>
-        <div class="cell poeng poeng01"></div>
-      </div>
-      <div class="rad land02">
-        <div class="cell plass02">2</div>
-        <div class="cell land land02"></div>
-        <div class="cell poeng poeng02"></div>
-      </div>
-      <div class="rad land03">
-        <div class="cell plass03">3</div>
-        <div class="cell land land03"></div>
-        <div class="cell poeng poeng03"></div>
-      </div>
-      <div class="rad land04">
-        <div class="cell plass04">4</div>
-        <div class="cell land land04"></div>
-        <div class="cell poeng poeng04"></div>
-      </div>
-    </div>
-  `;
+  // Ranking-container: JS-en din forventer .rangeringA/.rangeringB osv og fyller den selv
+  const rankingContainer = `<div class="rangering${groupLetter}"></div>`;
 
-  // Hele containerA (samme som før)
   root.innerHTML = `
-    <div class="containerA">
-      <div class="title">Gruppe A</div>
+    <div class="${containerClass}">
+      <div class="title">Gruppe ${groupLetter}</div>
+
       <form>
         <div class="table">
           <div class="header">
@@ -166,7 +144,7 @@ function renderGroupA() {
           ${noDoublingRow}
         </div>
 
-        ${rankingBlock}
+        ${rankingContainer}
       </form>
     </div>
   `;
@@ -176,7 +154,7 @@ function renderGroupA() {
 document.addEventListener('DOMContentLoaded', function () {
     console.log('DOMContentLoaded event fired');
 
-    renderGroupA();
+    ['A', 'B', 'C', 'D', 'E', 'F'].forEach(g => renderGroup(g));
 
     initializeGroups();
     fillAllCells();
