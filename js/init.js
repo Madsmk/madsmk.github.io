@@ -28,7 +28,6 @@ function initialize() {
     document
         .querySelectorAll('input[type=checkbox], input[type=radio]')
         .forEach(el => el.addEventListener('change', updateAll));
-    attachEventListeners();
     updateAll();
     initSubmit({
         serviceId: 'contact_service',
