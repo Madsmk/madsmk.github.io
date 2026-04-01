@@ -169,79 +169,6 @@ nav ul li a:hover {
     text-align: center;
 }
 
-.tips {
-    display: flex;
-    width: 80%;
-    margin: 4px 0;
-    justify-content: space-between;
-}
-
-.tips label {
-    display: flex;
-    align-items: center;
-}
-
-.tips .dot {
-    height: 18px;
-    width: 18px;
-    background: #d9d9d9;
-    margin-right: 10px;
-    border: 4px solid transparent;
-    transition: all 0.3s ease;
-}
-
-/* Hide original checkboxes */
-form input[type="checkbox"] {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
-    width: 0;
-    height: 0;
-}
-
-/* When checkbox is checked style */
-form input[type="checkbox"]:checked + label .dot {
-    border-color: #176f08; /* Border color on check */
-    background: #176f08; /* Background color on check */
-}
-
-.dobling {
-    display: flex;
-    width: 80%;
-    justify-content: center;
-    margin: 4px 0;
-}
-
-.dobling label {
-    display: flex;
-    align-items: center;
-}
-
-.dobling .radio {
-    height: 18px;
-    width: 18px;
-    background: #d9d9d9;
-    border-radius: 50%;
-    margin-right: 10px;
-    border: 4px solid transparent;
-    transition: all 0.3s ease;
-}
-
-/* Hide original radio buttons */
-form input[type="radio"] {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
-    width: 0;
-    height: 0;
-}
-
-/* When radio button is checked style */
-form input[type="radio"]:checked + label .radio {
-    border-color: #176f08; /* Border color on check */
-    background: #176f08; /* Background color on check */
-}
-
 /* Right-aligning positive values */
 .cell.poeng-h[data-value]:not([data-value^="-"])::before,
 .cell.poeng-u[data-value]:not([data-value^="-"])::before,
@@ -554,19 +481,6 @@ html, body, .sluttspillTreTable, .round16, .quarterfinals, .semifinals, .final {
     justify-content: center;
 }
 
-/*.round16, .quarterfinals, .semifinals, .final {
-    display: grid;
-    grid-template-rows: repeat(2, 1fr); /* Two rows for splitting matches 
-    gap: 20px;
-    flex-grow: 1;
-}
-
-.top-half, .bottom-half {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}*/
-
 .match {
     display: flex;
     flex-direction: column;
@@ -601,11 +515,26 @@ html, body, .sluttspillTreTable, .round16, .quarterfinals, .semifinals, .final {
 }
 
 /* ---- Modernisert: label-wrap for tips ---- */
+.tip-option {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
 .tip-option input {
   position: absolute;
   opacity: 0;
   width: 0;
   height: 0;
+}
+
+.tip-option .dot {
+  height: 18px;
+  width: 18px;
+  background: #d9d9d9;
+  border:  4px solid transparent;
+  margin-right: 8px;
+  transition: all 0.2s ease;
 }
 
 /* Når checkbox er checked, style dot (input ligger rett før .dot) */
@@ -614,13 +543,13 @@ html, body, .sluttspillTreTable, .round16, .quarterfinals, .semifinals, .final {
   background: #176f08;
 }
 
-/* Behold layouten du allerede har på tips */
-.tip-option {
+/* ---- Modernisert: label-wrap for dobling ---- */
+.double-option {
   display: flex;
   align-items: center;
+  cursor: pointer;
 }
 
-/* ---- Modernisert: label-wrap for dobling ---- */
 .double-option input {
   position: absolute;
   opacity: 0;
@@ -628,9 +557,13 @@ html, body, .sluttspillTreTable, .round16, .quarterfinals, .semifinals, .final {
   height: 0;
 }
 
-.double-option {
-  display: flex;
-  align-items: center;
+.double-option .radio {
+  height: 18px;
+  width: 18px;
+  background: #d9d9d9;
+  border:  4px solid transparent;
+  margin-right: 8px;
+  transition: all 0.2s ease;
 }
 
 /* Når radio er checked, style radio (input ligger rett før .radio) */
