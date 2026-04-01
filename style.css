@@ -593,8 +593,8 @@ html, body, .sluttspillTreTable, .round16, .quarterfinals, .semifinals, .final {
     font-size: 0.8em;
 }
 
-.tip-option input:checked ~ .dot,
-.double-option input:checked ~ .radio {
+.tip-option:has(input:checked) .dot,
+.double-option:has(input:checked) .radio {
     box-shadow: 0 0 0 3pc rgba(23, 111, 8, 0.15);
 }
 
