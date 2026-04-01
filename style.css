@@ -523,7 +523,8 @@ html, body, .sluttspillTreTable, .round16, .quarterfinals, .semifinals, .final {
     align-items: center;
 }
 
-.tip-option {
+.tip-option,
+.double-option {
   display: flex;
   align-items: center;
 }
@@ -533,6 +534,14 @@ html, body, .sluttspillTreTable, .round16, .quarterfinals, .semifinals, .final {
   opacity: 0;
   width: 0;
   height: 0;
+}
+
+.tip-option .dot,
+.double-option .radio {
+    display: block;
+    flex-shrink: 0;
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
 .tip-option .dot {
@@ -551,11 +560,6 @@ html, body, .sluttspillTreTable, .round16, .quarterfinals, .semifinals, .final {
 }
 
 /* ---- Modernisert: label-wrap for dobling ---- */
-.double-option {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-}
 
 .double-option input {
   position: absolute;
@@ -577,4 +581,37 @@ html, body, .sluttspillTreTable, .round16, .quarterfinals, .semifinals, .final {
 .double-option input:checked + .radio {
   border-color: #176f08;
   background: #176f08;
+}
+
+.tip-option input:checked ~ .utfall,
+.double-option input:checked ~ .utfall {
+    font-weight: 600;
+}
+
+.double-option input:checked ~ .utfall::after {
+    content: "x2";
+    font-size: 0.8em;
+}
+
+.tip-option input:checked ~ .dot,
+.double-option input:checked ~ .radio {
+    box-shadow: 0 0 0 3pc rgba(23, 111, 8, 0.15);
+}
+
+.tip-option:hover,
+.double-option:hover {
+    background-color: #f2f8f2;
+    border-radius: 6px;
+}
+
+.cell.poeng-h,
+.cell.poeng-u,
+.cell.poeng_b {
+    transition: transform 0.15s ease color 0.15s ease;
+}
+
+.cell.poeng-h.updated,
+.cell.poeng-u.updated,
+.cell.poeng_b.updated {
+    transform: scale(1.1);
 }
