@@ -604,14 +604,7 @@ html, body, .sluttspillTreTable, .round16, .quarterfinals, .semifinals, .final {
     border-radius: 6px;
 }
 
-.cell.poeng-h,
-.cell.poeng-u,
-.cell.poeng_b {
-    transition: transform 0.15s ease color 0.15s ease;
-}
-
-.cell.poeng-h.updated,
-.cell.poeng-u.updated,
-.cell.poeng_b.updated {
+.cell.updated {
     transform: scale(1.1);
+    transition: transform 0.15s ease;
 }
