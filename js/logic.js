@@ -156,10 +156,17 @@ export function updatePoints(group) {
             const pointsB = calculatePoints(isCheckedH, isCheckedU, isCheckedB, isRadioChecked, 'B');
             const bonusBP = calculateBonus(isCheckedH, isCheckedU, isCheckedB);
 
-            poengH.textContent = pointsH;
-            poengU.textContent = pointsU;
-            poengB.textContent = pointsB;
-            poengBP.textContent = bonusBP;
+            poengH.setAttribute("data-value", pointsH);
+            poengU.setAttribute("data-value", pointsU);
+            poengB.setAttribute("data-value", pointsB);
+            poengBP.setAttribute("data-value", bonusBP);
+
+            [poengH, poengU, poengB, poengBP].forEach(el => {
+                el.classList.remove("updated");
+                void el.offsetWidth;
+                el.classList.add("updated");
+                setTimeout(() => el.classList.remove("updated"), 150)
+            });
         }
     });
 }
