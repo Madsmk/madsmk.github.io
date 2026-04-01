@@ -538,7 +538,7 @@ html, body, .sluttspillTreTable, .round16, .quarterfinals, .semifinals, .final {
 }
 
 /* Når checkbox er checked, style dot (input ligger rett før .dot) */
-.tip-option input:checked + .dot {
+.tip-option input:checked ~ .dot {
   border-color: #176f08;
   background: #176f08;
 }
