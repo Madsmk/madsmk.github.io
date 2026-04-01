@@ -515,10 +515,17 @@ html, body, .sluttspillTreTable, .round16, .quarterfinals, .semifinals, .final {
 }
 
 /* ---- Modernisert: label-wrap for tips ---- */
+
+.tips {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    align-items: center;
+}
+
 .tip-option {
   display: flex;
   align-items: center;
-  cursor: pointer;
 }
 
 .tip-option input {
