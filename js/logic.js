@@ -4,7 +4,7 @@ function log(...args) {
     if (DEBUG) console.log(...args);
 }
 
-import { teamMap } from './data.js';
+import { teamMap } from './data_2026.js';
 import { POINT_RULES, GROUPS } from './config.js';
 
 export function getTeamName(teamID) {
@@ -292,7 +292,7 @@ function handleThirdPlaceLinkClick(evt, thirdPlaceTeams) {
 export function updateThirdPlacedTeamsRanking() {
     console.log('updateThirdPlacedTeamsRanking')
     const thirdPlaceTeams = [];
-    ['A', 'B', 'C', 'D', 'E', 'F'].forEach(group => {
+    GROUPS.forEach(group => {
         const team = getTeamRankedThreeFromGroup(group);
         if (team) {
             thirdPlaceTeams.push({
@@ -588,7 +588,7 @@ function mapGroupsToMatches(groups) {
         'C D E F': ['C', 'E', 'D', 'F']
     };
     
-    return table[groups.join(' ')] || ['A', 'A', 'C', 'D']; // Return default order if mapping fails
+    return table[groups.join(' ')] || ['A', 'B', 'C', 'D']; // Return default order if mapping fails
 }
 
 // Get team ranking based on position in sluttspillTeams
@@ -655,7 +655,7 @@ function generatePlayoffTree() {
     semifinalsContainer.innerHTML = '';
     finalContainer.innerHTML = '';
 
-    const groupLetters = ['A', 'B', 'C', 'D', 'E', 'F'];
+    const groupLetters = GROUPS;
     const groupPositions = {};
 
     groupLetters.forEach(group => {
