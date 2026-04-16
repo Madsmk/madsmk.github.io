@@ -1,4 +1,5 @@
-export const GROUPS = ['A', 'B', 'C', 'D', 'E', 'F']
+//export const GROUPS = ['A', 'B', 'C', 'D', 'E', 'F']
+export const GROUPS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L']
 
 export const POINT_RULES = {
     single: {
