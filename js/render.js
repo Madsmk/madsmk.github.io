@@ -6,7 +6,7 @@ export function renderGroup(groupLetter, mountId = null) {
     return;
   }
   console.log("renderGroup:", groupLetter, "rootId:", rootId);
-  const containerClass = `container${groupLetter}`;
+  const containerClass = `container container-${groupLetter}`;
 
   // Bygg kamp-rader 01-06
   let matchRows = "";
@@ -89,7 +89,7 @@ export function renderGroup(groupLetter, mountId = null) {
   `;
 
   // Ranking-container: JS-en din forventer .rangeringA/.rangeringB osv og fyller den selv
-  const rankingContainer = `<div class="rangering${groupLetter}"></div>`;
+  const rankingContainer = `<div class="rangering rangering-${groupLetter}"></div>`;
 
   root.innerHTML = `
     <div class="${containerClass}">

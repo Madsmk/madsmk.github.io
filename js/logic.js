@@ -6,6 +6,7 @@ function log(...args) {
 
 import { teamMap, FIXTURES } from './data_2026.js';
 import { POINT_RULES, GROUPS } from './config.js';
+import { ADVANCEMENT_RULES } from "./config.js";
 
 export function getTeamName(teamID) {
     return teamMap?.[teamID]?.name ?? '';
@@ -754,7 +755,7 @@ export function populateSluttspillTable() {
 
     const rankingTable = document.querySelector('.rangeringAllTeams');
     if (rankingTable) {
-        const thirdPlaceTeams = Array.from(rankingTable.querySelectorAll('.rad')).slice(0, 4);
+        const thirdPlaceTeams = Array.from(rankingTable.querySelectorAll('.rad')).slice(0, ADVANCEMENT_RULES.bestThirdPlaced);
         thirdPlaceTeams.forEach(row => {
             sluttspillTeams.push({
                 team: row.querySelector('.land').textContent.replace(/\s*\(opp\)\s*|\s*\(ned\)\s*/g, ''),
