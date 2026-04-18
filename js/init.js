@@ -1,5 +1,3 @@
-console.log("init.js LASTET")
-
 import { renderGroup } from './render.js';
 import { GROUPS } from './config.js';
 import {

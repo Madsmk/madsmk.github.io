@@ -4,7 +4,7 @@ function log(...args) {
     if (DEBUG) console.log(...args);
 }
 
-import { teamMap } from './data_2026.js';
+import { teamMap, FIXTURES } from './data_2026.js';
 import { POINT_RULES, GROUPS } from './config.js';
 
 export function getTeamName(teamID) {
@@ -14,47 +14,44 @@ export function getTeamName(teamID) {
 export const groups = {};
 
 export function initializeGroups() {
-    const groupCount = 6;
     const teamCountPerGroup = 4;
-    for (let groupCharCode = 'A'.charCodeAt(0); groupCharCode < 'A'.charCodeAt(0) + groupCount; groupCharCode++) {
-        let group = String.fromCharCode(groupCharCode);
+
+    GROUPS.forEach(group => {
         groups[group] = {
             teams: [],
-            teamPoints: {}
+            teamPoints: {},
         };
 
         for (let i = 1; i <= teamCountPerGroup; i++) {
-            let teamID = `team${group}${i}`;
-            let teamName = teamMap[teamID]?.name || '';
+            const teamID = `team${group}${i}`;
+            const teamName = teamMap[teamID]?.name;
+
             if (teamName) {
                 groups[group].teams.push(teamName);
                 groups[group].teamPoints[teamName] = 0;
             }
         }
-    }
-    console.log('Groups initialized:', groups); // Debugging log
+    });
 }
-export function fillAllCells() {
-    log('Filling all cells');
-    Object.keys(groups).forEach(group => {
-        const matches = [
-            [1, 2, '01'],
-            [3, 4, '02'],
-            [1, 3, '03'],
-            [4, 2, '04'],
-            [2, 3, '05'],
-            [4, 1, '06']
-        ];
 
-        matches.forEach(([homeTeamNum, awayTeamNum, matchNumber]) => {
-            const homeCell = document.querySelector(`.row.match${group}${matchNumber} .cell.home`);
-            const awayCell = document.querySelector(`.row.match${group}${matchNumber} .cell.away`);
+export function fillAllCells() {
+    GROUPS.forEach(group => {
+        const fixures = FIXTURES[group];
+        if (!fixures) return;
+
+        fixures.forEach(({ id, home, away }) => {
+            const matchNumber = id.slice(1); // "01", "02", ...
+
+            const homeCell = document.querySelector(
+                `.row.match${group}${matchNumber} .cell.home`
+            );
+            const awayCell = document.querySelector(
+                `.row.match${group}${matchNumber} .cell.away`
+            );
+
             if (homeCell && awayCell) {
-                homeCell.textContent = getTeamName(`team${group}${homeTeamNum}`);
-                awayCell.textContent = getTeamName(`team${group}${awayTeamNum}`);
-                console.log(`Populating cells for match ${matchNumber} in group ${group}: ${homeCell.textContent} vs ${awayCell.textContent}`);
-            } else {
-                console.error(`Could not find cells for match ${matchNumber} in group ${group}`);
+                homeCell.textContent = getTeamName(`team${group}${home}`);
+                awayCell.textContent = getTeamName(`team${group}${away}`);
             }
         });
     });
@@ -130,21 +127,14 @@ function calculateBonus(isCheckedH, isCheckedU, isCheckedB) {
 }
 
 export function updatePoints(group) {
-    const matches = [
-        [1, 2, '01'],
-        [3, 4, '02'],
-        [1, 3, '03'],
-        [4, 2, '04'],
-        [2, 3, '05'],
-        [4, 1, '06']
-    ];
-
-    matches.forEach(([homeTeamNum, awayTeamNum, matchNumber]) => {
+    FIXTURES[group].forEach(({ id }) => {
+        const matchNumber = id.slice(1);
+        
         const poengH = document.querySelector(`.poeng-h.match${group}${matchNumber}`);
         const poengU = document.querySelector(`.poeng-u.match${group}${matchNumber}`);
         const poengB = document.querySelector(`.poeng-b.match${group}${matchNumber}`);
         const poengBP = document.querySelector(`.poeng-bp.match${group}${matchNumber}`);
-
+    
         if (poengH && poengU && poengB && poengBP) {
             const isRadioChecked = document.getElementById(`X${group}${matchNumber}`)?.checked;
             const isCheckedH = document.getElementById(`H${group}${matchNumber}`)?.checked;
@@ -169,7 +159,7 @@ export function updatePoints(group) {
             });
         }
     });
-}
+};
 
 function handleLinkClick(event, group) {
     event.preventDefault();
