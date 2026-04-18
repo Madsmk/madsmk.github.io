@@ -617,3 +617,14 @@ html, body, .sluttspillTreTable, .round16, .quarterfinals, .semifinals, .final {
 .double-option {
     transform: none !important;
 }
+
+.tip-option input:focus,
+.double-option input:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.tip-option:has(input:focus-visible),
+.double-option:has(input:focus-visible) {
+    outline: 2;
+}
