@@ -239,7 +239,7 @@ export function updateRankingTable(group) {
             `;
         });
 
-        document.querySelectorAll('.rangering-${group} + ' .opp, .rangering-${group} + ' .ned').forEach(link => {
+        document.querySelectorAll(`.rangering-${group} + .opp, .rangering-${group} + .ned`).forEach(link => {
             link.addEventListener('click', function (event) {
                 handleLinkClick(event, group);
             });
