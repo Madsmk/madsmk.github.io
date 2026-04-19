@@ -211,7 +211,7 @@ export function updateRankingTable(group) {
 
     groups[group].teams.sort((a, b) => groups[group].teamPoints[b] - groups[group].teamPoints[a]);
 
-    const rankingTable = document.querySelector('.rangering' + group);
+    const rankingTable = document.querySelector(`.rangering-${group}`);
     if (rankingTable) {
         rankingTable.innerHTML = `
             <div class="rangOverskrift">
@@ -239,7 +239,7 @@ export function updateRankingTable(group) {
             `;
         });
 
-        document.querySelectorAll('.rangering' + group + ' .opp, .rangering' + group + ' .ned').forEach(link => {
+        document.querySelectorAll('.rangering-${group} + ' .opp, .rangering-${group} + ' .ned').forEach(link => {
             link.addEventListener('click', function (event) {
                 handleLinkClick(event, group);
             });
