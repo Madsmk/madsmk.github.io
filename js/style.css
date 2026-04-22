@@ -187,14 +187,12 @@ nav ul li a:hover {
     color: #800000; /* Dark red color for negative values */
 }
 
-.rangeringA, .rangeringB, .rangeringC, .rangeringD, .rangeringE, .rangeringF {
-    display: table;
-    width: 50%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    /*table-layout: fixed;  Set table layout to fixed */
+.cell.poeng-h,
+.cell.poeng-u,
+.cell.poeng-b,
+.cell.poeng-bp {
+  position: relative;
 }
-
 
 .rangering {
     display: table;

@@ -128,39 +128,51 @@ function calculateBonus(isCheckedH, isCheckedU, isCheckedB) {
 }
 
 export function updatePoints(group) {
-    FIXTURES[group].forEach(({ id }) => {
-        const matchNumber = id.slice(1);
-        
-        const poengH = document.querySelector(`.poeng-h.match${group}${matchNumber}`);
-        const poengU = document.querySelector(`.poeng-u.match${group}${matchNumber}`);
-        const poengB = document.querySelector(`.poeng-b.match${group}${matchNumber}`);
-        const poengBP = document.querySelector(`.poeng-bp.match${group}${matchNumber}`);
-    
-        if (poengH && poengU && poengB && poengBP) {
-            const isRadioChecked = document.getElementById(`X${group}${matchNumber}`)?.checked;
-            const isCheckedH = document.getElementById(`H${group}${matchNumber}`)?.checked;
-            const isCheckedU = document.getElementById(`U${group}${matchNumber}`)?.checked;
-            const isCheckedB = document.getElementById(`B${group}${matchNumber}`)?.checked;
+  const fixtures = FIXTURES[group] ?? [];
+  
+  fixtures.forEach(({ id }) => {
+    const matchNumber = id.slice(1);
 
-            const pointsH = calculatePoints(isCheckedH, isCheckedU, isCheckedB, isRadioChecked, 'H');
-            const pointsU = calculatePoints(isCheckedH, isCheckedU, isCheckedB, isRadioChecked, 'U');
-            const pointsB = calculatePoints(isCheckedH, isCheckedU, isCheckedB, isRadioChecked, 'B');
-            const bonusBP = calculateBonus(isCheckedH, isCheckedU, isCheckedB);
+    const poengH  = document.querySelector(`.poeng-h.match${group}${matchNumber}`);
+    const poengU  = document.querySelector(`.poeng-u.match${group}${matchNumber}`);
+    const poengB  = document.querySelector(`.poeng-b.match${group}${matchNumber}`);
+    const poengBP = document.querySelector(`.poeng-bp.match${group}${matchNumber}`);
 
-            poengH.setAttribute("data-value", pointsH);
-            poengU.setAttribute("data-value", pointsU);
-            poengB.setAttribute("data-value", pointsB);
-            poengBP.setAttribute("data-value", bonusBP);
+    if (!poengH || !poengU || !poengB || !poengBP) return;
 
-            [poengH, poengU, poengB, poengBP].forEach(el => {
-                el.classList.remove("updated");
-                void el.offsetWidth;
-                el.classList.add("updated");
-                setTimeout(() => el.classList.remove("updated"), 150)
-            });
-        }
+    const isRadioChecked = document.getElementById(`X${group}${matchNumber}`)?.checked;
+    const isCheckedH = document.getElementById(`H${group}${matchNumber}`)?.checked;
+    const isCheckedU = document.getElementById(`U${group}${matchNumber}`)?.checked;
+    const isCheckedB = document.getElementById(`B${group}${matchNumber}`)?.checked;
+
+    const pointsH  = calculatePoints(isCheckedH, isCheckedU, isCheckedB, isRadioChecked, 'H');
+    const pointsU  = calculatePoints(isCheckedH, isCheckedU, isCheckedB, isRadioChecked, 'U');
+    const pointsB  = calculatePoints(isCheckedH, isCheckedU, isCheckedB, isRadioChecked, 'B');
+    const bonusBP  = calculateBonus(isCheckedH, isCheckedU, isCheckedB);
+
+    // ✅ 1) TØM tekstinnhold for å unngå "00", "88", "-2-2"
+    // (vi lar CSS vise tallet via data-value)
+    poengH.textContent  = '';
+    poengU.textContent  = '';
+    poengB.textContent  = '';
+    poengBP.textContent = '';
+
+    // ✅ 2) Sett data-value (CSS bruker dette)
+    poengH.setAttribute("data-value", String(pointsH));
+    poengU.setAttribute("data-value", String(pointsU));
+    poengB.setAttribute("data-value", String(pointsB));
+    poengBP.setAttribute("data-value", String(bonusBP));
+
+    // ✅ 3) Trigger "updated" animasjon (valgfritt)
+    [poengH, poengU, poengB, poengBP].forEach(el => {
+      el.classList.remove("updated");
+      void el.offsetWidth; // reflow for å re-trigge animasjon
+      el.classList.add("updated");
+      setTimeout(() => el.classList.remove("updated"), 150);
     });
-};
+  });
+}
+
 
 function handleLinkClick(event, group) {
   const btn = event.currentTarget;
