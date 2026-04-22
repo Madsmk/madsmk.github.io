@@ -5,8 +5,19 @@ function log(...args) {
 }
 
 import { teamMap, FIXTURES } from './data_2026.js';
-import { POINT_RULES, GROUPS } from './config.js';
-import { ADVANCEMENT_RULES } from "./config.js";
+import { POINT_RULES, GROUPS, ADVANCEMENT_RULES } from './config.js';
+import { ANNEX_C } from './annex_c_2026.js';
+import { buildRoundOf32Matchups, buildRoundOf16Matchups, buildQuarterfinalMatchups, buildSemifinalMatchups, buildFinalMatchups } from './logic_playoff.js';
+
+let thirdPlaceManualOrder = null; // array med gruppe-bokstaver i ønsket rekkefølge
+
+const r32 = buildRoundOf32Matchups(bestThirdGroups, ANNEX_C);
+const r16 = buildRoundOf16Matchups(r32);
+const qf  = buildQuarterfinalMatchups(r16);
+const sf  = buildSemifinalMatchups(qf);
+const fm  = buildFinalMatchups(sf);
+
+console.log(r32, r16, qf, sf, fm.final, fm.thirdPlace);
 
 export function getTeamName(teamID) {
     return teamMap?.[teamID]?.name ?? '';
@@ -320,49 +331,117 @@ function handleThirdPlaceLinkClick(evt, thirdPlaceTeams) {
 }
 
 export function updateThirdPlacedTeamsRanking() {
-    console.log('updateThirdPlacedTeamsRanking')
-    const thirdPlaceTeams = [];
-    GROUPS.forEach(group => {
-        const team = getTeamRankedThreeFromGroup(group);
-        if (team) {
-            thirdPlaceTeams.push({
-                team: team,
-                points: groups[group].teamPoints[team]
-            });
-        }
+  const thirdPlaceTeams = [];
+
+  // 1) Samle 3.-plass fra hver gruppe
+  GROUPS.forEach(group => {
+    const team = getTeamRankedThreeFromGroup(group);
+    if (team) {
+      thirdPlaceTeams.push({
+        group,
+        team,
+        points: groups[group].teamPoints[team]
+      });
+    }
+  });
+
+  // 2) Standard sortering (poeng) – brukes ved første init / når order mangler
+  thirdPlaceTeams.sort((a, b) => b.points - a.points);
+
+  // 3) Init / sync manuell rekkefølge
+  // Hvis vi ikke har en manuell rekkefølge ennå, start med poengsortert rekkefølge
+  if (!thirdPlaceManualOrder || thirdPlaceManualOrder.length !== thirdPlaceTeams.length) {
+    thirdPlaceManualOrder = thirdPlaceTeams.map(t => t.group);
+  } else {
+    // Hvis grupper har endret seg (burde ikke i VM, men greit), synk
+    const current = new Set(thirdPlaceTeams.map(t => t.group));
+    thirdPlaceManualOrder = thirdPlaceManualOrder.filter(g => current.has(g));
+    // legg til evt nye grupper bakerst
+    thirdPlaceTeams.forEach(t => {
+      if (!thirdPlaceManualOrder.includes(t.group)) thirdPlaceManualOrder.push(t.group);
+    });
+  }
+
+  // 4) Bruk manuell rekkefølge til å lage endelig rekkefølge i tabellen
+  const byGroup = new Map(thirdPlaceTeams.map(t => [t.group, t]));
+  const ordered = thirdPlaceManualOrder.map(g => byGroup.get(g)).filter(Boolean);
+
+  // 5) Antall som går videre (VM 2026 = 8)
+  const qualifiedCount = ADVANCEMENT_RULES.bestThirdPlaced;
+  const qualified = ordered.slice(0, qualifiedCount);
+
+  // 6) Render tabell
+  const rankingTable = document.querySelector('.rangeringAllTeams');
+  if (rankingTable) {
+    rankingTable.innerHTML = `
+      <div class="rangOverskrift">
+        <div class="cell">Plass</div>
+        <div class="cell">Gruppe</div>
+        <div class="cell">Lag</div>
+        <div class="cell">Forventet poeng</div>
+        <div class="cell">Flytt</div>
+        <div class="cell">Status</div>
+      </div>
+    `;
+
+    // Hjelper for å avgjøre om flytting skal tillates (kun ved poenglikhet med nabo)
+    const isTie = (i, j) =>
+      i >= 0 && j >= 0 &&
+      i < ordered.length && j < ordered.length &&
+      Math.abs(ordered[i].points - ordered[j].points) < 1e-9;
+
+    ordered.forEach(({ group, team, points }, index) => {
+      const okUp = index > 0 && isTie(index, index - 1);
+      const okDown = index < ordered.length - 1 && isTie(index, index + 1);
+
+      const status = index < qualifiedCount ? '✅ Videre' : '❌ Utslått';
+
+      rankingTable.innerHTML += `
+        <div class="rad ${index < qualifiedCount ? 'qualified' : 'not-qualified'}">
+          <div class="cell plass">${index + 1}</div>
+          <div class="cell gruppe">${group}</div>
+          <div class="cell land">${team}</div>
+          <div class="cell poeng">${points.toFixed(1)}</div>
+          <div class="cell flytt">
+            <button type="button" class="move-up" data-index="${index}" ${okUp ? '' : 'disabled'}>
+              (opp)
+            </button>
+            <button type="button" class="move-down" data-index="${index}" ${okDown ? '' : 'disabled'}>
+              (ned)
+            </button>
+          </div>
+          <div class="cell status">${status}</div>
+        </div>
+      `;
     });
 
-    thirdPlaceTeams.sort((a, b) => b.points - a.points);
+    // 7) Bind events (buttons)
+    rankingTable.querySelectorAll('button.move-up, button.move-down').forEach(btn => {
+      btn.addEventListener('click', (event) => {
+        const b = event.currentTarget;
+        const index = parseInt(b.dataset.index, 10);
+        if (Number.isNaN(index)) return;
 
-    const rankingTable = document.querySelector('.rangeringAllTeams');
-    if (rankingTable) {
-        rankingTable.innerHTML = `
-            <div class="rangOverskrift">
-                <div class="cell">Plass</div>
-                <div class="cell">Land</div>
-                <div class="cell">Forventet poeng</div>
-            </div>
-        `;
+        if (b.classList.contains('move-up') && index > 0) {
+          // swap i tredjeplass-ordren
+          [thirdPlaceManualOrder[index - 1], thirdPlaceManualOrder[index]] =
+            [thirdPlaceManualOrder[index], thirdPlaceManualOrder[index - 1]];
+        }
 
-        thirdPlaceTeams.forEach(({ team, points }, index) => {
-            let actionsHTML = `${team}`;
-            if (index > 0 && points === thirdPlaceTeams[index - 1].points) {
-                actionsHTML += ` <a href="#" class="opp" data-index="${index}" data-direction="opp">(opp)</a>`;
-            }
-            if (index < thirdPlaceTeams.length - 1 && points === thirdPlaceTeams[index + 1].points) {
-                actionsHTML += ` <a href="#" class="ned" data-index="${index}" data-direction="ned">(ned)</a>`;
-            }
-            rankingTable.innerHTML += `
-                <div class="rad">
-                    <div class="cell plass">${index + 1}</div>
-                    <div class="cell land">${actionsHTML}</div>
-                    <div class="cell poeng">${points.toFixed(1)}</div>
-                </div>
-            `;
-        });
-        console.log(thirdPlaceTeams)
-        addThirdPlaceEventListeners(thirdPlaceTeams);
-    }
+        if (b.classList.contains('move-down') && index < thirdPlaceManualOrder.length - 1) {
+          [thirdPlaceManualOrder[index + 1], thirdPlaceManualOrder[index]] =
+            [thirdPlaceManualOrder[index], thirdPlaceManualOrder[index + 1]];
+        }
+
+        // Re-render + oppdater sluttspill
+        updateThirdPlacedTeamsRanking();
+        populateSluttspillTable();
+      });
+    });
+  }
+
+  // 8) Returnér gruppene til de kvalifiserte tredjeplassene (brukes i Annex C)
+  return qualified.map(t => t.group);
 }
 
 function getAllTeamsFromGroups() {

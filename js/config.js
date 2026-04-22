@@ -4,7 +4,7 @@ export const GROUPS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L
 export const ADVANCEMENT_RULES = {
   groupWinner: 1,
   groupRunnerUp: 1,
-  bestThirdPlaced: 4
+  bestThirdPlaced: 8
 };
 
 export const POINT_RULES = {
