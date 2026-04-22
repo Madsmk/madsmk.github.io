@@ -187,14 +187,12 @@ nav ul li a:hover {
     color: #800000; /* Dark red color for negative values */
 }
 
-.rangeringA, .rangeringB, .rangeringC, .rangeringD, .rangeringE, .rangeringF {
-    display: table;
-    width: 50%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    /*table-layout: fixed;  Set table layout to fixed */
+.cell.poeng-h,
+.cell.poeng-u,
+.cell.poeng-b,
+.cell.poeng-bp {
+  position: relative;
 }
-
 
 .rangering {
     display: table;
@@ -277,6 +275,28 @@ nav ul li a:hover {
     border-collapse: collapse;
     margin-top: 20px;
     /*table-layout: fixed;  Set table layout to fixed */
+}
+
+.rangeringAllTeams button.move-up,
+.rangeringAllTeams button.move-down {
+  background: none;
+  border: none;
+  padding: 0 6px;
+  margin-left: 4px;
+  color: #176f08;
+  cursor: pointer;
+  font: inherit;
+}
+
+.rangeringAllTeams button.move-up:hover,
+.rangeringAllTeams button.move-down:hover {
+  text-decoration: underline;
+}
+
+.rangeringAllTeams button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  text-decoration: none;
 }
 
 .rangOverskrift, .rad {
@@ -636,4 +656,20 @@ html, body, .sluttspillTreTable, .round16, .quarterfinals, .semifinals, .final {
 .tip-option:has(input:focus-visible),
 .double-option:has(input:focus-visible) {
     outline: 2;
+}
+
+.rangering button.opp,
+.rangering button.ned {
+  background: none;
+  border: none;
+  padding: 0 4px;
+  margin-left: 4px;
+  color: #176f08;
+  cursor: pointer;
+  font: inherit;
+}
+
+.rangering button.opp:hover,
+.rangering button.ned:hover {
+  text-decoration: underline;
 }
