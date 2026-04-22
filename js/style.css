@@ -1,0 +1,655 @@
+/* Add the imported font */
+@import url(https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap);
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    background: linear-gradient(135deg, #71b7e6, #9b59b6);
+}
+
+.containerUserDetails {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+    max-width: 400px;
+}
+
+.containerUserDetails h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.containerUserDetails form {
+    display: flex;
+    flex-direction: column;
+}
+
+.containerUserDetails label {
+    margin-bottom: 10px;
+}
+
+.containerUserDetails input[type="text"],
+.containerUserDetails input[type="email"],
+.containerUserDetails button {
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.containerUserDetails button {
+    background-color: #4CAF50;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.containerUserDetails button:hover {
+    background-color: #45a049;
+}
+
+.instructions {
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    padding: 15px;
+    margin-bottom: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.instructions h2 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}
+
+.instructions p {
+    margin: 10px 0;
+}
+
+.instructions ul {
+    list-style-type: square;
+    padding-left: 20px;
+}
+
+.instructions ol {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.instructions li {
+    margin-bottom: 10px;
+}
+
+header {
+    width: 100%;
+    background-color: #333;
+    color: #fff;
+    padding: 10px 0;
+}
+
+nav ul {
+    list-style-type: none;
+    padding: 0;
+    text-align: center;
+}
+
+nav ul li {
+    display: inline;
+    margin-right: 20px;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 5px 10px;
+}
+
+nav ul li a:hover {
+    background-color: #555;
+}
+
+.container {
+    max-width: 1100px;
+    width: 100%;
+    background: #fff;
+    padding: 25px;
+    border-radius: 15px;
+    margin-top: 20px;
+}
+
+.title {
+    font-size: 2.5em; /* Make the title larger */
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+    text-transform: uppercase; /* Transform text to uppercase for a bold effect */
+    letter-spacing: 2px; /* Add spacing between letters */
+    background: linear-gradient(45deg, #ff6b6b, #f8e9a1); /* Add a gradient background */
+    -webkit-background-clip: text; /* Use the background as text color */
+    background-clip: text; /* Standard property */
+    -webkit-text-fill-color: transparent; /* Make text transparent to show gradient */
+    color: transparent; /* Fallback for text-fill-color */
+}
+
+.table {
+    display: table;
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.header, .row {
+    display: table-row;
+}
+
+.header .cell, .rangOverskrift .cell {
+    font-weight: bold; /* Make the text bold */
+    background-color: #f2f2f2; /* Light gray background */
+    padding: 8px;
+    text-align: center;
+}
+
+.cell {
+    display: table-cell;
+    border: 1px solid #dddddd;
+    padding: 8px;
+    text-align: center;
+}
+
+/* Right-aligning positive values */
+.cell.poeng-h[data-value]:not([data-value^="-"])::before,
+.cell.poeng-u[data-value]:not([data-value^="-"])::before,
+.cell.poeng-b[data-value]:not([data-value^="-"])::before,
+.cell.poeng-bp[data-value]:not([data-value^="-"])::before {
+    content: attr(data-value);
+    color: #008000; /* Dark green color for positive values */
+}
+
+/* Right-aligning negative values */
+.cell.poeng-h[data-value^="-"]::before,
+.cell.poeng-u[data-value^="-"]::before,
+.cell.poeng-b[data-value^="-"]::before,
+.cell.poeng-bp[data-value^="-"]::before {
+    content: attr(data-value);
+    color: #800000; /* Dark red color for negative values */
+}
+
+.rangeringA, .rangeringB, .rangeringC, .rangeringD, .rangeringE, .rangeringF {
+    display: table;
+    width: 50%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    /*table-layout: fixed;  Set table layout to fixed */
+}
+
+
+.rangering {
+    display: table;
+    width: 50%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+
+.rangOverskrift, .rad {
+    display: table-row;
+}
+
+.rangOverskrift .cell, .rad .cell {
+    padding: 8px;
+    text-align: center;
+}
+
+.rangOverskrift .plass, .rad .plass {
+    width: 15%; /* Set a smaller percentage width for the first column */
+}
+
+.rangOverskrift .land, .rad .land {
+    width: 50%; /* Set a wider percentage width for the other columns */
+}
+
+.rangOverskrift .poeng, .rad .poeng {
+    width: 35%; /* Set a wider percentage width for the other columns */
+}
+
+/* Highlighting the first three ranks */
+.rangeringA .rad:nth-child(2), .rangeringB .rad:nth-child(2), .rangeringC .rad:nth-child(2), .rangeringD .rad:nth-child(2), .rangeringE .rad:nth-child(2), .rangeringF .rad:nth-child(2) {
+    background-color: #aaffaa; /* Light green for rank 1 */
+}
+
+.rangeringA .rad:nth-child(3), .rangeringB .rad:nth-child(3), .rangeringC .rad:nth-child(3), .rangeringD .rad:nth-child(3), .rangeringE .rad:nth-child(3), .rangeringF .rad:nth-child(3) {
+    background-color: #aaffaa; /* Light green for rank 2 */
+}
+
+.rangeringA .rad:nth-child(4), .rangeringB .rad:nth-child(4), .rangeringC .rad:nth-child(4), .rangeringD .rad:nth-child(4), .rangeringE .rad:nth-child(4), .rangeringF .rad:nth-child(4) {
+    background-color: #bddbfa; /* Light blue for rank 3 */
+}
+    
+.containerThirdPlaceRanking {
+    max-width: 1100px;
+    width: 100%;
+    background: #fff;
+    padding: 25px;
+    border-radius: 15px;
+    margin-top: 20px;
+}
+    
+.title {
+    font-size: 2.5em;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    background: linear-gradient(45deg, #ff6b6b, #f8e9a1);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+}
+
+.containerThirdPlaceRanking {
+    display: flex;
+    width: 100%;
+}
+
+.rangeringAllTeamsWrapper {
+    flex: 1; /* Takes 50% of the width */
+    padding: 10px; /* Optional padding */
+}
+
+.rangeringAllTeams {
+    display: table;
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    /*table-layout: fixed;  Set table layout to fixed */
+}
+
+.rangOverskrift, .rad {
+    display: table-row;
+}
+
+.rangOverskrift .cell, .rad .cell {
+    padding: 8px;
+    text-align: center;
+}
+
+.rangOverskrift .plass, .rad .plass {
+    width: 30%; /* Set a smaller percentage width for the first column */
+}
+
+.rangOverskrift .land, .rad .land {
+    width: 100%; /* Set a wider percentage width for the other columns */
+}
+
+.rangOverskrift .poeng, .rad .poeng {
+    width: 70%; /* Set a wider percentage width for the other columns */
+}
+
+/* Highlighting the first three ranks */
+.rangeringAllTeams .rad:nth-child(2), .rangeringAllTeams .rad:nth-child(3), .rangeringAllTeams .rad:nth-child(4), .rangeringAllTeams .rad:nth-child(5) {
+    background-color: #aaffaa; /* Light green for rank 1 */
+}
+
+.instructions {
+    flex: 1; /* Takes remaining 50% of the width */
+    padding: 10px; /* Optional padding */
+    background-color: #f9f9f9; /* Optional styling for instructions */
+}
+
+@media (max-width: 768px) {
+    .containerThirdPlaceRanking {
+        flex-direction: column;
+    }
+}
+
+.containerSluttspill {
+    max-width: 1100px;
+    width: 100%;
+    background: #fff;
+    padding: 25px;
+    border-radius: 15px;
+    margin-top: 20px;
+}
+    
+.title {
+    font-size: 2.5em;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    background: linear-gradient(45deg, #ff6b6b, #f8e9a1);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+}
+
+.containerSluttspill {
+    display: flex;
+    width: 100%;
+}
+
+.sluttspillTableWrapper {
+    flex: 1; /* Takes 50% of the width */
+    padding: 10px; /* Optional padding */
+}
+
+.sluttspillTable {
+    display: table;
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    /*table-layout: fixed;  Set table layout to fixed */
+}
+
+.rangOverskrift, .rad {
+    display: table-row;
+}
+
+.rangOverskrift .cell, .rad .cell {
+    padding: 8px;
+    text-align: center;
+}
+
+.rangOverskrift .plass, .rad .plass {
+    width: 30%; /* Set a smaller percentage width for the first column */
+}
+
+.rangOverskrift .land, .rad .land {
+    width: 100%; /* Set a wider percentage width for the other columns */
+}
+
+.rangOverskrift .poeng, .rad .poeng {
+    width: 70%; /* Set a wider percentage width for the other columns */
+}
+
+/* Highlighting the first three ranks */
+.sluttspillTable .rad:nth-child(2), .sluttspillTable .rad:nth-child(3), .sluttspillTable .rad:nth-child(4) {
+    background-color: #aaffaa; /* Light green for rank 1 */
+}
+
+.instructions {
+    flex: 1; /* Takes remaining 50% of the width */
+    padding: 10px; /* Optional padding */
+    background-color: #f9f9f9; /* Optional styling for instructions */
+}
+
+@media (max-width: 768px) {
+    .containerSluttspill {
+        flex-direction: column;
+    }
+}
+
+.containerSluttspillTre {
+    max-width: 1100px;
+    width: 100%;
+    background: #fff;
+    padding: 25px;
+    border-radius: 15px;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.containerSluttspillTre .title {
+    font-size: 2.5em;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    background: linear-gradient(45deg, #ff6b6b, #f8e9a1);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+}
+
+.sluttspillTreTable {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 columns for each round */
+    gap: 20px;
+    width: 100%;
+}
+
+html, body, .sluttspillTreTable, .round16, .quarterfinals, .semifinals, .final {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.round, .semifinal, .final {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.round .match, .semifinal .match, .final .match {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #000;
+    border-radius: 5px;
+    background-color: #e0ff34;
+    width: 150px;
+}
+
+.round16 {
+    grid-column: 1 / 2;
+    display: grid;
+    grid-template-rows: repeat(8, 1fr); /* 8 matches */
+    gap: 20px;
+}
+
+.quarterfinals {
+    grid-column: 2 / 3;
+    display: grid;
+    grid-template-rows: repeat(4, 1fr); /* 4 matches, each spanning 2 rows of round 16 */
+    gap: 40px;
+}
+
+.semifinals {
+    grid-column: 3 / 4;
+    display: grid;
+    grid-template-rows: repeat(2, 1fr); /* 2 matches, each spanning 2 rows of quarterfinals */
+    gap: 80px;
+}
+
+.final {
+    grid-column: 4 / 5;
+    display: grid;
+    grid-template-rows: 1fr; /* 1 match, spanning 2 rows of semifinals */
+    gap: 160px;
+    align-items: center; /* Center align the content */
+}
+
+.final .match {
+    height: 200px; /* Adjust this value to make the final match box bigger */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.match {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #000;
+    border-radius: 5px;
+    background-color: #c5bfbf;
+    width: 150px;
+}
+
+.team {
+    margin: 5px 0;
+}
+
+/* Winner and loser styles */
+.winner {
+    font-weight: bold;
+    color: green;
+}
+
+.loser {
+    color: red;
+    font-style: italic;
+}
+
+.ranking {
+    font-style: italic;
+    font-size: smaller;
+}
+
+/* ---- Modernisert: label-wrap for tips ---- */
+
+.tips {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    align-items: center;
+}
+
+.tip-option,
+.double-option {
+  display: flex;
+  align-items: center;
+}
+
+.tip-option input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.tip-option .dot,
+.double-option .radio {
+    display: block;
+    flex-shrink: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.tip-option .dot {
+  height: 18px;
+  width: 18px;
+  background: #d9d9d9;
+  border:  4px solid transparent;
+  margin-right: 8px;
+  transition: all 0.2s ease;
+}
+
+/* Når checkbox er checked, style dot (input ligger rett før .dot) */
+.tip-option input:checked ~ .dot {
+  border-color: #176f08;
+  background: #176f08;
+}
+
+/* ---- Modernisert: label-wrap for dobling ---- */
+
+.double-option input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.double-option .radio {
+  height: 18px;
+  width: 18px;
+  background: #d9d9d9;
+  border:  4px solid transparent;
+  margin-right: 8px;
+  transition: all 0.2s ease;
+}
+
+/* Når radio er checked, style radio (input ligger rett før .radio) */
+.double-option input:checked + .radio {
+  border-color: #176f08;
+  background: #176f08;
+}
+
+.tip-option input:checked ~ .utfall,
+.double-option input:checked ~ .utfall {
+    font-weight: 600;
+}
+
+.double-option input:checked ~ .utfall::after {
+    content: "x2";
+    font-size: 0.8em;
+}
+
+.tip-option:has(input:checked) .dot,
+.double-option:has(input:checked) .radio {
+    box-shadow: 0 0 0 3pc rgba(23, 111, 8, 0.15);
+}
+
+.tip-option:hover,
+.double-option:hover {
+    background-color: #f2f8f2;
+    border-radius: 6px;
+}
+
+.cell.poeng-h::after,
+.cell.poeng-u::after,
+.cell.poeng-b::after,
+.cell.poeng-bp::after {
+    content: attr(data-value);
+    display: inline-block;
+    transition: transform 0.15s ease;
+}
+
+.tip-option,
+.double-option {
+    transform: none !important;
+}
+
+.tip-option input:focus,
+.double-option input:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.tip-option:has(input:focus-visible),
+.double-option:has(input:focus-visible) {
+    outline: 2;
+}
+
+.rangering button.opp,
+.rangering button.ned {
+  background: none;
+  border: none;
+  padding: 0 4px;
+  margin-left: 4px;
+  color: #176f08;
+  cursor: pointer;
+  font: inherit;
+}
+
+.rangering button.opp:hover,
+.rangering button.ned:hover {
+  text-decoration: underline;
+}

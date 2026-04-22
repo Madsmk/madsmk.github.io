@@ -163,88 +163,115 @@ export function updatePoints(group) {
 };
 
 function handleLinkClick(event, group) {
-    event.preventDefault();
-    const index = parseInt(event.target.dataset.index);
-    const direction = event.target.dataset.direction;
-    if (direction === 'opp' && index > 0) {
-        swapTeams(index, index - 1, groups[group].teams);
-    } else if (direction === 'ned' && index < groups[group].teams.length - 1) {
-        swapTeams(index, index + 1, groups[group].teams);
-    }
+  const btn = event.currentTarget;
 
-    updateRankingTable(group);
-    updateThirdPlacedTeamsRanking();
-    populateSluttspillTable();
+  const index = parseInt(btn.dataset.index, 10);
+  const direction = btn.dataset.direction;
+
+  if (Number.isNaN(index)) return;
+
+  if (direction === 'opp' && index > 0) {
+    swapTeams(index, index - 1, groups[group].teams);
+  } else if (direction === 'ned' && index < groups[group].teams.length - 1) {
+    swapTeams(index, index + 1, groups[group].teams);
+  }
+
+  updateRankingTable(group);
+  updateThirdPlacedTeamsRanking();
+  populateSluttspillTable();
 }
 
 export function updateRankingTable(group) {
-    groups[group].teams.forEach(team => groups[group].teamPoints[team] = 0);
+  // Nullstill poeng
+  groups[group].teams.forEach(team => {
+    groups[group].teamPoints[team] = 0;
+  });
 
-    const matches = [
-        [1, 2, '01'],
-        [3, 4, '02'],
-        [1, 3, '03'],
-        [4, 2, '04'],
-        [2, 3, '05'],
-        [4, 1, '06']
-    ];
+  // Bruk fixtures (VM/EM-agnostisk)
+  const fixtures = FIXTURES[group] ?? [];
 
-    matches.forEach(([homeTeamNum, awayTeamNum, matchNumber]) => {
-        const homeChecked = document.getElementById(`H${group}${matchNumber}`)?.checked;
-        const drawChecked = document.getElementById(`U${group}${matchNumber}`)?.checked;
-        const awayChecked = document.getElementById(`B${group}${matchNumber}`)?.checked;
+  fixtures.forEach(({ id, home, away }) => {
+    const matchNumber = id.slice(1);
 
-        const checkboxCount = [homeChecked, drawChecked, awayChecked].filter(Boolean).length;
+    const homeChecked = document.getElementById(`H${group}${matchNumber}`)?.checked;
+    const drawChecked = document.getElementById(`U${group}${matchNumber}`)?.checked;
+    const awayChecked = document.getElementById(`B${group}${matchNumber}`)?.checked;
 
-        if (checkboxCount > 0) {
-            const homeTeamName = getTeamName(`team${group}${homeTeamNum}`);
-            const awayTeamName = getTeamName(`team${group}${awayTeamNum}`);
+    const checkboxCount = [homeChecked, drawChecked, awayChecked].filter(Boolean).length;
+    if (checkboxCount === 0) return;
 
-            if (homeChecked) groups[group].teamPoints[homeTeamName] += 3 / checkboxCount;
-            if (drawChecked) {
-                groups[group].teamPoints[homeTeamName] += 1 / checkboxCount;
-                groups[group].teamPoints[awayTeamName] += 1 / checkboxCount;
-            }
-            if (awayChecked) groups[group].teamPoints[awayTeamName] += 3 / checkboxCount;
-        }
-    });
+    const homeTeam = getTeamName(`team${group}${home}`);
+    const awayTeam = getTeamName(`team${group}${away}`);
 
-    groups[group].teams.sort((a, b) => groups[group].teamPoints[b] - groups[group].teamPoints[a]);
-
-    const rankingTable = document.querySelector(`.rangering-${group}`);
-    if (rankingTable) {
-        rankingTable.innerHTML = `
-            <div class="rangOverskrift">
-                <div class="cell">Plass</div>
-                <div class="cell">Land</div>
-                <div class="cell">Forventet poeng</div>
-            </div>
-        `;
-
-        groups[group].teams.forEach((team, index) => {
-            let actionsHTML = `${team}`;
-            if (index > 0 && groups[group].teamPoints[team] === groups[group].teamPoints[groups[group].teams[index - 1]]) {
-                actionsHTML += ` <a href="#" class="opp" data-index="${index}" data-direction="opp" data-group="${group}">(opp)</a>`;
-            }
-            if (index < groups[group].teams.length - 1 && groups[group].teamPoints[team] === groups[group].teamPoints[groups[group].teams[index + 1]]) {
-                actionsHTML += ` <a href="#" class="ned" data-index="${index}" data-direction="ned" data-group="${group}">(ned)</a>`;
-            }
-
-            rankingTable.innerHTML += `
-                <div class="rad">
-                    <div class="cell plass">${index + 1}</div>
-                    <div class="cell land">${actionsHTML}</div>
-                    <div class="cell poeng">${groups[group].teamPoints[team].toFixed(1)}</div>
-                </div>
-            `;
-        });
-
-        document.querySelectorAll(`.rangering-${group} + .opp, .rangering-${group} + .ned`).forEach(link => {
-            link.addEventListener('click', function (event) {
-                handleLinkClick(event, group);
-            });
-        });
+    if (homeChecked) groups[group].teamPoints[homeTeam] += 3 / checkboxCount;
+    if (drawChecked) {
+      groups[group].teamPoints[homeTeam] += 1 / checkboxCount;
+      groups[group].teamPoints[awayTeam] += 1 / checkboxCount;
     }
+    if (awayChecked) groups[group].teamPoints[awayTeam] += 3 / checkboxCount;
+  });
+
+  // Sorter
+  groups[group].teams.sort(
+    (a, b) => groups[group].teamPoints[b] - groups[group].teamPoints[a]
+  );
+
+  const rankingTable = document.querySelector(`.rangering-${group}`);
+  if (!rankingTable) return;
+
+  rankingTable.innerHTML = `
+    <div class="rangOverskrift">
+      <div class="cell">Plass</div>
+      <div class="cell">Land</div>
+      <div class="cell">Forventet poeng</div>
+    </div>
+  `;
+
+  const isTie = (a, b) =>
+    Math.abs(groups[group].teamPoints[a] - groups[group].teamPoints[b]) < 1e-9;
+
+  groups[group].teams.forEach((team, index) => {
+    let actionsHTML = `${team}`;
+
+    if (index > 0 && isTie(team, groups[group].teams[index - 1])) {
+      actionsHTML += `
+        <button type="button"
+                class="opp"
+                data-index="${index}"
+                data-direction="opp">
+          (opp)
+        </button>`;
+    }
+
+    if (index < groups[group].teams.length - 1 &&
+        isTie(team, groups[group].teams[index + 1])) {
+      actionsHTML += `
+        <button type="button"
+                class="ned"
+                data-index="${index}"
+                data-direction="ned">
+          (ned)
+        </button>`;
+    }
+
+    rankingTable.innerHTML += `
+      <div class="rad">
+        <div class="cell plass">${index + 1}</div>
+        <div class="cell land">${actionsHTML}</div>
+        <div class="cell poeng">
+          ${groups[group].teamPoints[team].toFixed(1)}
+        </div>
+      </div>
+    `;
+  });
+
+  // ✅ Event binding (knapper – ikke lenker)
+  rankingTable.querySelectorAll('button.opp, button.ned')
+    .forEach(button => {
+      button.addEventListener('click', event => {
+        handleLinkClick(event, group);
+      });
+    });
 }
 
 // Function to get the third ranked team from a group
