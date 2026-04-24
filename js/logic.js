@@ -193,7 +193,7 @@ function handleLinkClick(event, group) {
 
   updateRankingTable(group);
   updateThirdPlacedTeamsRanking();
-  populateSluttspillTable();
+  updateKnockoutRankingAndTree();
 }
 
 export function updateRankingTable(group) {
@@ -318,8 +318,7 @@ function handleThirdPlaceLinkClick(evt, thirdPlaceTeams) {
         swapThirdPlaceElements(index, index + 1, thirdPlaceTeams);
     }
 
-    updateOverallRankingTable(thirdPlaceTeams);
-    populateSluttspillTable();
+    updateKnockoutRankingAndTree();
 }
 
 export function updateThirdPlacedTeamsRanking() {
@@ -369,7 +368,7 @@ export function updateThirdPlacedTeamsRanking() {
       <div class="rangOverskrift">
         <div class="cell">Plass</div>
         <div class="cell">Gruppe</div>
-        <div class="cell">Lag</div>
+        <div class="cell">Land</div>
         <div class="cell">Forventet poeng</div>
         <div class="cell">Flytt</div>
         <div class="cell">Status</div>
@@ -427,7 +426,7 @@ export function updateThirdPlacedTeamsRanking() {
 
         // Re-render + oppdater sluttspill
         updateThirdPlacedTeamsRanking();
-        populateSluttspillTable();
+        updateKnockoutRankingAndTree();
       });
     });
   }
@@ -456,42 +455,147 @@ function getAllTeamsFromGroups() {
     return allTeams;
 }
 
-function updateOverallRankingTable(thirdPlaceTeams) {
-    const rankingTable = document.querySelector('.rangeringAllTeams');
-    const allTeams = getAllTeamsFromGroups();
-    console.log('RangeringAllTeams')
-    if (rankingTable) {
-        rankingTable.innerHTML = `
-            <div class="rangOverskrift">
-                <div class="cell">Plass</div>
-                <div class="cell">Land</div>
-                <div class="cell">Forventet poeng</div>
-            </div>
-        `;
+export function updateKnockoutRankingTable() {
+  const knockoutTeams = [];
 
-        thirdPlaceTeams.forEach(({ team, points }, index) => {
-            let actionsHTML = `${team}`;
-            if (index > 0 && points === thirdPlaceTeams[index - 1].points) {
-                actionsHTML += ` <a href="#" class="opp" data-index="${index}" data-direction="opp">(opp)</a>`;
-            }
-            if (index < thirdPlaceTeams.length - 1 && points === thirdPlaceTeams[index + 1].points) {
-                actionsHTML += ` <a href="#" class="ned" data-index="${index}" data-direction="ned">(ned)</a>`;
-            }
-            rankingTable.innerHTML += `
-                <div class="rad">
-                    <div class="cell plass">${index + 1}</div>
-                    <div class="cell land">${actionsHTML}</div>
-                    <div class="cell poeng">${points.toFixed(1)}</div>
-                </div>
-            `;
-        });
+  // 1️⃣ Gruppevinnere og -toere
+  GROUPS.forEach(group => {
+    const teams = groups[group].teams;
 
-        addThirdPlaceEventListeners(thirdPlaceTeams);
-        generatePlayoffTree(allTeams);
+    if (teams[0]) {
+      knockoutTeams.push({
+        seed: `1${group}`,
+        group,
+        position: 1,
+        team: teams[0],
+        points: groups[group].teamPoints[teams[0]]
+      });
     }
+
+    if (teams[1]) {
+      knockoutTeams.push({
+        seed: `2${group}`,
+        group,
+        position: 2,
+        team: teams[1],
+        points: groups[group].teamPoints[teams[1]]
+      });
+    }
+  });
+
+  // 2️⃣ Kvalifiserte tredjeplasser
+  const qualifiedThirdGroups = updateThirdPlacedTeamsRanking();
+
+  qualifiedThirdGroups.forEach(group => {
+    const team = getTeamRankedThreeFromGroup(group);
+    if (team) {
+      knockoutTeams.push({
+        seed: `3${group}`,
+        group,
+        position: 3,
+        team,
+        points: groups[group].teamPoints[team]
+      });
+    }
+  });
+
+  // 3️⃣ Standardsortering (valgfri – poeng synkende)
+  knockoutTeams.sort((a, b) => b.points - a.points);
+
+  // 4️⃣ Init / sync manuell rekkefølge
+  if (!knockoutManualOrder || knockoutManualOrder.length !== knockoutTeams.length) {
+    knockoutManualOrder = knockoutTeams.map(t => t.seed);
+  } else {
+    const current = new Set(knockoutTeams.map(t => t.seed));
+    knockoutManualOrder = knockoutManualOrder.filter(s => current.has(s));
+    knockoutTeams.forEach(t => {
+      if (!knockoutManualOrder.includes(t.seed)) {
+        knockoutManualOrder.push(t.seed);
+      }
+    });
+  }
+
+  const bySeed = new Map(knockoutTeams.map(t => [t.seed, t]));
+  const ordered = knockoutManualOrder.map(s => bySeed.get(s)).filter(Boolean);
+
+  // 5️⃣ Render tabell
+  const table = document.querySelector('.sluttspillTable');
+  if (!table) return ordered;
+
+  table.innerHTML = `
+    <div class="rangOverskrift">
+      <div class="cell">Rangering</div>
+      <div class="cell">Seed</div>
+      <div class="cell">Land</div>
+      <div class="cell">Forventet poeng</div>
+      <div class="cell">Flytt</div>
+    </div>
+  `;
+
+  ordered.forEach(({ seed, team, points }, index) => {
+    table.innerHTML += `
+      <div class="rad">
+        <div class="cell plass">${index + 1}</div>
+        <div class="cell seed">${seed}</div>
+        <div class="cell land">${team}</div>
+        <div class="cell poeng">${points.toFixed(1)}</div>
+        <div class="cell flytt">
+          <button type="button"
+                  class="opp"
+                  data-index="${index}"
+                  ${index === 0 ? 'disabled' : ''}>(opp)</button>
+          <button type="button"
+                  class="ned"
+                  data-index="${index}"
+                  ${index === ordered.length - 1 ? 'disabled' : ''}>(ned)</button>
+        </div>
+      </div>
+    `;
+  });
+
+  // 6️⃣ Event listeners
+  table.querySelectorAll('button.opp, button.ned').forEach(btn => {
+    btn.addEventListener('click', e => {
+      const index = parseInt(e.currentTarget.dataset.index, 10);
+      if (Number.isNaN(index)) return;
+
+      if (btn.classList.contains('opp') && index > 0) {
+        [knockoutManualOrder[index - 1], knockoutManualOrder[index]] =
+          [knockoutManualOrder[index], knockoutManualOrder[index - 1]];
+      }
+
+      if (btn.classList.contains('ned') && index < knockoutManualOrder.length - 1) {
+        [knockoutManualOrder[index + 1], knockoutManualOrder[index]] =
+          [knockoutManualOrder[index], knockoutManualOrder[index + 1]];
+      }
+
+   updateKnockoutRankingAndTree();
+    });
+  });
+
+  return ordered;
 }
 
+export function updateKnockoutRankingAndTree() {
+  // 1️⃣ Oppdater sluttspill-rangeringstabell
+  const rankedKnockoutTeams = updateKnockoutRankingTable();
 
+  if (!rankedKnockoutTeams || rankedKnockoutTeams.length === 0) {
+    console.warn('Sluttspill-rangering ikke klar ennå');
+    return;
+  }
+
+  // 2️⃣ Bygg sluttspillstruktur (Annex C + runder)
+  const knockout = buildKnockoutFromCurrentState();
+
+  if (!knockout) {
+    console.warn('Sluttspillstruktur ikke klar ennå');
+    return;
+  }
+
+  // 3️⃣ Render sluttspill-treet
+  renderPlayoffTree(knockout);
+}
 
 // Add event listeners for match ranking manipulation in the sluttspill table
 function addSluttspillEventListeners(sluttspillTeams) {
