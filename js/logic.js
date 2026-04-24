@@ -11,14 +11,6 @@ import { buildRoundOf32Matchups, buildRoundOf16Matchups, buildQuarterfinalMatchu
 
 let thirdPlaceManualOrder = null; // array med gruppe-bokstaver i ønsket rekkefølge
 
-const r32 = buildRoundOf32Matchups(bestThirdGroups, ANNEX_C);
-const r16 = buildRoundOf16Matchups(r32);
-const qf  = buildQuarterfinalMatchups(r16);
-const sf  = buildSemifinalMatchups(qf);
-const fm  = buildFinalMatchups(sf);
-
-console.log(r32, r16, qf, sf, fm.final, fm.thirdPlace);
-
 export function getTeamName(teamID) {
     return teamMap?.[teamID]?.name ?? '';
 }
@@ -746,110 +738,14 @@ function getTeamFromRankingTable(group, position) {
 
     // Generate the initial playoff tree
 function generatePlayoffTree() {
-    console.log('Generating playoff tree');
+    const knockout = buildKnockoutFromCurrentState();
 
-    const round16Container = document.querySelector('.sluttspillTreTable .round16');
-    const quarterfinalsContainer = document.querySelector('.sluttspillTreTable .quarterfinals');
-    const semifinalsContainer = document.querySelector('.sluttspillTreTable .semifinals');
-    const finalContainer = document.querySelector('.sluttspillTreTable .final');
-    
-    if (!round16Container || !quarterfinalsContainer || !semifinalsContainer || !finalContainer) {
-        console.error("Containers for playoff tree not found.");
+    if (!knockout) {
+        // Sluttspill er ikke klart ennå
         return;
     }
 
-    // Clear previous tree content
-    round16Container.innerHTML = '';
-    quarterfinalsContainer.innerHTML = '';
-    semifinalsContainer.innerHTML = '';
-    finalContainer.innerHTML = '';
-
-    const groupLetters = GROUPS;
-    const groupPositions = {};
-
-    groupLetters.forEach(group => {
-        const rankingTable = document.querySelector(`.rangering${group}`);
-        if (!rankingTable) return;
-
-        const teamRows = rankingTable.querySelectorAll('.rad .land');
-        groupPositions[group] = {};
-
-        teamRows.forEach(row => {
-            const place = parseInt(row.closest('.rad').querySelector('.plass').textContent, 10);
-            const team = row.textContent.replace(/\s*\(.*?\)\s*/g, '').trim();
-            groupPositions[group][place] = team;
-        });
-    });
-
-    console.log('Group Positions:', groupPositions);
-
-    const matchups = [
-        { group1: 'B', place1: 1, group2: 'C', place2: 3 },
-        { group1: 'A', place1: 1, group2: 'C', place2: 2 },
-        { group1: 'F', place1: 1, group2: 'C', place2: 3 },
-        { group1: 'D', place1: 2, group2: 'E', place2: 2 },
-        { group1: 'E', place1: 1, group2: 'C', place2: 3 },
-        { group1: 'D', place1: 1, group2: 'F', place2: 2 },
-        { group1: 'C', place1: 1, group2: 'C', place2: 3 },
-        { group1: 'A', place1: 2, group2: 'B', place2: 2 }
-    ];
-
-    const topFourThirdPlaced = getTopFourThirdPlacedTeams();
-    console.log('Top four third-placed teams:', topFourThirdPlaced);
-    
-    if (topFourThirdPlaced.length < 4) {
-        console.error("Not enough third-placed teams for the playoff.", topFourThirdPlaced);
-        return;
-    }
-
-    const topFourGroups = topFourThirdPlaced.map((team) => team.group).sort();
-    console.log('test', topFourThirdPlaced, topFourGroups);
-
-    const mappedGroups = mapGroupsToMatches(topFourGroups);
-    console.log('Mapped groups:', mappedGroups);
-
-    const thirdPlaceMappings = [
-        { matchIndex: 0, mappedGroupIndex: 0 },
-        { matchIndex: 2, mappedGroupIndex: 1 },
-        { matchIndex: 4, mappedGroupIndex: 2 },
-        { matchIndex: 6, mappedGroupIndex: 3 }
-    ];
-
-    thirdPlaceMappings.forEach((mapping) => {
-        const matchIndex = mapping.matchIndex;
-        const mappedGroupIndex = mapping.mappedGroupIndex;
-        const group = mappedGroups[mappedGroupIndex];
-        matchups[matchIndex].group2 = group;
-        matchups[matchIndex].place2 = 3;
-    });
-
-    console.log('Updated matchups:', matchups);
-
-    const initialRankings = {};
-
-    // Capture initial rankings for all teams
-    matchups.forEach((matchup, index) => {
-        const team1 = getTeamFromRankingTable(matchup.group1, matchup.place1);
-        const team2 = getTeamFromRankingTable(matchup.group2, matchup.place2);
-
-        const ranking1 = parseInt(getTeamRanking(team1), 10);
-        const ranking2 = parseInt(getTeamRanking(team2), 10);
-
-        initialRankings[team1] = ranking1;
-        initialRankings[team2] = ranking2;
-
-        console.log(`Match ${index + 1}: ${team1} (${ranking1}) vs ${team2} (${ranking2})`);
-
-        if (team1 && team2) {
-            const matchId = `RO16${index + 1}`;
-            const matchHTML = createMatchHTML(team1, team2, matchId, ranking1, ranking2);
-            round16Container.innerHTML += matchHTML;
-        } else {
-            console.error(`Could not find teams for match ${index + 1}.`);
-        }
-    });
-
-    populateNextRounds(round16Container, quarterfinalsContainer, semifinalsContainer, finalContainer, initialRankings);
+    renderPlayoffTree(knockout);
 }
 
 export function populateSluttspillTable() {
@@ -918,3 +814,29 @@ export function populateSluttspillTable() {
         generatePlayoffTree(sluttspillTeams); // Generate playoff tree after populating the table
     }
 
+function buildKnockoutFromCurrentState() {
+  // 1️⃣ Finn de 8 beste tredjeplassene
+  const bestThirdGroups = updateThirdPlacedTeamsRanking();
+
+  if (!bestThirdGroups || bestThirdGroups.length !== ADVANCEMENT_RULES.bestThirdPlaced) {
+    console.warn('Sluttspill ikke klart – mangler tredjeplasser');
+    return;
+  }
+
+  // 2️⃣ Bygg sluttspillrundene
+  const r32 = buildRoundOf32Matchups(bestThirdGroups, ANNEX_C);
+  const r16 = buildRoundOf16Matchups(r32);
+  const qf  = buildQuarterfinalMatchups(r16);
+  const sf  = buildSemifinalMatchups(qf);
+  const fm  = buildFinalMatchups(sf);
+
+  // 3️⃣ Debug / videre rendering
+  console.log('R32', r32);
+  console.log('R16', r16);
+  console.log('QF', qf);
+  console.log('SF', sf);
+  console.log('Final', fm.final);
+  console.log('Bronse', fm.thirdPlace);
+
+  return { r32, r16, qf, sf, fm };
+}
