@@ -6,7 +6,7 @@ import {
   updatePoints,
   updateRankingTable,
   updateThirdPlacedTeamsRanking,
-  updateKnockoutRankingAndTree;
+  updateKnockoutRankingAndTree,
   groups
 } from './logic.js';
 import { initSubmit } from './submit.js';
