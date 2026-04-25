@@ -581,31 +581,114 @@ export function updateKnockoutRankingTable() {
   return ordered;
 }
 
+// -----------------------------
+// Sluttspill: seed -> lag + deltaker-rang (#)
+// -----------------------------
+
+function baseSeedToTeamName(seed) {
+  const m = String(seed).match(/^([123])([A-L])$/);
+  if (!m) return null;
+  const pos = Number(m[1]);  // 1/2/3
+  const grp = m[2];          // A-L
+  return groups?.[grp]?.teams?.[pos - 1] ?? null;
+}
+
+function buildMatchIndexFromKnockout(knockout) {
+  const idx = new Map();
+  if (!knockout) return idx;
+
+  const all = []
+    .concat(knockout.r32 ?? [])
+    .concat(knockout.r16 ?? [])
+    .concat(knockout.qf ?? [])
+    .concat(knockout.sf ?? []);
+
+  if (knockout.fm?.thirdPlace) all.push(knockout.fm.thirdPlace);
+  if (knockout.fm?.final) all.push(knockout.fm.final);
+
+  all.forEach(m => idx.set(m.matchNo, m));
+  return idx;
+}
+
+/**
+ * Lager en formatter: seed -> "Lagnavn (#deltakerRank)"
+ * - 1A/2B/3E vises som faktiske lag
+ * - Wxx/Lxx resolves rekursivt fra bracket (lavest deltakerRank vinner)
+ */
+function createParticipantFormatSeed(knockout, orderedKnockoutRanking) {
+  // orderedKnockoutRanking er returnert fra updateKnockoutRankingTable(): [{seed, team, ...}, ...]
+  const teamRank = new Map(orderedKnockoutRanking.map((row, i) => [row.team, i + 1])); // team -> 1..N
+  const matchIndex = buildMatchIndexFromKnockout(knockout);
+
+  const winnerCache = new Map(); // matchNo -> teamName
+  const loserCache = new Map();  // matchNo -> teamName
+
+  const getRank = (teamName) => teamRank.get(teamName) ?? Number.POSITIVE_INFINITY;
+
+  const resolveName = (seed) => {
+    if (!seed) return '';
+
+    // Base seeds: 1A/2B/3E
+    const base = baseSeedToTeamName(seed);
+    if (base) return base;
+
+    // Winner/Loser seeds: W73 / L101
+    const wl = String(seed).match(/^([WL])(\\d{2,3})$/);
+    if (wl) {
+      const kind = wl[1];
+      const matchNo = parseInt(wl[2], 10);
+      ensureOutcome(matchNo);
+      return kind === 'W'
+        ? (winnerCache.get(matchNo) ?? seed)
+        : (loserCache.get(matchNo) ?? seed);
+    }
+
+    return String(seed);
+  };
+
+  const ensureOutcome = (matchNo) => {
+    if (winnerCache.has(matchNo) && loserCache.has(matchNo)) return;
+
+    const match = matchIndex.get(matchNo);
+    if (!match) {
+      winnerCache.set(matchNo, `W${matchNo}`);
+      loserCache.set(matchNo, `L${matchNo}`);
+      return;
+    }
+
+    const homeName = resolveName(match.home);
+    const awayName = resolveName(match.away);
+
+    // Deltaker-rang avgjør: lavest rank vinner
+    const homeWins = getRank(homeName) < getRank(awayName);
+
+    winnerCache.set(matchNo, homeWins ? homeName : awayName);
+    loserCache.set(matchNo, homeWins ? awayName : homeName);
+  };
+
+  // Formatter som sendes inn til renderPlayoffTree
+  return (seed) => {
+    const name = resolveName(seed);
+    const rank = teamRank.get(name);
+    return rank ? `${name} (#${rank})` : name;
+  };
+}
+
 export function updateKnockoutRankingAndTree() {
-  // 1) Oppdater tabellen (setter/oppdaterer knockoutManualOrder)
+  // 1) Oppdater tabell og få deltakerens sluttspillrangering (ordered)
   const ordered = updateKnockoutRankingTable();
   if (!ordered || ordered.length === 0) return;
 
-  // 2) Bygg bracket
+  // 2) Bygg bracket (R32..Final)
   const knockout = buildKnockoutFromCurrentState();
   if (!knockout) return;
 
-  // 3) Få de kvalifiserte tredjeplass-gruppene (8 stk) – brukes for riktig seed→lag i sluttspillet
-  const bestThirdGroups = updateThirdPlacedTeamsRanking();
+  // 3) Lag formatter basert på deltakerens rangering
+  const formatSeed = createParticipantFormatSeed(knockout, ordered);
 
-  // 4) Resolver: seed -> {name, rank} basert på deltakerens sluttspillrangering
-  const resolve = createSeedResolver(knockout, bestThirdGroups);
-
-  // 5) Formatter: vis "Lag (#rank)" (rank kan være null hvis ikke i tabellen)
-  const formatSeed = (seed) => {
-    const { name, rank } = resolve(seed);
-    return rank ? `${name} (#${rank})` : name;
-  };
-
-  // 6) Render treet med faktiske lagnavn + deltaker-rank
+  // 4) Render treet med "Lag (#rank)"
   renderPlayoffTree(knockout, formatSeed);
 }
-
 // ---- Sluttspill: deltaker-rangering (lag -> rank) + resolve av W/L ----
 
 // 1) Base seed -> faktisk lag (1A/2B/3E)
@@ -615,23 +698,6 @@ function baseSeedToTeamName(seed) {
   const pos = Number(m[1]);   // 1/2/3
   const grp = m[2];           // A-L
   return groups?.[grp]?.teams?.[pos - 1] ?? null;
-}
-
-// 2) Finn match-objekt for matchNo fra knockout-strukturen
-function buildMatchIndex(knockout) {
-  const all = [];
-  if (!knockout) return new Map();
-
-  all.push(...(knockout.r32 ?? []));
-  all.push(...(knockout.r16 ?? []));
-  all.push(...(knockout.qf  ?? []));
-  all.push(...(knockout.sf  ?? []));
-  if (knockout.fm?.thirdPlace) all.push(knockout.fm.thirdPlace);
-  if (knockout.fm?.final) all.push(knockout.fm.final);
-
-  const idx = new Map();
-  all.forEach(m => idx.set(m.matchNo, m));
-  return idx;
 }
 
 // 3) Bygg map: lagNavn -> deltakerRank (1=best)
@@ -655,63 +721,6 @@ function buildTeamRankMapFromKnockoutOrder(bestThirdGroups) {
   });
 
   return rankMap;
-}
-
-// 4) Resolver seed -> { name, rank } med støtte for Wxx/Lxx
-function createSeedResolver(knockout, bestThirdGroups) {
-  const matchIndex = buildMatchIndex(knockout);
-  const teamRankMap = buildTeamRankMapFromKnockoutOrder(bestThirdGroups);
-
-  const winnerCache = new Map(); // matchNo -> teamName
-  const loserCache  = new Map(); // matchNo -> teamName
-
-  const teamRank = (teamName) => teamRankMap.get(teamName) ?? Number.POSITIVE_INFINITY;
-
-  const resolveName = (seed) => {
-    if (!seed) return '';
-
-    // Base seed 1A/2B/3E
-    const base = baseSeedToTeamName(seed);
-    if (base) return base;
-
-    // W/L seed
-    const wl = String(seed).match(/^([WL])(\\d{2,3})$/);
-    if (wl) {
-      const kind = wl[1];
-      const matchNo = parseInt(wl[2], 10);
-      ensureOutcome(matchNo);
-      return (kind === 'W')
-        ? (winnerCache.get(matchNo) ?? seed)
-        : (loserCache.get(matchNo) ?? seed);
-    }
-
-    return String(seed);
-  };
-
-  const ensureOutcome = (matchNo) => {
-    if (winnerCache.has(matchNo) && loserCache.has(matchNo)) return;
-
-    const match = matchIndex.get(matchNo);
-    if (!match) {
-      winnerCache.set(matchNo, `W${matchNo}`);
-      loserCache.set(matchNo, `L${matchNo}`);
-      return;
-    }
-
-    const homeName = resolveName(match.home);
-    const awayName = resolveName(match.away);
-
-    const homeWins = teamRank(homeName) < teamRank(awayName);
-
-    winnerCache.set(matchNo, homeWins ? homeName : awayName);
-    loserCache.set(matchNo, homeWins ? awayName : homeName);
-  };
-
-  return (seed) => {
-    const name = resolveName(seed);
-    const rank = teamRankMap.get(name) ?? null;
-    return { name, rank };
-  };
 }
 
 // Add event listeners for match ranking manipulation in the sluttspill table
@@ -1088,111 +1097,6 @@ function buildSeedToTeamNameMap() {
   });
 
   return map;
-}
-
-function flattenAllMatches(knockout) {
-  const all = [];
-  if (!knockout) return all;
-  all.push(...(knockout.r32 ?? []));
-  all.push(...(knockout.r16 ?? []));
-  all.push(...(knockout.qf ?? []));
-  all.push(...(knockout.sf ?? []));
-  if (knockout.fm?.thirdPlace) all.push(knockout.fm.thirdPlace);
-  if (knockout.fm?.final) all.push(knockout.fm.final);
-  return all;
-}
-
-function buildMatchIndex(knockout) {
-  const idx = new Map(); // matchNo -> match object
-  flattenAllMatches(knockout).forEach(m => idx.set(m.matchNo, m));
-  return idx;
-}
-
-/**
- * Create a resolver that can resolve:
- *  - 1A/2B/3E → team name
- *  - W79/L79 → team name (based on knockout ranking)
- *
- * @param {object} knockout - { r32, r16, qf, sf, fm } from buildKnockoutFromCurrentState()
- * @param {string[]} knockoutManualOrder - array of seed strings in user-defined knockout ranking order
- * @returns {(seed:string)=>string} resolver function
- */
-export function createPlayoffSeedResolver(knockout, knockoutManualOrder) {
-  const seedToTeam = buildSeedToTeamNameMap();
-  const rankMap = buildRankMapFromKnockoutOrder(knockoutManualOrder);
-  const matchIndex = buildMatchIndex(knockout);
-
-  // Cache computed winners/losers
-  const winnerCache = new Map(); // matchNo -> teamName
-  const loserCache = new Map();  // matchNo -> teamName
-
-  // resolve a base seed ("1A") or a dynamic seed ("W79")
-  const resolve = (seed) => {
-    if (!seed) return '';
-
-    // Base seed like "1A", "2B", "3E"
-    if (/^[123][A-L]$/.test(seed)) {
-      return seedToTeam.get(seed) ?? seed; // fallback to seed if missing
-    }
-
-    // Winner/Loser seed like "W79" / "L101"
-    const wl = seed.match(/^([WL])(\\d{2,3})$/);
-    if (wl) {
-      const kind = wl[1];              // 'W' or 'L'
-      const matchNo = parseInt(wl[2], 10);
-
-      // compute match winner/loser if not cached
-      ensureMatchOutcome(matchNo);
-
-      return (kind === 'W')
-        ? (winnerCache.get(matchNo) ?? seed)
-        : (loserCache.get(matchNo) ?? seed);
-    }
-
-    // unknown format
-    return seed;
-  };
-
-  const ensureMatchOutcome = (matchNo) => {
-    if (winnerCache.has(matchNo) && loserCache.has(matchNo)) return;
-
-    const match = matchIndex.get(matchNo);
-    if (!match) {
-      // unknown match number
-      winnerCache.set(matchNo, `W${matchNo}`);
-      loserCache.set(matchNo, `L${matchNo}`);
-      return;
-    }
-
-    const homeName = resolve(match.home);
-    const awayName = resolve(match.away);
-
-    // Determine which seed corresponds to each side for ranking lookup:
-    // If match.home is already a seed ("1A"/"3E"/"W79"), use it.
-    // If it resolves to a name but seed wasn't present, still use match.home.
-    const homeSeed = match.home;
-    const awaySeed = match.away;
-
-    const homeRank = rankMap.has(homeSeed) ? rankMap.get(homeSeed) : Number.POSITIVE_INFINITY;
-    const awayRank = rankMap.has(awaySeed) ? rankMap.get(awaySeed) : Number.POSITIVE_INFINITY;
-
-    // If ranks exist: lower index = better.
-    // If rank missing for both: fallback alphabetical by name to keep deterministic.
-    let homeWins;
-    if (homeRank !== awayRank) {
-      homeWins = homeRank < awayRank;
-    } else {
-      homeWins = String(homeName).localeCompare(String(awayName), 'nb') <= 0;
-    }
-
-    const winner = homeWins ? homeName : awayName;
-    const loser  = homeWins ? awayName : homeName;
-
-    winnerCache.set(matchNo, winner);
-    loserCache.set(matchNo, loser);
-  };
-
-  return resolve;
 }
 
     // Generate the initial playoff tree
