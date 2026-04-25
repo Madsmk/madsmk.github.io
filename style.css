@@ -673,3 +673,137 @@ html, body, .sluttspillTreTable, .round16, .quarterfinals, .semifinals, .final {
 .rangering button.ned:hover {
   text-decoration: underline;
 }
+
+.sluttspillTreTable {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  column-gap: 40px;
+  align-items: stretch;
+  margin-top: 20px;
+}
+
+.sluttspillTreTable > div {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.top-half,
+.bottom-half {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.match {
+  position: relative;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+  min-height: 52px;
+}
+
+.match-label {
+  font-size: 10px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.team {
+  font-size: 14px;
+  line-height: 1.3;
+}
+
+.team.home {
+  font-weight: 600;
+}
+
+/* Alle matcher unntatt i siste kolonne */
+.round32 .match::after,
+.round16 .match::after,
+.quarterfinals .match::after,
+.semifinals .match::after {
+  content: "";
+  position: absolute;
+  right: -40px;
+  top: 50%;
+  width: 40px;
+  height: 1px;
+  background: #999;
+}
+
+/* R32: tettest */
+.round32 .match {
+  margin: 12px 0;
+}
+
+/* R16: midtstilte */
+.round16 .match {
+  margin: 36px 0;
+}
+
+/* QF */
+.quarterfinals .match {
+  margin: 72px 0;
+}
+
+/* SF */
+.semifinals .match {
+  margin: 144px 0;
+}
+
+.final {
+  justify-content: center;
+}
+
+.final .top-half {
+  gap: 48px;
+}
+
+.final .bottom-half {
+  margin-top: 40px;
+  opacity: 0.85;
+}
+
+.team.winner {
+  font-weight: 700;
+  color: #1b7f2a; /* mørk grønn */
+}
+
+.team.loser {
+  color: #888;
+}
+
+
+
+.team.winner {
+  font-weight: 700;
+  color: #1f6f3d;
+  background: #e6f4ea;
+  border-left: 4px solid #2da44e;
+  padding-left: 6px;
+  border-radius: 3px;
+}
+
+.team.loser {
+  color: #999;
+}
+
+.match:has(.winner) {
+  opacity: 0.9;
+}
+
+.match:has(.loser) {
+  opacity: 0.85;
+}
+
+.final .match .team.winner {
+  background: #fff3cd;
+  border-left-color: #f4b400;
+  color: #7a5c00;
+}
+
+.final .match .winner::after {
+  content: "🏆";
+}
