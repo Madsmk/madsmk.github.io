@@ -582,14 +582,136 @@ export function updateKnockoutRankingTable() {
 }
 
 export function updateKnockoutRankingAndTree() {
-  const ranked = updateKnockoutRankingTable();
-  if (!ranked || ranked.length === 0) return;
+  // 1) Oppdater tabellen (setter/oppdaterer knockoutManualOrder)
+  const ordered = updateKnockoutRankingTable();
+  if (!ordered || ordered.length === 0) return;
 
+  // 2) Bygg bracket
   const knockout = buildKnockoutFromCurrentState();
   if (!knockout) return;
 
-  // renderPlayoffTree må importeres fra render_playoff.js
-  renderPlayoffTree(knockout, knockoutManualOrder);
+  // 3) Få de kvalifiserte tredjeplass-gruppene (8 stk) – brukes for riktig seed→lag i sluttspillet
+  const bestThirdGroups = updateThirdPlacedTeamsRanking();
+
+  // 4) Resolver: seed -> {name, rank} basert på deltakerens sluttspillrangering
+  const resolve = createSeedResolver(knockout, bestThirdGroups);
+
+  // 5) Formatter: vis "Lag (#rank)" (rank kan være null hvis ikke i tabellen)
+  const formatSeed = (seed) => {
+    const { name, rank } = resolve(seed);
+    return rank ? `${name} (#${rank})` : name;
+  };
+
+  // 6) Render treet med faktiske lagnavn + deltaker-rank
+  renderPlayoffTree(knockout, formatSeed);
+}
+
+// ---- Sluttspill: deltaker-rangering (lag -> rank) + resolve av W/L ----
+
+// 1) Base seed -> faktisk lag (1A/2B/3E)
+function baseSeedToTeamName(seed) {
+  const m = String(seed).match(/^([123])([A-L])$/);
+  if (!m) return null;
+  const pos = Number(m[1]);   // 1/2/3
+  const grp = m[2];           // A-L
+  return groups?.[grp]?.teams?.[pos - 1] ?? null;
+}
+
+// 2) Finn match-objekt for matchNo fra knockout-strukturen
+function buildMatchIndex(knockout) {
+  const all = [];
+  if (!knockout) return new Map();
+
+  all.push(...(knockout.r32 ?? []));
+  all.push(...(knockout.r16 ?? []));
+  all.push(...(knockout.qf  ?? []));
+  all.push(...(knockout.sf  ?? []));
+  if (knockout.fm?.thirdPlace) all.push(knockout.fm.thirdPlace);
+  if (knockout.fm?.final) all.push(knockout.fm.final);
+
+  const idx = new Map();
+  all.forEach(m => idx.set(m.matchNo, m));
+  return idx;
+}
+
+// 3) Bygg map: lagNavn -> deltakerRank (1=best)
+function buildTeamRankMapFromKnockoutOrder(bestThirdGroups) {
+  // knockoutManualOrder inneholder seeds i deltakerens rekkefølge
+  // Vi må mappe seed -> lag -> rank
+  const rankMap = new Map(); // teamName -> rank
+
+  (knockoutManualOrder ?? []).forEach((seed, i) => {
+    let name = null;
+
+    // 1A/2B/3E kan resolves rett
+    name = baseSeedToTeamName(seed);
+
+    // Hvis seed er 3X men kun noen 3X er med i sluttspillet:
+    // baseSeedToTeamName('3X') vil gi groups[X].teams[2] hvis den finnes.
+    // (bestThirdGroups styrer hvem som faktisk er kvalifisert, men navnet ligger i gruppen.)
+    if (name) {
+      rankMap.set(name, i + 1);
+    }
+  });
+
+  return rankMap;
+}
+
+// 4) Resolver seed -> { name, rank } med støtte for Wxx/Lxx
+function createSeedResolver(knockout, bestThirdGroups) {
+  const matchIndex = buildMatchIndex(knockout);
+  const teamRankMap = buildTeamRankMapFromKnockoutOrder(bestThirdGroups);
+
+  const winnerCache = new Map(); // matchNo -> teamName
+  const loserCache  = new Map(); // matchNo -> teamName
+
+  const teamRank = (teamName) => teamRankMap.get(teamName) ?? Number.POSITIVE_INFINITY;
+
+  const resolveName = (seed) => {
+    if (!seed) return '';
+
+    // Base seed 1A/2B/3E
+    const base = baseSeedToTeamName(seed);
+    if (base) return base;
+
+    // W/L seed
+    const wl = String(seed).match(/^([WL])(\\d{2,3})$/);
+    if (wl) {
+      const kind = wl[1];
+      const matchNo = parseInt(wl[2], 10);
+      ensureOutcome(matchNo);
+      return (kind === 'W')
+        ? (winnerCache.get(matchNo) ?? seed)
+        : (loserCache.get(matchNo) ?? seed);
+    }
+
+    return String(seed);
+  };
+
+  const ensureOutcome = (matchNo) => {
+    if (winnerCache.has(matchNo) && loserCache.has(matchNo)) return;
+
+    const match = matchIndex.get(matchNo);
+    if (!match) {
+      winnerCache.set(matchNo, `W${matchNo}`);
+      loserCache.set(matchNo, `L${matchNo}`);
+      return;
+    }
+
+    const homeName = resolveName(match.home);
+    const awayName = resolveName(match.away);
+
+    const homeWins = teamRank(homeName) < teamRank(awayName);
+
+    winnerCache.set(matchNo, homeWins ? homeName : awayName);
+    loserCache.set(matchNo, homeWins ? awayName : homeName);
+  };
+
+  return (seed) => {
+    const name = resolveName(seed);
+    const rank = teamRankMap.get(name) ?? null;
+    return { name, rank };
+  };
 }
 
 // Add event listeners for match ranking manipulation in the sluttspill table
@@ -1078,4 +1200,113 @@ function generatePlayoffTree() {
   const knockout = buildKnockoutFromCurrentState();
   if (!knockout) return;
   renderPlayoffTree(knockout);
+}
+
+function seedToTeamName_base(seed) {
+  // '1A','2B','3E'
+  const m = String(seed).match(/^([123])([A-L])$/);
+  if (!m) return null;
+
+  const pos = Number(m[1]);      // 1/2/3
+  const grp = m[2];              // A-L
+  return groups?.[grp]?.teams?.[pos - 1] ?? null;
+}
+
+function flattenMatches(knockout) {
+  const all = [];
+  if (!knockout) return all;
+  all.push(...(knockout.r32 ?? []));
+  all.push(...(knockout.r16 ?? []));
+  all.push(...(knockout.qf ?? []));
+  all.push(...(knockout.sf ?? []));
+  if (knockout.fm?.thirdPlace) all.push(knockout.fm.thirdPlace);
+  if (knockout.fm?.final) all.push(knockout.fm.final);
+  return all;
+}
+
+function buildMatchIndex(knockout) {
+  const idx = new Map();
+  flattenMatches(knockout).forEach(m => idx.set(m.matchNo, m));
+  return idx;
+}
+
+function buildSeedRankIndex(knockoutManualOrder) {
+  // lavest index = best
+  const rank = new Map();
+  (knockoutManualOrder ?? []).forEach((seed, i) => rank.set(seed, i));
+  return rank;
+}
+
+/**
+ * Lager en resolver(seed) -> { name, rank }
+ * som kan håndtere 1A/2B/3E og W73/L101.
+ */
+function createSeedResolver(knockout, knockoutManualOrder) {
+  const matchIndex = buildMatchIndex(knockout);
+  const seedRank = buildSeedRankIndex(knockoutManualOrder);
+
+  const winnerCache = new Map(); // matchNo -> name
+  const loserCache  = new Map(); // matchNo -> name
+
+  const resolveName = (seed) => {
+    if (!seed) return '';
+
+    // Base seed
+    const base = seedToTeamName_base(seed);
+    if (base) return base;
+
+    // W/L seed
+    const wl = String(seed).match(/^([WL])(\\d{2,3})$/);
+    if (wl) {
+      const kind = wl[1];
+      const matchNo = parseInt(wl[2], 10);
+      ensureOutcome(matchNo);
+      return (kind === 'W') ? (winnerCache.get(matchNo) ?? seed) : (loserCache.get(matchNo) ?? seed);
+    }
+
+    return String(seed);
+  };
+
+  const ensureOutcome = (matchNo) => {
+    if (winnerCache.has(matchNo) && loserCache.has(matchNo)) return;
+
+    const match = matchIndex.get(matchNo);
+    if (!match) {
+      winnerCache.set(matchNo, `W${matchNo}`);
+      loserCache.set(matchNo, `L${matchNo}`);
+      return;
+    }
+
+    const homeName = resolveName(match.home);
+    const awayName = resolveName(match.away);
+
+    // Bruk seed-rangering som beslutningsgrunnlag (lavere = bedre)
+    const homeSeed = match.home;
+    const awaySeed = match.away;
+
+    const homeR = seedRank.has(homeSeed) ? seedRank.get(homeSeed) : Number.POSITIVE_INFINITY;
+    const awayR = seedRank.has(awaySeed) ? seedRank.get(awaySeed) : Number.POSITIVE_INFINITY;
+
+    let homeWins;
+    if (homeR !== awayR) {
+      homeWins = homeR < awayR;
+    } else {
+      // fallback deterministisk
+      homeWins = String(homeName).localeCompare(String(awayName), 'nb') <= 0;
+    }
+
+    const win = homeWins ? homeName : awayName;
+    const lose = homeWins ? awayName : homeName;
+
+    winnerCache.set(matchNo, win);
+    loserCache.set(matchNo, lose);
+  };
+
+  const resolver = (seed) => {
+    const name = resolveName(seed);
+    const rank = getFifaRank(name);
+    return { name, rank };
+  };
+
+  return resolver;
 }

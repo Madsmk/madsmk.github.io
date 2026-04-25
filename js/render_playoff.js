@@ -2,10 +2,12 @@ import { resolveSeedToTeamName } from './logic.js';
 import { createPlayoffSeedResolver } from './logic.js';
 
 // js/render_playoff.js
-export function renderPlayoffTree(knockout, resolveTeamName = null) {
+
+export function renderPlayoffTree(knockout, formatSeed = null) {
   if (!knockout) return;
 
   const { r32, r16, qf, sf, fm } = knockout;
+
   const qs = (sel) => document.querySelector(sel);
 
   const containers = {
@@ -13,8 +15,7 @@ export function renderPlayoffTree(knockout, resolveTeamName = null) {
     r16: { top: qs('.sluttspillTreTable .round16 .top-half'), bot: qs('.sluttspillTreTable .round16 .bottom-half') },
     qf:  { top: qs('.sluttspillTreTable .quarterfinals .top-half'), bot: qs('.sluttspillTreTable .quarterfinals .bottom-half') },
     sf:  { top: qs('.sluttspillTreTable .semifinals .top-half'), bot: qs('.sluttspillTreTable .semifinals .bottom-half') },
-    final:{ top: qs('.sluttspillTreTable .final .top-half'), bot: qs('.sluttspillTreTable .final .bottom-half') },
-  };
+    final:{ top: qs('.sluttspillTreTable .final .top-half'), bot:
 
   Object.values(containers).forEach(r => {
     if (!r.top || !r.bot) return;
