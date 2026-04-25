@@ -8,6 +8,7 @@ import { teamMap, FIXTURES } from './data_2026.js';
 import { POINT_RULES, GROUPS, ADVANCEMENT_RULES } from './config.js';
 import { ANNEX_C } from './annex_c_2026.js';
 import { buildRoundOf32Matchups, buildRoundOf16Matchups, buildQuarterfinalMatchups, buildSemifinalMatchups, buildFinalMatchups } from './logic_playoff.js';
+import { renderPlayoffTree } from './render_playoff.js'
 
 let thirdPlaceManualOrder = null; // array med gruppe-bokstaver i ønsket rekkefølge
 
@@ -577,24 +578,14 @@ export function updateKnockoutRankingTable() {
 }
 
 export function updateKnockoutRankingAndTree() {
-  // 1️⃣ Oppdater sluttspill-rangeringstabell
-  const rankedKnockoutTeams = updateKnockoutRankingTable();
+  const ranked = updateKnockoutRankingTable();
+  if (!ranked || ranked.length === 0) return;
 
-  if (!rankedKnockoutTeams || rankedKnockoutTeams.length === 0) {
-    console.warn('Sluttspill-rangering ikke klar ennå');
-    return;
-  }
-
-  // 2️⃣ Bygg sluttspillstruktur (Annex C + runder)
   const knockout = buildKnockoutFromCurrentState();
+  if (!knockout) return;
 
-  if (!knockout) {
-    console.warn('Sluttspillstruktur ikke klar ennå');
-    return;
-  }
-
-  // 3️⃣ Render sluttspill-treet
-  renderPlayoffTree(knockout);
+  // renderPlayoffTree må importeres fra render_playoff.js
+  renderPlayoffTree(knockout, knockoutManualOrder);
 }
 
 // Add event listeners for match ranking manipulation in the sluttspill table
@@ -935,79 +926,152 @@ function buildKnockoutFromCurrentState() {
   return { r32, r16, qf, sf, fm };
 }
 
-function renderPlayoffTree(knockout) {
-  if (!knockout) return;
+export function resolveSeedToTeamName(seed) {
+  if (!seed) return '';
 
-  const { r32, r16, qf, sf, fm } = knockout;
+  // Eks: '1A', '2C', '3E'
+  const match = seed.match(/^([123])([A-L])$/);
+  if (match) {
+    const position = Number(match[1]); // 1 | 2 | 3
+    const group = match[2];
+    return groups[group]?.teams?.[position - 1] ?? seed;
+  }
 
-  const qs = (sel) => document.querySelector(sel);
+  // Eks: 'W79' / 'L101' – foreløpig vis seed (kan utvides senere)
+  return seed;
+}
 
-  const containers = {
-    r32: {
-      top: qs('.sluttspillTreTable .round32 .top-half'),
-      bot: qs('.sluttspillTreTable .round32 .bottom-half'),
-    },
-    r16: {
-      top: qs('.sluttspillTreTable .round16 .top-half'),
-      bot: qs('.sluttspillTreTable .round16 .bottom-half'),
-    },
-    qf: {
-      top: qs('.sluttspillTreTable .quarterfinals .top-half'),
-      bot: qs('.sluttspillTreTable .quarterfinals .bottom-half'),
-    },
-    sf: {
-      top: qs('.sluttspillTreTable .semifinals .top-half'),
-      bot: qs('.sluttspillTreTable .semifinals .bottom-half'),
-    },
-    final: {
-      top: qs('.sluttspillTreTable .final .top-half'),
-      bot: qs('.sluttspillTreTable .final .bottom-half'),
-    },
-  };
+// ---- Seed resolving for playoff rendering ----
 
-  Object.values(containers).forEach(r => {
-    if (!r.top || !r.bot) return;
-    r.top.innerHTML = '';
-    r.bot.innerHTML = '';
+function buildRankMapFromKnockoutOrder(knockoutManualOrder) {
+  // rank 0 = best, 1 = next, ...
+  const rank = new Map();
+  (knockoutManualOrder ?? []).forEach((seed, idx) => rank.set(seed, idx));
+  return rank;
+}
+
+function buildSeedToTeamNameMap() {
+  // resolves 1A/2A/3A → actual team names using groups
+  const map = new Map();
+
+  GROUPS.forEach(g => {
+    const t = groups[g]?.teams ?? [];
+    if (t[0]) map.set(`1${g}`, t[0]);
+    if (t[1]) map.set(`2${g}`, t[1]);
+    if (t[2]) map.set(`3${g}`, t[2]); // NOTE: third place team name (after ranking table ordering)
   });
 
-  const renderMatch = (el, match, label) => {
-    el.innerHTML += `
-      <div class="match" data-match="${match.matchNo}">
-        <div class="match-label">${label}</div>
-        <div class="team home">${match.home}</div>
-        <div class="team away">${match.away}</div>
-      </div>
-    `;
+  return map;
+}
+
+function flattenAllMatches(knockout) {
+  const all = [];
+  if (!knockout) return all;
+  all.push(...(knockout.r32 ?? []));
+  all.push(...(knockout.r16 ?? []));
+  all.push(...(knockout.qf ?? []));
+  all.push(...(knockout.sf ?? []));
+  if (knockout.fm?.thirdPlace) all.push(knockout.fm.thirdPlace);
+  if (knockout.fm?.final) all.push(knockout.fm.final);
+  return all;
+}
+
+function buildMatchIndex(knockout) {
+  const idx = new Map(); // matchNo -> match object
+  flattenAllMatches(knockout).forEach(m => idx.set(m.matchNo, m));
+  return idx;
+}
+
+/**
+ * Create a resolver that can resolve:
+ *  - 1A/2B/3E → team name
+ *  - W79/L79 → team name (based on knockout ranking)
+ *
+ * @param {object} knockout - { r32, r16, qf, sf, fm } from buildKnockoutFromCurrentState()
+ * @param {string[]} knockoutManualOrder - array of seed strings in user-defined knockout ranking order
+ * @returns {(seed:string)=>string} resolver function
+ */
+export function createPlayoffSeedResolver(knockout, knockoutManualOrder) {
+  const seedToTeam = buildSeedToTeamNameMap();
+  const rankMap = buildRankMapFromKnockoutOrder(knockoutManualOrder);
+  const matchIndex = buildMatchIndex(knockout);
+
+  // Cache computed winners/losers
+  const winnerCache = new Map(); // matchNo -> teamName
+  const loserCache = new Map();  // matchNo -> teamName
+
+  // resolve a base seed ("1A") or a dynamic seed ("W79")
+  const resolve = (seed) => {
+    if (!seed) return '';
+
+    // Base seed like "1A", "2B", "3E"
+    if (/^[123][A-L]$/.test(seed)) {
+      return seedToTeam.get(seed) ?? seed; // fallback to seed if missing
+    }
+
+    // Winner/Loser seed like "W79" / "L101"
+    const wl = seed.match(/^([WL])(\\d{2,3})$/);
+    if (wl) {
+      const kind = wl[1];              // 'W' or 'L'
+      const matchNo = parseInt(wl[2], 10);
+
+      // compute match winner/loser if not cached
+      ensureMatchOutcome(matchNo);
+
+      return (kind === 'W')
+        ? (winnerCache.get(matchNo) ?? seed)
+        : (loserCache.get(matchNo) ?? seed);
+    }
+
+    // unknown format
+    return seed;
   };
 
-  const splitAndRender = (matches, container, label) => {
-    const half = Math.ceil(matches.length / 2);
-    matches.slice(0, half).forEach(m =>
-      renderMatch(container.top, m, `${label} ${m.matchNo}`)
-    );
-    matches.slice(half).forEach(m =>
-      renderMatch(container.bot, m, `${label} ${m.matchNo}`)
-    );
+  const ensureMatchOutcome = (matchNo) => {
+    if (winnerCache.has(matchNo) && loserCache.has(matchNo)) return;
+
+    const match = matchIndex.get(matchNo);
+    if (!match) {
+      // unknown match number
+      winnerCache.set(matchNo, `W${matchNo}`);
+      loserCache.set(matchNo, `L${matchNo}`);
+      return;
+    }
+
+    const homeName = resolve(match.home);
+    const awayName = resolve(match.away);
+
+    // Determine which seed corresponds to each side for ranking lookup:
+    // If match.home is already a seed ("1A"/"3E"/"W79"), use it.
+    // If it resolves to a name but seed wasn't present, still use match.home.
+    const homeSeed = match.home;
+    const awaySeed = match.away;
+
+    const homeRank = rankMap.has(homeSeed) ? rankMap.get(homeSeed) : Number.POSITIVE_INFINITY;
+    const awayRank = rankMap.has(awaySeed) ? rankMap.get(awaySeed) : Number.POSITIVE_INFINITY;
+
+    // If ranks exist: lower index = better.
+    // If rank missing for both: fallback alphabetical by name to keep deterministic.
+    let homeWins;
+    if (homeRank !== awayRank) {
+      homeWins = homeRank < awayRank;
+    } else {
+      homeWins = String(homeName).localeCompare(String(awayName), 'nb') <= 0;
+    }
+
+    const winner = homeWins ? homeName : awayName;
+    const loser  = homeWins ? awayName : homeName;
+
+    winnerCache.set(matchNo, winner);
+    loserCache.set(matchNo, loser);
   };
 
-  splitAndRender(r32, containers.r32, 'R32');
-  splitAndRender(r16, containers.r16, 'R16');
-  splitAndRender(qf,  containers.qf,  'QF');
-  splitAndRender(sf,  containers.sf,  'SF');
-
-  renderMatch(containers.final.top, fm.final, 'Finale');
-  renderMatch(containers.final.bot, fm.thirdPlace, 'Bronsefinale');
+  return resolve;
 }
 
     // Generate the initial playoff tree
 function generatePlayoffTree() {
-    const knockout = buildKnockoutFromCurrentState();
-
-    if (!knockout) {
-        // Sluttspill er ikke klart ennå
-        return;
-    }
-
-    renderPlayoffTree(knockout);
+  const knockout = buildKnockoutFromCurrentState();
+  if (!knockout) return;
+  renderPlayoffTree(knockout);
 }

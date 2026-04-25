@@ -6,7 +6,7 @@ import {
   updatePoints,
   updateRankingTable,
   updateThirdPlacedTeamsRanking,
-  populateSluttspillTable,
+  updateKnockoutRankingAndTree;
   groups
 } from './logic.js';
 import { initSubmit } from './submit.js';
@@ -62,5 +62,5 @@ function updateAll() {
     updateRankingTable(group);
   });
   updateThirdPlacedTeamsRanking();
-  populateSluttspillTable();
+  updateKnockoutRankingAndTree();
 }
