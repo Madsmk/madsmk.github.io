@@ -11,6 +11,7 @@ import { buildRoundOf32Matchups, buildRoundOf16Matchups, buildQuarterfinalMatchu
 import { renderPlayoffTree } from './render_playoff.js'
 
 let thirdPlaceManualOrder = null; // array med gruppe-bokstaver i ønsket rekkefølge
+let knockoutManualOrder = null;
 
 export function getTeamName(teamID) {
     return teamMap?.[teamID]?.name ?? '';
