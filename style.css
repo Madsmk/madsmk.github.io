@@ -169,29 +169,38 @@ nav ul li a:hover {
     text-align: center;
 }
 
-/* Right-aligning positive values */
-.cell.poeng-h[data-value]:not([data-value^="-"])::before,
-.cell.poeng-u[data-value]:not([data-value^="-"])::before,
-.cell.poeng-b[data-value]:not([data-value^="-"])::before,
-.cell.poeng-bp[data-value]:not([data-value^="-"])::before {
-    content: attr(data-value);
-    color: #008000; /* Dark green color for positive values */
-}
-
-/* Right-aligning negative values */
-.cell.poeng-h[data-value^="-"]::before,
-.cell.poeng-u[data-value^="-"]::before,
-.cell.poeng-b[data-value^="-"]::before,
-.cell.poeng-bp[data-value^="-"]::before {
-    content: attr(data-value);
-    color: #800000; /* Dark red color for negative values */
-}
-
 .cell.poeng-h,
 .cell.poeng-u,
 .cell.poeng-b,
 .cell.poeng-bp {
   position: relative;
+}
+
+/* Selve tallet */
+.cell.poeng-h::after,
+.cell.poeng-u::after,
+.cell.poeng-b::after,
+.cell.poeng-bp::after {
+  content: attr(data-value);
+  display: inline-block;
+  font-weight: 600;
+  transition: transform 0.15s ease;
+}
+
+/* Positive verdier */
+.cell.poeng-h[data-value]:not([data-value^="-"])::after,
+.cell.poeng-u[data-value]:not([data-value^="-"])::after,
+.cell.poeng-b[data-value]:not([data-value^="-"])::after,
+.cell.poeng-bp[data-value]:not([data-value^="-"])::after {
+  color: #008000; /* grønn */
+}
+
+/* Negative verdier */
+.cell.poeng-h[data-value^="-"]::after,
+.cell.poeng-u[data-value^="-"]::after,
+.cell.poeng-b[data-value^="-"]::after,
+.cell.poeng-bp[data-value^="-"]::after {
+  color: #800000; /* rød */
 }
 
 .rangering {
@@ -221,19 +230,6 @@ nav ul li a:hover {
 
 .rangOverskrift .poeng, .rad .poeng {
     width: 35%; /* Set a wider percentage width for the other columns */
-}
-
-/* Highlighting the first three ranks */
-.rangeringA .rad:nth-child(2), .rangeringB .rad:nth-child(2), .rangeringC .rad:nth-child(2), .rangeringD .rad:nth-child(2), .rangeringE .rad:nth-child(2), .rangeringF .rad:nth-child(2) {
-    background-color: #aaffaa; /* Light green for rank 1 */
-}
-
-.rangeringA .rad:nth-child(3), .rangeringB .rad:nth-child(3), .rangeringC .rad:nth-child(3), .rangeringD .rad:nth-child(3), .rangeringE .rad:nth-child(3), .rangeringF .rad:nth-child(3) {
-    background-color: #aaffaa; /* Light green for rank 2 */
-}
-
-.rangeringA .rad:nth-child(4), .rangeringB .rad:nth-child(4), .rangeringC .rad:nth-child(4), .rangeringD .rad:nth-child(4), .rangeringE .rad:nth-child(4), .rangeringF .rad:nth-child(4) {
-    background-color: #bddbfa; /* Light blue for rank 3 */
 }
     
 .containerThirdPlaceRanking {
@@ -633,14 +629,6 @@ html, body, .sluttspillTreTable, .round16, .quarterfinals, .semifinals, .final {
     border-radius: 6px;
 }
 
-.cell.poeng-h::after,
-.cell.poeng-u::after,
-.cell.poeng-b::after,
-.cell.poeng-bp::after {
-    content: attr(data-value);
-    display: inline-block;
-    transition: transform 0.15s ease;
-}
 
 .tip-option,
 .double-option {
