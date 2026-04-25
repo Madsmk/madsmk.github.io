@@ -691,15 +691,6 @@ export function updateKnockoutRankingAndTree() {
 }
 // ---- Sluttspill: deltaker-rangering (lag -> rank) + resolve av W/L ----
 
-// 1) Base seed -> faktisk lag (1A/2B/3E)
-function baseSeedToTeamName(seed) {
-  const m = String(seed).match(/^([123])([A-L])$/);
-  if (!m) return null;
-  const pos = Number(m[1]);   // 1/2/3
-  const grp = m[2];           // A-L
-  return groups?.[grp]?.teams?.[pos - 1] ?? null;
-}
-
 // 3) Bygg map: lagNavn -> deltakerRank (1=best)
 function buildTeamRankMapFromKnockoutOrder(bestThirdGroups) {
   // knockoutManualOrder inneholder seeds i deltakerens rekkefølge
