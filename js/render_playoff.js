@@ -22,7 +22,7 @@ export function renderPlayoffTree(knockout, resolveTeamName = null) {
     r.bot.innerHTML = '';
   });
 
-  const nameOf = (seed) => (resolveTeamName ? resolveTeamName(seed) : seed);
+  const nameOf = (seed) => typeof resolveTeamName === 'function' ? resolveTeamName(seed) : seed;
 
   const renderMatch = (el, match, label) => {
     el.innerHTML += `
