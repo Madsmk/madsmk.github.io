@@ -199,12 +199,12 @@ function handleLinkClick(event, group) {
 }
 
 export function updateRankingTable(group) {
-  // Nullstill poeng
+  // 1) Nullstill poeng
   groups[group].teams.forEach(team => {
     groups[group].teamPoints[team] = 0;
   });
 
-  // Bruk fixtures (VM/EM-agnostisk)
+  // 2) Bruk fixtures (ikke hardkodet matches)
   const fixtures = FIXTURES[group] ?? [];
 
   fixtures.forEach(({ id, home, away }) => {
@@ -228,67 +228,70 @@ export function updateRankingTable(group) {
     if (awayChecked) groups[group].teamPoints[awayTeam] += 3 / checkboxCount;
   });
 
-  // Sorter
-  groups[group].teams.sort(
-    (a, b) => groups[group].teamPoints[b] - groups[group].teamPoints[a]
-  );
+  // 3) Sortér etter poeng (synkende)
+  groups[group].teams.sort((a, b) => groups[group].teamPoints[b] - groups[group].teamPoints[a]);
 
+  // 4) Finn riktig container (ny klasse-konvensjon)
   const rankingTable = document.querySelector(`.rangering-${group}`);
   if (!rankingTable) return;
 
+  // 5) Header inkl Flytt-kolonne
   rankingTable.innerHTML = `
     <div class="rangOverskrift">
-      <div class="cell">Plass</div>
-      <div class="cell">Land</div>
-      <div class="cell">Forventet poeng</div>
+      <div class="cell plass">Plass</div>
+      <div class="cell land">Land</div>
+      <div class="cell poeng">Forventet poeng</div>
+      <div class="cell flytt">Flytt</div>
     </div>
   `;
 
-  const isTie = (a, b) =>
-    Math.abs(groups[group].teamPoints[a] - groups[group].teamPoints[b]) < 1e-9;
+  // Helper: robust sammenligning av float
+  const isTie = (t1, t2) =>
+    Math.abs(groups[group].teamPoints[t1] - groups[group].teamPoints[t2]) < 1e-9;
 
+  // 6) Render rader
   groups[group].teams.forEach((team, index) => {
-    let actionsHTML = `${team}`;
+    const canUp = index > 0 && isTie(team, groups[group].teams[index - 1]);
+    const canDown = index < groups[group].teams.length - 1 && isTie(team, groups[group].teams[index + 1]);
 
-    if (index > 0 && isTie(team, groups[group].teams[index - 1])) {
-      actionsHTML += `
-        <button type="button"
-                class="opp"
-                data-index="${index}"
-                data-direction="opp">
-          (opp)
-        </button>`;
-    }
-
-    if (index < groups[group].teams.length - 1 &&
-        isTie(team, groups[group].teams[index + 1])) {
-      actionsHTML += `
-        <button type="button"
-                class="ned"
-                data-index="${index}"
-                data-direction="ned">
-          (ned)
-        </button>`;
-    }
+    const flyttHTML = `
+      <button type="button" class="move-up" data-index="${index}" ${canUp ? '' : 'disabled'}>(opp)</button>
+      <button type="button" class="move-down" data-index="${index}" ${canDown ? '' : 'disabled'}>(ned)</button>
+    `;
 
     rankingTable.innerHTML += `
       <div class="rad">
         <div class="cell plass">${index + 1}</div>
-        <div class="cell land">${actionsHTML}</div>
-        <div class="cell poeng">
-          ${groups[group].teamPoints[team].toFixed(1)}
-        </div>
+        <div class="cell land">${team}</div>
+        <div class="cell poeng">${groups[group].teamPoints[team].toFixed(1)}</div>
+        <div class="cell flytt">${flyttHTML}</div>
       </div>
     `;
   });
 
-  // ✅ Event binding (knapper – ikke lenker)
-  rankingTable.querySelectorAll('button.opp, button.ned')
-    .forEach(button => {
-      button.addEventListener('click', event => {
-        handleLinkClick(event, group);
-      });
+  // 7) Event binding (scoped til denne tabellen)
+  rankingTable.querySelectorAll('button.move-up, button.move-down').forEach(btn => {
+    btn.addEventListener('click', (event) => {
+      const b = event.currentTarget;
+      const index = parseInt(b.dataset.index, 10);
+      if (Number.isNaN(index)) return;
+
+      if (b.classList.contains('move-up') && index > 0) {
+        [groups[group].teams[index - 1], groups[group].teams[index]] =
+          [groups[group].teams[index], groups[group].teams[index - 1]];
+      }
+
+      if (b.classList.contains('move-down') && index < groups[group].teams.length - 1) {
+        [groups[group].teams[index + 1], groups[group].teams[index]] =
+          [groups[group].teams[index], groups[group].teams[index + 1]];
+      }
+
+      // Re-render + oppdater videre avhengigheter
+      updateRankingTable(group);
+      updateThirdPlacedTeamsRanking();
+      updateKnockoutRankingAndTree();
     });
+  });
 }
 
 // Function to get the third ranked team from a group
