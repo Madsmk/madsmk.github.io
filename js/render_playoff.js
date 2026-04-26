@@ -106,3 +106,65 @@ export function renderPlayoffTree(knockout, resolveName, pickWinnerSide) {
   renderMatch(containers.final.top, fm.final,      { round: 'final', indexInHalf: 0, nameOf, winnerSideOf });
   renderMatch(containers.final.bot, fm.thirdPlace, { round: 'final', indexInHalf: 0, nameOf, winnerSideOf });
 }
+
+export function drawBracketLines({ animate = false } = {}) {
+  const svg = document.getElementById('bracket-lines');
+  const table = document.querySelector('.sluttspillTreTable');
+  if (!svg || !table) return;
+
+  svg.innerHTML = '';
+
+  const tableRect = table.getBoundingClientRect();
+  svg.setAttribute('viewBox', `0 0 ${tableRect.width} ${tableRect.height}`);
+  svg.setAttribute('width', tableRect.width);
+  svg.setAttribute('height', tableRect.height);
+
+  const getCenter = (el) => {
+    const r = el.getBoundingClientRect();
+    return {
+      x: r.left - tableRect.left + r.width / 2,
+      y: r.top - tableRect.top + r.height / 2,
+    };
+  };
+
+  // Alle matcher som HAR data-from (dvs. kommer fra tidligere matcher)
+  const targets = table.querySelectorAll('.match[data-from]');
+
+  targets.forEach(target => {
+    const from = target.dataset.from.split(',').map(s => s.trim());
+    const targetCenter = getCenter(target);
+
+    from.forEach(srcNo => {
+      const src = table.querySelector(`.match[data-match="${srcNo}"]`);
+      if (!src) return;
+
+      const srcCenter = getCenter(src);
+
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.classList.add('bracket-line');
+
+      const d = `
+        M ${srcCenter.x} ${srcCenter.y}
+        C ${srcCenter.x + 40} ${srcCenter.y},
+          ${targetCenter.x - 40} ${targetCenter.y},
+          ${targetCenter.x} ${targetCenter.y}
+      `;
+      path.setAttribute('d', d);
+      path.setAttribute('stroke', '#b0b0b0');
+      path.setAttribute('stroke-width', '2');
+      path.setAttribute('fill', 'none');
+      path.setAttribute('stroke-linecap', 'round');
+
+      svg.appendChild(path);
+
+      if (animate) {
+        const len = path.getTotalLength();
+        path.style.strokeDasharray = `${len}`;
+        path.style.strokeDashoffset = `${len}`;
+        path.getBoundingClientRect(); // flush
+        path.style.transition = 'stroke-dashoffset 450ms ease';
+        path.style.strokeDashoffset = '0';
+      }
+    });
+  });
+}
