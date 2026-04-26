@@ -600,13 +600,6 @@ nav ul li a:hover {
   justify-content: space-between;
 }
 
-.top-half,
-.bottom-half {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
 .match {
   position: relative;
   padding: 8px 12px;
@@ -702,31 +695,12 @@ nav ul li a:hover {
   align-items: start !important;
 }
 
-/* Hver runde er en kolonne med top/bottom-half */
-.sluttspillTreTable .round32,
-.sluttspillTreTable .round16,
-.sluttspillTreTable .quarterfinals,
-.sluttspillTreTable .semifinals,
-.sluttspillTreTable .final{
-  display: flex !important;
-  flex-direction: column !important;
-  justify-content: space-between !important;
-}
-
 /* Plasser rundene i riktig kolonne */
 .sluttspillTreTable .round32      { grid-column: 1 / 2 !important; }
 .sluttspillTreTable .round16      { grid-column: 2 / 3 !important; }
 .sluttspillTreTable .quarterfinals{ grid-column: 3 / 4 !important; }
 .sluttspillTreTable .semifinals   { grid-column: 4 / 5 !important; }
 .sluttspillTreTable .final        { grid-column: 5 / 6 !important; }
-
-/* Top/bottom half: vertikale lister */
-.sluttspillTreTable .top-half,
-.sluttspillTreTable .bottom-half{
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 20px !important;   /* default (R32) */
-}
 
 /* Match-boksen (samme i alle runder) */
 .sluttspillTreTable .match{
@@ -802,16 +776,6 @@ nav ul li a:hover {
 .sluttspillTreTable .quarterfinals{ grid-column: 3 / 4; }
 .sluttspillTreTable .semifinals   { grid-column: 4 / 5; }
 .sluttspillTreTable .final        { grid-column: 5 / 6; }
-
-.sluttspillTreTable .round32,
-.sluttspillTreTable .round16,
-.sluttspillTreTable .quarterfinals,
-.sluttspillTreTable .semifinals,
-.sluttspillTreTable .final {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
 
 /* Kamp-boksen */
 .match {
@@ -895,5 +859,64 @@ nav ul li a:hover {
 /* Match må få lov å spenne over flere rader */
 .sluttspillTreTable .match{
   align-self: stretch;
+}
+
+/* ==============================
+   SLUTTSPILL – GRID-BASERT LAYOUT
+   ============================== */
+
+.sluttspillTreTable {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(180px, 1fr));
+  grid-template-rows: repeat(32, 24px); /* basisrad */
+  column-gap: 40px;
+  align-items: start;
+  position: relative;
+}
+
+/* Én kolonne per runde */
+.sluttspillTreTable .round32       { grid-column: 1; }
+.sluttspillTreTable .round16       { grid-column: 2; }
+.sluttspillTreTable .quarterfinals { grid-column: 3; }
+.sluttspillTreTable .semifinals    { grid-column: 4; }
+.sluttspillTreTable .final         { grid-column: 5; }
+
+/* Halvdeler MÅ være grid (IKKE flex) */
+.sluttspillTreTable .top-half,
+.sluttspillTreTable .bottom-half {
+  display: grid;
+  grid-auto-rows: 24px;
+  row-gap: 0;
+  position: relative;
+}
+
+/* Match-boks */
+.sluttspillTreTable .match {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 10px 12px;
+  border: 1px solid #cfcfcf;
+  border-radius: 10px;
+  background: #fff;
+  min-height: 56px;
+}
+
+/* Team */
+.sluttspillTreTable .team {
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+/* Winner / loser */
+.sluttspillTreTable .team.winner {
+  font-weight: 800;
+  background: #e6f4ea;
+  border-left: 4px solid #2da44e;
+  padding-left: 8px;
+}
+
+.sluttspillTreTable .team.loser {
+  color: #999;
 }
 
