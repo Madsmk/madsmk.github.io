@@ -581,6 +581,8 @@ export function updateKnockoutRankingTable() {
   return ordered;
 }
 
+
+
 // -----------------------------
 // Sluttspill: seed -> lag + deltaker-rang (#)
 // -----------------------------
@@ -588,10 +590,18 @@ export function updateKnockoutRankingTable() {
 function baseSeedToTeamName(seed) {
   const m = String(seed).match(/^([123])([A-L])$/);
   if (!m) return null;
-  const pos = Number(m[1]);  // 1/2/3
-  const grp = m[2];          // A-L
+  const pos = Number(m[1]); // 1/2/3
+  const grp = m[2];         // A-L
   return groups?.[grp]?.teams?.[pos - 1] ?? null;
 }
+
+
+function buildRankMap(knockoutManualOrder) {
+  const map = new Map();
+  (knockoutManualOrder ?? []).forEach((seed, i) => map.set(seed, i)); // lavest index = best
+  return map;
+}
+
 
 function buildMatchIndexFromKnockout(knockout) {
   const idx = new Map();
@@ -675,20 +685,17 @@ function createParticipantFormatSeed(knockout, orderedKnockoutRanking) {
 }
 
 export function updateKnockoutRankingAndTree() {
-  // 1) Oppdater tabell og få deltakerens sluttspillrangering (ordered)
-  const ordered = updateKnockoutRankingTable();
-  if (!ordered || ordered.length === 0) return;
+  const ranked = updateKnockoutRankingTable();
+  if (!ranked || ranked.length === 0) return;
 
-  // 2) Bygg bracket (R32..Final)
   const knockout = buildKnockoutFromCurrentState();
   if (!knockout) return;
 
-  // 3) Lag formatter basert på deltakerens rangering
-  const formatSeed = createParticipantFormatSeed(knockout, ordered);
+  const { resolveName, pickWinnerSide } = createPlayoffResolvers(knockout, knockoutManualOrder);
 
-  // 4) Render treet med "Lag (#rank)"
-  renderPlayoffTree(knockout, formatSeed);
+  renderPlayoffTree(knockout, resolveName, pickWinnerSide);
 }
+
 // ---- Sluttspill: deltaker-rangering (lag -> rank) + resolve av W/L ----
 
 // 3) Bygg map: lagNavn -> deltakerRank (1=best)
@@ -1109,7 +1116,6 @@ function seedToTeamName_base(seed) {
 
 function flattenMatches(knockout) {
   const all = [];
-  if (!knockout) return all;
   all.push(...(knockout.r32 ?? []));
   all.push(...(knockout.r16 ?? []));
   all.push(...(knockout.qf ?? []));
@@ -1118,6 +1124,76 @@ function flattenMatches(knockout) {
   if (knockout.fm?.final) all.push(knockout.fm.final);
   return all;
 }
+
+
+export function createPlayoffResolvers(knockout, knockoutManualOrder) {
+  const rankMap = buildRankMap(knockoutManualOrder);
+  const matchIndex = new Map(flattenMatches(knockout).map(m => [m.matchNo, m]));
+
+  const winnerSeedCache = new Map(); // matchNo -> base seed (1A/2B/3E)
+  const loserSeedCache  = new Map();
+
+  const resolveBaseSeed = (seed) => {
+    const s = String(seed);
+
+    // 1A/2B/3E
+    if (/^[123][A-L]$/.test(s)) return s;
+
+    // W79 / L101
+    const wl = s.match(/^([WL])(\\d{2,3})$/);
+    if (!wl) return s;
+
+    const kind = wl[1];
+    const matchNo = parseInt(wl[2], 10);
+
+    ensureOutcome(matchNo);
+
+    return kind === 'W'
+      ? (winnerSeedCache.get(matchNo) ?? s)
+      : (loserSeedCache.get(matchNo) ?? s);
+  };
+
+  const ensureOutcome = (matchNo) => {
+    if (winnerSeedCache.has(matchNo) && loserSeedCache.has(matchNo)) return;
+
+    const match = matchIndex.get(matchNo);
+    if (!match) {
+      winnerSeedCache.set(matchNo, `W${matchNo}`);
+      loserSeedCache.set(matchNo, `L${matchNo}`);
+      return;
+    }
+
+    const homeBase = resolveBaseSeed(match.home);
+    const awayBase = resolveBaseSeed(match.away);
+
+    const homeRank = rankMap.has(homeBase) ? rankMap.get(homeBase) : Number.POSITIVE_INFINITY;
+    const awayRank = rankMap.has(awayBase) ? rankMap.get(awayBase) : Number.POSITIVE_INFINITY;
+
+    // lavest rank-index vinner
+    const homeWins = homeRank <= awayRank;
+
+    winnerSeedCache.set(matchNo, homeWins ? homeBase : awayBase);
+    loserSeedCache.set(matchNo,  homeWins ? awayBase : homeBase);
+  };
+
+  const resolveName = (seed) => {
+    const base = resolveBaseSeed(seed);
+    return baseSeedToTeamName(base) ?? base; // fallback til seed hvis ukjent
+  };
+
+  const pickWinnerSide = (homeSeed, awaySeed) => {
+    const homeBase = resolveBaseSeed(homeSeed);
+    const awayBase = resolveBaseSeed(awaySeed);
+
+    const homeRank = rankMap.has(homeBase) ? rankMap.get(homeBase) : Number.POSITIVE_INFINITY;
+    const awayRank = rankMap.has(awayBase) ? rankMap.get(awayBase) : Number.POSITIVE_INFINITY;
+
+    return homeRank <= awayRank ? 'home' : 'away';
+  };
+
+  return { resolveName, pickWinnerSide };
+}
+
 
 function buildMatchIndex(knockout) {
   const idx = new Map();
