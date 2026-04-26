@@ -588,6 +588,7 @@ nav ul li a:hover {
 .sluttspillTreTable {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(32, 1fr); /* basis: R32 */
   column-gap: 40px;
   align-items: stretch;
   margin-top: 20px;
@@ -640,37 +641,9 @@ nav ul li a:hover {
   background: #999;
 }
 
-/* R32: tettest */
-.round32 .match {
-  margin: 12px 0;
-}
-
-/* R16: midtstilte */
-.round16 .match {
-  margin: 36px 0;
-}
-
-/* QF */
-.quarterfinals .match {
-  margin: 72px 0;
-}
-
-/* SF */
-.semifinals .match {
-  margin: 144px 0;
-}
 
 .final {
   justify-content: center;
-}
-
-.final .top-half {
-  gap: 48px;
-}
-
-.final .bottom-half {
-  margin-top: 40px;
-  opacity: 0.85;
 }
 
 .team.winner {
@@ -783,56 +756,6 @@ nav ul li a:hover {
   line-height: 1.25 !important;
 }
 
-/* ----------------------------
-   Vertikal “innruting”:
-   Øk avstanden i senere runder,
-   og legg på litt topp-margin slik at 2→1 samler seg visuelt.
-   ---------------------------- */
-
-/* R16: 4 kamper top + 4 kamper bot */
-.sluttspillTreTable .round16 .top-half,
-.sluttspillTreTable .round16 .bottom-half{
-  gap: 64px !important;
-}
-.sluttspillTreTable .round16 .top-half{
-  margin-top: 28px !important;
-}
-
-/* QF: 2 kamper top + 2 kamper bot */
-.sluttspillTreTable .quarterfinals .top-half,
-.sluttspillTreTable .quarterfinals .bottom-half{
-  gap: 140px !important;
-}
-.sluttspillTreTable .quarterfinals .top-half{
-  margin-top: 78px !important;
-}
-
-/* SF: 1 kamp top + 1 kamp bot */
-.sluttspillTreTable .semifinals .top-half,
-.sluttspillTreTable .semifinals .bottom-half{
-  gap: 260px !important;
-}
-.sluttspillTreTable .semifinals .top-half{
-  margin-top: 150px !important;
-}
-
-/* Final kolonne: final øverst, bronse nederst */
-.sluttspillTreTable .final .top-half{
-  margin-top: 210px !important;
-  gap: 0 !important;
-}
-.sluttspillTreTable .final .bottom-half{
-  margin-top: 60px !important;
-  opacity: 0.9 !important;
-  gap: 0 !important;
-}
-
-@media (max-width: 768px) {
-  .containerSluttspill {
-    flex-direction: column;
-  }
-}
-
 .containerSluttspillTre {
   max-width: 1100px;
   width: 100%;
@@ -859,19 +782,6 @@ nav ul li a:hover {
   color: transparent;
 }
 
-/* (Valgfritt, men nyttig) Horisontal “pil” mot neste runde */
-.sluttspillTreTable .round32 .match::after,
-.sluttspillTreTable .round16 .match::after,
-.sluttspillTreTable .quarterfinals .match::after,
-.sluttspillTreTable .semifinals .match::after{
-  content: "" !important;
-  position: absolute !important;
-  right: -40px !important;
-  top: 50% !important;
-  width: 40px !important;
-  height: 1px !important;
-  background: #b0b0b0 !important;
-}
 
 /* ================================
    SLUTTSPILL – HOVEDSTRUKTUR
@@ -903,14 +813,6 @@ nav ul li a:hover {
   justify-content: space-between;
 }
 
-/* Top / bottom-halves */
-.top-half,
-.bottom-half {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
 /* Kamp-boksen */
 .match {
   position: relative;
@@ -930,42 +832,6 @@ nav ul li a:hover {
 .team {
   font-size: 14px;
   line-height: 1.25;
-}
-
-/* R16 */
-.round16 .top-half,
-.round16 .bottom-half {
-  gap: 64px;
-}
-.round16 .top-half {
-  margin-top: 28px;
-}
-
-/* QF */
-.quarterfinals .top-half,
-.quarterfinals .bottom-half {
-  gap: 140px;
-}
-.quarterfinals .top-half {
-  margin-top: 78px;
-}
-
-/* SF */
-.semifinals .top-half,
-.semifinals .bottom-half {
-  gap: 260px;
-}
-.semifinals .top-half {
-  margin-top: 150px;
-}
-
-/* Final */
-.final .top-half {
-  margin-top: 220px;
-}
-.final .bottom-half {
-  margin-top: 60px;
-  opacity: 0.85;
 }
 
 /* Winner/loser i sluttspilltre */
@@ -991,20 +857,6 @@ nav ul li a:hover {
   padding: 10px 12px;
 }
 
-/* Horisontale linjer til neste runde (enkel, robust) */
-.sluttspillTreTable .round32 .match::after,
-.sluttspillTreTable .round16 .match::after,
-.sluttspillTreTable .quarterfinals .match::after,
-.sluttspillTreTable .semifinals .match::after{
-  content: "";
-  position: absolute;
-  right: -40px;
-  top: 50%;
-  width: 40px;
-  height: 2px;
-  background: #b0b0b0;
-}
-
 .containerSluttspillTre {
   position: relative;
 }
@@ -1022,3 +874,26 @@ nav ul li a:hover {
   position: relative;
   z-index: 2;
 }
+
+#bracket-lines path.bracket-line {
+  stroke: #b0b0b0;
+  stroke-width: 2;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Hver half er et grid med fast antall rader */
+.sluttspillTreTable .top-half,
+.sluttspillTreTable .bottom-half{
+  display: grid;
+  grid-auto-rows: 24px; /* “grunnraden” – juster etter smak */
+  row-gap: 0;           /* vi styrer avstand via grid-row spans */
+  position: relative;
+}
+
+/* Match må få lov å spenne over flere rader */
+.sluttspillTreTable .match{
+  align-self: stretch;
+}
+
