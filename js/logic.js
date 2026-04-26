@@ -697,7 +697,7 @@ export function updateKnockoutRankingAndTree() {
   renderPlayoffTree(knockout, resolveName, pickWinnerSide);
 
   // 👇 TEGN SVG-LINJER ETTER RENDER
-  requestAnimationFrame(drawBracketLines);
+  requestAnimationFrame(() => drawBracketLines({ animate: true }));
 }
 
 // ---- Sluttspill: deltaker-rangering (lag -> rank) + resolve av W/L ----
