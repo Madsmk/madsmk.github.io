@@ -65,3 +65,56 @@ export function renderPlayoffTree(knockout, resolveName, pickWinnerSide) {
   renderMatch(containers.final.top, fm.final);
   renderMatch(containers.final.bot, fm.thirdPlace);
 }
+
+export function drawBracketLines() {
+  const svg = document.getElementById('bracket-lines');
+  const table = document.querySelector('.sluttspillTreTable');
+
+  if (!svg || !table) return;
+
+  // Tøm gamle linjer
+  svg.innerHTML = '';
+
+  const tableRect = table.getBoundingClientRect();
+  svg.setAttribute('viewBox', `0 0 ${tableRect.width} ${tableRect.height}`);
+
+  const getCenter = (el) => {
+    const r = el.getBoundingClientRect();
+    return {
+      x: r.left - tableRect.left + r.width / 2,
+      y: r.top - tableRect.top + r.height / 2,
+    };
+  };
+
+  // Alle kamper som HAR data-from (altså ikke R32)
+  const matches = table.querySelectorAll('.match[data-from]');
+
+  matches.forEach(target => {
+    const from = target.dataset.from.split(',').map(n => n.trim());
+    const targetCenter = getCenter(target);
+
+    from.forEach(srcNo => {
+      const src = table.querySelector(`.match[data-match="${srcNo}"]`);
+      if (!src) return;
+
+      const srcCenter = getCenter(src);
+
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+
+      // Bezier-kurve (penere enn rette linjer)
+      const d = `
+        M ${srcCenter.x} ${srcCenter.y}
+        C ${srcCenter.x + 40} ${srcCenter.y},
+          ${targetCenter.x - 40} ${targetCenter.y},
+          ${targetCenter.x} ${targetCenter.y}
+      `;
+
+      path.setAttribute('d', d);
+      path.setAttribute('stroke', '#b0b0b0');
+      path.setAttribute('stroke-width', '2');
+      path.setAttribute('fill', 'none');
+
+      svg.appendChild(path);
+    });
+  });
+}

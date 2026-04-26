@@ -8,7 +8,7 @@ import { teamMap, FIXTURES } from './data_2026.js';
 import { POINT_RULES, GROUPS, ADVANCEMENT_RULES } from './config.js';
 import { ANNEX_C } from './annex_c_2026.js';
 import { buildRoundOf32Matchups, buildRoundOf16Matchups, buildQuarterfinalMatchups, buildSemifinalMatchups, buildFinalMatchups } from './logic_playoff.js';
-import { renderPlayoffTree } from './render_playoff.js'
+import { renderPlayoffTree, drawBracketLines } from './render_playoff.js'
 
 let thirdPlaceManualOrder = null; // array med gruppe-bokstaver i ønsket rekkefølge
 let knockoutManualOrder = null;
@@ -691,9 +691,13 @@ export function updateKnockoutRankingAndTree() {
   const knockout = buildKnockoutFromCurrentState();
   if (!knockout) return;
 
-  const { resolveName, pickWinnerSide } = createPlayoffResolvers(knockout, knockoutManualOrder);
+  const { resolveName, pickWinnerSide } =
+    createPlayoffResolvers(knockout, knockoutManualOrder);
 
   renderPlayoffTree(knockout, resolveName, pickWinnerSide);
+
+  // 👇 TEGN SVG-LINJER ETTER RENDER
+  requestAnimationFrame(drawBracketLines);
 }
 
 // ---- Sluttspill: deltaker-rangering (lag -> rank) + resolve av W/L ----
