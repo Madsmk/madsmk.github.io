@@ -1018,3 +1018,40 @@ nav ul li a:hover {
   margin-top: 60px;
   opacity: 0.85;
 }
+
+/* Winner/loser i sluttspilltre */
+.sluttspillTreTable .team.winner{
+  font-weight: 800;
+  color: #1f6f3d;
+  background: #e6f4ea;
+  border-left: 4px solid #2da44e;
+  padding-left: 8px;
+  border-radius: 4px;
+}
+
+.sluttspillTreTable .team.loser{
+  color: #999;
+  opacity: 0.85;
+}
+
+/* Match-boks litt ryddigere */
+.sluttspillTreTable .match{
+  background: #fff;
+  border: 1px solid #cfcfcf;
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+/* Horisontale linjer til neste runde (enkel, robust) */
+.sluttspillTreTable .round32 .match::after,
+.sluttspillTreTable .round16 .match::after,
+.sluttspillTreTable .quarterfinals .match::after,
+.sluttspillTreTable .semifinals .match::after{
+  content: "";
+  position: absolute;
+  right: -40px;
+  top: 50%;
+  width: 40px;
+  height: 2px;
+  background: #b0b0b0;
+}
