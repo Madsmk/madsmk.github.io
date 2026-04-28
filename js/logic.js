@@ -633,7 +633,7 @@ function createParticipantFormatSeed(knockout, orderedKnockoutRanking) {
     if (base) return base;
 
     // Winner/Loser seeds: W73 / L101
-    const wl = String(seed).match(/^([WL])(\\d{2,3})$/);
+    const wl = String(seed).match(/^([WL])(\d{2,3})$/);
     if (wl) {
       const kind = wl[1];
       const matchNo = parseInt(wl[2], 10);
@@ -715,7 +715,7 @@ function createParticipantKnockoutResolvers(knockout, ordered) {
     if (baseTeam) return baseTeam;
 
     // W/L seeds
-    const wl = String(seed).match(/^([WL])(\\d{2,3})$/);
+    const wl = String(seed).match(/^([WL])(\d{2,3})$/);
     if (!wl) return String(seed);
 
     const kind = wl[1];
@@ -1228,7 +1228,7 @@ export function createPlayoffResolvers(knockout, knockoutManualOrder) {
     if (/^[123][A-L]$/.test(s)) return s;
 
     // W79 / L101
-    const wl = s.match(/^([WL])(\\d{2,3})$/);
+    const wl = s.match(/^([WL])(\d{2,3})$/);
     if (!wl) return s;
 
     const kind = wl[1];
@@ -1315,7 +1315,7 @@ function createSeedResolver(knockout, knockoutManualOrder) {
     if (base) return base;
 
     // W/L seed
-    const wl = String(seed).match(/^([WL])(\\d{2,3})$/);
+    const wl = String(seed).match(/^([WL])(\d{2,3})$/);
     if (wl) {
       const kind = wl[1];
       const matchNo = parseInt(wl[2], 10);
