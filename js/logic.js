@@ -757,7 +757,12 @@ function createParticipantKnockoutResolvers(knockout, ordered) {
   const formatSeed = (seed) => {
     const team = resolveTeam(seed);
     const rank = teamRank.get(team);
-    return rank ? `${team} (#${rank})` : team;
+    //return rank ? `${team} (#${rank})` : team;
+    if (!rank) {
+      console.warn('Mangler rank for', team, 'seed=', seed);
+      return team;
+    }
+    return `${team} (#${rank})`;
   };
 
   return { formatSeed, pickWinnerSide };
