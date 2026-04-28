@@ -638,7 +638,12 @@ nav ul li a:hover {
 /* Selve sluttspill-tabellen */
 .sluttspillTreTable {
   display: grid;
-  grid-template-columns: repeat(5, minmax(180px, 1fr));
+  grid-template-columns:
+    minmax(260px, 1fr)
+    minmax(260px, 1fr)
+    minmax(260px, 1fr)
+    minmax(260px, 1fr)
+    minmax(260px, 1fr);
   column-gap: 40px;
   width: 100%;
   height: 1800px;              /* juster etter smak */
@@ -692,4 +697,26 @@ nav ul li a:hover {
 /* Litt luft mellom kampene horisontalt (valgfritt) */
 .sluttspillTreTable .round:not(:last-child) {
   padding-right: 10px;
+}
+
+.sluttspillTreTable .team-name {
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+.sluttspillTreTable .team-rank {
+  font-size: 11px;
+  color: #666;
+  margin-top: 2px;
+}
+
+/* Felles høyde for hele sluttspilltreet */
+.sluttspillTreTable {
+  height: 1600px;          /* juster 800–1000px etter smak */
+  align-items: stretch;
+}
+
+/* Alle runder må fordele samme høyde */
+.sluttspillTreTable .round {
+  height: 100%;
 }
