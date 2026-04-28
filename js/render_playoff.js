@@ -1,5 +1,3 @@
-window.addEventListener('resize', () => drawBracketLines({ animate: false }));
-
 export function renderPlayoffTree(knockout, resolveName, pickWinnerSide) {
   if (!knockout) return;
 
