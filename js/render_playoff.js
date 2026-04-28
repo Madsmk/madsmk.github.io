@@ -55,8 +55,17 @@ export function renderMatch(containerEl, match, indexInRound, roundKey, nameOf, 
   const homeSeed = match.home;
   const awaySeed = match.away;
 
-  const homeName = nameOf(homeSeed);
-  const awayName = nameOf(awaySeed);
+  function splitNameRank(text) {
+    const m = /^(.*?)(?:\s*\(#(\d+)\))?$/.exec(text);
+    return {
+      name: m?.[1] ?? text,
+      rank: m?.[2] ?? null
+    };
+  }
+
+  const home = splitNameRank(nameOf(homeSeed));
+  const away = splitNameRank(nameOf(awaySeed));
+
 
   const winSide = winnerSideOf(homeSeed, awaySeed); // 'home'|'away'|null
   const homeClass = winSide ? (winSide === 'home' ? 'winner' : 'loser') : '';
@@ -67,10 +76,15 @@ export function renderMatch(containerEl, match, indexInRound, roundKey, nameOf, 
   containerEl.insertAdjacentHTML(
     'beforeend',
     `
-      <div class="match" data-round="${roundKey}" data-match="${match.matchNo}"${fromAttr}
-           style="grid-row: ${indexInRound + 1};">
-        <div class="team home ${homeClass}" title="${homeSeed}">${homeName}</div>
-        <div class="team away ${awayClass}" title="${awaySeed}">${awayName}</div>
+      <div class="match" data-match="${match.matchNo}">
+        <div class="team home ${homeClass}">
+          <div class="team-name">${home.name}</div>
+          ${home.rank ? `<div class="team-rank">#${home.rank}</div>` : ''}
+        </div>
+        <div class="team away ${awayClass}">
+          <div class="team-name">${away.name}</div>
+          ${away.rank ? `<div class="team-rank">#${away.rank}</div>` : ''}
+        </div>
       </div>
     `
   );
