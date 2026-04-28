@@ -641,6 +641,7 @@ nav ul li a:hover {
   grid-template-columns: repeat(5, minmax(180px, 1fr));
   column-gap: 40px;
   width: 100%;
+  height: 800px;              /* juster etter smak */
   align-items: stretch;
 }
 
@@ -648,6 +649,7 @@ nav ul li a:hover {
 .sluttspillTreTable .round {
   display: grid;              /* grid per runde */
   align-items: stretch;       /* rutene fyller høyden */
+  height: 100%;
 }
 
 /* Plassering av rundene */
