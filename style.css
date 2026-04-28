@@ -585,84 +585,6 @@ nav ul li a:hover {
   text-decoration: underline;
 }
 
-.sluttspillTreTable {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  grid-template-rows: repeat(32, 1fr); /* basis: R32 */
-  column-gap: 40px;
-  align-items: stretch;
-  margin-top: 20px;
-}
-
-.sluttspillTreTable > div {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.match {
-  position: relative;
-  padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  background: #fff;
-  min-height: 52px;
-}
-
-.match-label {
-  font-size: 10px;
-  color: #666;
-  margin-bottom: 4px;
-}
-
-.team {
-  font-size: 14px;
-  line-height: 1.3;
-}
-
-/* Alle matcher unntatt i siste kolonne */
-.round32 .match::after,
-.round16 .match::after,
-.quarterfinals .match::after,
-.semifinals .match::after {
-  content: "";
-  position: absolute;
-  right: -40px;
-  top: 50%;
-  width: 40px;
-  height: 1px;
-  background: #999;
-}
-
-
-.final {
-  justify-content: center;
-}
-
-.team.winner {
-  font-weight: 700;
-  color: #1b7f2a; /* mørk grønn */
-}
-
-.team.loser {
-  color: #888;
-}
-
-
-
-.team.winner {
-  font-weight: 700;
-  color: #1f6f3d;
-  background: #e6f4ea;
-  border-left: 4px solid #2da44e;
-  padding-left: 6px;
-  border-radius: 3px;
-}
-
-.team.loser {
-  color: #999;
-}
-
 .match:has(.winner) {
   opacity: 0.9;
 }
@@ -681,150 +603,6 @@ nav ul li a:hover {
   content: "🏆";
 }
 
-/* ============================
-   SLUTTSPILLTREET (VM 2026)
-   R32 | R16 | QF | SF | Final/Bronse
-   ============================ */
-
-/* 5 kolonner, én per runde */
-.sluttspillTreTable{
-  display: grid !important;
-  grid-template-columns: repeat(5, minmax(180px, 1fr)) !important;
-  column-gap: 40px !important;
-  width: 100% !important;
-  align-items: start !important;
-}
-
-/* Plasser rundene i riktig kolonne */
-.sluttspillTreTable .round32      { grid-column: 1 / 2 !important; }
-.sluttspillTreTable .round16      { grid-column: 2 / 3 !important; }
-.sluttspillTreTable .quarterfinals{ grid-column: 3 / 4 !important; }
-.sluttspillTreTable .semifinals   { grid-column: 4 / 5 !important; }
-.sluttspillTreTable .final        { grid-column: 5 / 6 !important; }
-
-/* Match-boksen (samme i alle runder) */
-.sluttspillTreTable .match{
-  position: relative !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: stretch !important;
-  justify-content: center !important;
-  padding: 10px 12px !important;
-  border: 1px solid #cfcfcf !important;
-  border-radius: 10px !important;
-  background: #fff !important;
-  min-height: 56px !important;
-  width: 100% !important;
-  margin: 0 !important;   /* viktig: ikke “dytte” layouten ut av sync */
-}
-
-.sluttspillTreTable .match-label{
-  font-size: 11px !important;
-  color: #777 !important;
-  margin-bottom: 6px !important;
-}
-
-.sluttspillTreTable .team{
-  margin: 2px 0 !important;
-  font-size: 14px !important;
-  line-height: 1.25 !important;
-}
-
-.containerSluttspillTre {
-  max-width: 1100px;
-  width: 100%;
-  background: #fff;
-  padding: 25px;
-  border-radius: 15px;
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.containerSluttspillTre .title {
-  font-size: 2.5em;
-  font-weight: bold;
-  text-align: center;
-  margin-bottom: 20px;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  background: linear-gradient(45deg, #ff6b6b, #f8e9a1);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-}
-
-
-/* ================================
-   SLUTTSPILL – HOVEDSTRUKTUR
-   R32 | R16 | QF | SF | FINAL
-   ================================ */
-
-.sluttspillTreTable {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(180px, 1fr));
-  column-gap: 40px;
-  width: 100%;
-  align-items: start;
-}
-
-/* Én kolonne per runde */
-.sluttspillTreTable .round32      { grid-column: 1 / 2; }
-.sluttspillTreTable .round16      { grid-column: 2 / 3; }
-.sluttspillTreTable .quarterfinals{ grid-column: 3 / 4; }
-.sluttspillTreTable .semifinals   { grid-column: 4 / 5; }
-.sluttspillTreTable .final        { grid-column: 5 / 6; }
-
-/* Kamp-boksen */
-.match {
-  position: relative;
-  padding: 10px 12px;
-  border: 1px solid #cfcfcf;
-  border-radius: 10px;
-  background: #fff;
-  min-height: 56px;
-}
-
-.match-label {
-  font-size: 11px;
-  color: #777;
-  margin-bottom: 6px;
-}
-
-.team {
-  font-size: 14px;
-  line-height: 1.25;
-}
-
-/* Winner/loser i sluttspilltre */
-.sluttspillTreTable .team.winner{
-  font-weight: 800;
-  color: #1f6f3d;
-  background: #e6f4ea;
-  border-left: 4px solid #2da44e;
-  padding-left: 8px;
-  border-radius: 4px;
-}
-
-.sluttspillTreTable .team.loser{
-  color: #999;
-  opacity: 0.85;
-}
-
-/* Match-boks litt ryddigere */
-.sluttspillTreTable .match{
-  background: #fff;
-  border: 1px solid #cfcfcf;
-  border-radius: 12px;
-  padding: 10px 12px;
-}
-
-.containerSluttspillTre {
-  position: relative;
-}
-
 #bracket-lines {
   position: absolute;
   inset: 0;
@@ -832,11 +610,6 @@ nav ul li a:hover {
   height: 100%;
   pointer-events: none;
   z-index: 1;
-}
-
-.sluttspillTreTable {
-  position: relative;
-  z-index: 2;
 }
 
 #bracket-lines path.bracket-line {
@@ -847,68 +620,62 @@ nav ul li a:hover {
   stroke-linejoin: round;
 }
 
-/* Hver half er et grid med fast antall rader */
-.sluttspillTreTable .top-half,
-.sluttspillTreTable .bottom-half{
-  display: grid;
-  grid-auto-rows: 24px; /* “grunnraden” – juster etter smak */
-  row-gap: 0;           /* vi styrer avstand via grid-row spans */
-  position: relative;
+
+/* =====================================================
+   SLUTTSPILL – TABELLBASERT GRID-LAYOUT (NY MODELL)
+   Uten top-half / bottom-half
+   ===================================================== */
+
+.containerSluttspillTre {
+  max-width: 1100px;
+  width: 100%;
+  background: #fff;
+  padding: 25px;
+  border-radius: 15px;
+  margin-top: 20px;
 }
 
-/* Match må få lov å spenne over flere rader */
-.sluttspillTreTable .match{
-  align-self: stretch;
-}
-
-/* ==============================
-   SLUTTSPILL – GRID-BASERT LAYOUT
-   ============================== */
-
+/* Selve sluttspill-tabellen */
 .sluttspillTreTable {
   display: grid;
   grid-template-columns: repeat(5, minmax(180px, 1fr));
-  grid-template-rows: repeat(32, 24px); /* basisrad */
   column-gap: 40px;
-  align-items: start;
-  position: relative;
+  width: 100%;
+  align-items: stretch;
 }
 
 /* Én kolonne per runde */
-.sluttspillTreTable .round32       { grid-column: 1; }
-.sluttspillTreTable .round16       { grid-column: 2; }
-.sluttspillTreTable .quarterfinals { grid-column: 3; }
-.sluttspillTreTable .semifinals    { grid-column: 4; }
-.sluttspillTreTable .final         { grid-column: 5; }
-
-/* Halvdeler MÅ være grid (IKKE flex) */
-.sluttspillTreTable .top-half,
-.sluttspillTreTable .bottom-half {
-  display: grid;
-  grid-auto-rows: 24px;
-  row-gap: 0;
-  position: relative;
+.sluttspillTreTable .round {
+  display: grid;              /* grid per runde */
+  align-items: stretch;       /* rutene fyller høyden */
 }
 
-/* Match-boks */
+/* Plassering av rundene */
+.sluttspillTreTable .round32        { grid-column: 1; }
+.sluttspillTreTable .round16        { grid-column: 2; }
+.sluttspillTreTable .quarterfinals  { grid-column: 3; }
+.sluttspillTreTable .semifinals     { grid-column: 4; }
+.sluttspillTreTable .final          { grid-column: 5; }
+
+/* Kampboks – sentrert i sin "tabellrute" */
 .sluttspillTreTable .match {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 10px 12px;
+  justify-self: stretch;
+  align-self: center;         /* ⭐ nøkkelen: sentrer i ruten */
+  background: #ffffff;
   border: 1px solid #cfcfcf;
   border-radius: 10px;
-  background: #fff;
+  padding: 10px 12px;
   min-height: 56px;
+  box-sizing: border-box;
 }
 
-/* Team */
+/* Laglinjer */
 .sluttspillTreTable .team {
   font-size: 14px;
   line-height: 1.25;
 }
 
-/* Winner / loser */
+/* Vinner / taper */
 .sluttspillTreTable .team.winner {
   font-weight: 800;
   background: #e6f4ea;
@@ -920,3 +687,7 @@ nav ul li a:hover {
   color: #999;
 }
 
+/* Litt luft mellom kampene horisontalt (valgfritt) */
+.sluttspillTreTable .round:not(:last-child) {
+  padding-right: 10px;
+}
