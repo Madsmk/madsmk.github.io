@@ -593,15 +593,6 @@ nav ul li a:hover {
   opacity: 0.85;
 }
 
-.final .match .team.winner {
-  background: #fff3cd;
-  border-left-color: #f4b400;
-  color: #7a5c00;
-}
-
-.final .match .winner::after {
-  content: "🏆";
-}
 
 #bracket-lines {
   position: absolute;
@@ -655,6 +646,7 @@ nav ul li a:hover {
   display: grid;              /* grid per runde */
   align-items: stretch;       /* rutene fyller høyden */
   height: 100%;
+  align-content: space-between; /* ✅ DENNE manglet */
 }
 
 /* Plassering av rundene */
@@ -718,5 +710,17 @@ nav ul li a:hover {
 
 /* Alle runder må fordele samme høyde */
 .sluttspillTreTable .round {
+  display: grid;  
   height: 100%;
+  align-content: space-between; /* ✅ DENNE manglet */
+}
+
+.final .match .team.winner {
+  background: #fff3cd;
+  border-left-color: #f4b400;
+  color: #7a5c00;
+}
+
+.final .match .winner::after {
+  content: "🏆";
 }
