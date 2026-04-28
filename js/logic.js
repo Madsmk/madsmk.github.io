@@ -587,21 +587,11 @@ export function updateKnockoutRankingTable() {
 // Sluttspill: seed -> lag + deltaker-rang (#)
 // -----------------------------
 
-function baseSeedToTeamName(seed) {
-  const m = String(seed).match(/^([123])([A-L])$/);
-  if (!m) return null;
-  const pos = Number(m[1]); // 1/2/3
-  const grp = m[2];         // A-L
-  return groups?.[grp]?.teams?.[pos - 1] ?? null;
-}
-
-
 function buildRankMap(knockoutManualOrder) {
   const map = new Map();
   (knockoutManualOrder ?? []).forEach((seed, i) => map.set(seed, i)); // lavest index = best
   return map;
 }
-
 
 function buildMatchIndexFromKnockout(knockout) {
   const idx = new Map();
@@ -684,20 +674,112 @@ function createParticipantFormatSeed(knockout, orderedKnockoutRanking) {
   };
 }
 
-export function updateKnockoutRankingAndTree() {
-  const ranked = updateKnockoutRankingTable();
-  if (!ranked || ranked.length === 0) return;
+// ---------- SLUTTSPILL: resolve seed -> (name, rank) basert på deltakerens ranking ----------
 
+// base seed: "1A"/"2B"/"3E" -> faktisk lag fra gruppetabellen
+function baseSeedToTeamName(seed) {
+  const m = String(seed).match(/^([123])([A-L])$/);
+  if (!m) return null;
+  const pos = Number(m[1]);  // 1/2/3
+  const grp = m[2];          // A-L
+  return groups?.[grp]?.teams?.[pos - 1] ?? null;
+}
+
+/**
+ * Lager:
+ *  - formatSeed(seed): "Lag (#rank)" (rank = deltakerens sluttspillrangering)
+ *  - pickWinnerSide(homeSeed, awaySeed): 'home'/'away' basert på lavest rank vinner
+ *
+ * @param {object} knockout - {r32,r16,qf,sf,fm}
+ * @param {Array<{seed:string, team:string}>} ordered - fra updateKnockoutRankingTable()
+ */
+function createParticipantKnockoutResolvers(knockout, ordered) {
+  const matchIndex = buildMatchIndex(knockout);
+
+  // teamName -> rank (1=best)
+  const teamRank = new Map(ordered.map((row, i) => [row.team, i + 1]));
+
+  // caching for W/L-resolve
+  const winCache = new Map();   // matchNo -> teamName
+  const loseCache = new Map();  // matchNo -> teamName
+
+  const big = Number.POSITIVE_INFINITY;
+  const getRank = (teamName) => teamRank.get(teamName) ?? big;
+
+  // resolve seed til faktisk teamName (inkl W/L)
+  const resolveTeam = (seed) => {
+    if (!seed) return '';
+
+    // base seeds 1A/2B/3E
+    const baseTeam = baseSeedToTeamName(seed);
+    if (baseTeam) return baseTeam;
+
+    // W/L seeds
+    const wl = String(seed).match(/^([WL])(\\d{2,3})$/);
+    if (!wl) return String(seed);
+
+    const kind = wl[1];
+    const matchNo = parseInt(wl[2], 10);
+
+    ensureOutcome(matchNo);
+
+    return kind === 'W'
+      ? (winCache.get(matchNo) ?? String(seed))
+      : (loseCache.get(matchNo) ?? String(seed));
+  };
+
+  const ensureOutcome = (matchNo) => {
+    if (winCache.has(matchNo) && loseCache.has(matchNo)) return;
+
+    const match = matchIndex.get(matchNo);
+    if (!match) {
+      winCache.set(matchNo, `W${matchNo}`);
+      loseCache.set(matchNo, `L${matchNo}`);
+      return;
+    }
+
+    const homeTeam = resolveTeam(match.home);
+    const awayTeam = resolveTeam(match.away);
+
+    // lavest rank vinner
+    const homeWins = getRank(homeTeam) <= getRank(awayTeam);
+
+    winCache.set(matchNo, homeWins ? homeTeam : awayTeam);
+    loseCache.set(matchNo, homeWins ? awayTeam : homeTeam);
+  };
+
+  const pickWinnerSide = (homeSeed, awaySeed) => {
+    const homeTeam = resolveTeam(homeSeed);
+    const awayTeam = resolveTeam(awaySeed);
+    return getRank(homeTeam) <= getRank(awayTeam) ? 'home' : 'away';
+  };
+
+  const formatSeed = (seed) => {
+    const team = resolveTeam(seed);
+    const rank = teamRank.get(team);
+    return rank ? `${team} (#${rank})` : team;
+  };
+
+  return { formatSeed, pickWinnerSide };
+}
+
+export function updateKnockoutRankingAndTree() {
+  // 1) Oppdater sluttspilltabellen og få deltakerens rekkefølge
+  const ordered = updateKnockoutRankingTable();
+  if (!ordered || ordered.length === 0) return;
+
+  // 2) Bygg sluttspill-bracket (seeds + from)
   const knockout = buildKnockoutFromCurrentState();
   if (!knockout) return;
 
-  const { resolveName, pickWinnerSide } =
-    createPlayoffResolvers(knockout, knockoutManualOrder);
+  // 3) Lag resolver som kan formatere W/L og vise (#rank)
+  const { formatSeed, pickWinnerSide } = createParticipantKnockoutResolvers(knockout, ordered);
 
-  renderPlayoffTree(knockout, resolveName, pickWinnerSide);
+  // 4) Render treet med lagnavn + deltaker-rank og riktig winner/loser
+  renderPlayoffTree(knockout, formatSeed, pickWinnerSide);
 
-  // 👇 TEGN SVG-LINJER ETTER RENDER
-  requestAnimationFrame(() => drawBracketLines({ animate: true }));
+  // (valgfritt) Hvis du tegner SVG-linjer:
+  // requestAnimationFrame(() => drawBracketLines({ animate: true }));
 }
 
 // ---- Sluttspill: deltaker-rangering (lag -> rank) + resolve av W/L ----
