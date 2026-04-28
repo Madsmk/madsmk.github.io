@@ -36,10 +36,16 @@ export function renderPlayoffTree(knockout, resolveName, pickWinnerSide) {
     });
   };
 
-  renderRound(r32, containers.r32, 'r32');
-  renderRound(r16, containers.r16, 'r16');
-  renderRound(qf,  containers.qf,  'qf');
-  renderRound(sf,  containers.sf,  'sf');
+  // r16, qf, sf, fm kommer fra knockout
+  const r32Ordered = orderByNextRound(r32, r16);  // R32 sorteres etter R16.from
+  const r16Ordered = orderByNextRound(r16, qf);   // R16 sorteres etter QF.from
+  const qfOrdered  = orderByNextRound(qf, sf);    // QF sorteres etter SF.from
+  const sfOrdered  = sf;                          // to matcher; rekkefølge ok
+
+  renderRound(r32Ordered, containers.r32, 'r32');
+  renderRound(r16Ordered, containers.r16, 'r16');
+  renderRound(qfOrdered,  containers.qf,  'qf');
+  renderRound(sfOrdered,  containers.sf,  'sf');
 
   // Final-kolonnen: 2 rader (finale + bronse)
   containers.final.style.gridTemplateRows = 'repeat(2, 1fr)';

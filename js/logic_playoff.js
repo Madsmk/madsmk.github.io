@@ -71,29 +71,23 @@ export function buildRoundOf32Matchups(bestThirdGroups, ANNEX_C) {
   ];
 }
 
-/**
- * Build Round of 16 matchups (R16) from Round of 32 matchups (R32).
- *
- * @param {Array<{matchNo:number}>} roundOf32Matchups
- * @returns {Array<{matchNo:number, home:string, away:string, from:number[]}>}
- */
 export function buildRoundOf16Matchups(roundOf32Matchups) {
   if (!Array.isArray(roundOf32Matchups)) {
-    throw new Error("roundOf32Matchups must be an array (output from buildRoundOf32Matchups).");
+    throw new Error("roundOf32Matchups must be an array.");
   }
 
   const matchNos = new Set(roundOf32Matchups.map(m => m.matchNo));
   const required = Array.from({ length: 16 }, (_, i) => 73 + i); // 73..88
   const missing = required.filter(n => !matchNos.has(n));
   if (missing.length) {
-    throw new Error(`roundOf32Matchups is missing Round of 32 match numbers: ${missing.join(", ")}`);
+    throw new Error(`Missing R32 matches: ${missing.join(", ")}`);
   }
 
   const W = (n) => `W${n}`;
 
   return [
-    { matchNo: 89, home: W(73), away: W(75), from: [73, 75] },
-    { matchNo: 90, home: W(74), away: W(77), from: [74, 77] },
+    { matchNo: 89, home: W(74), away: W(77), from: [74, 77] },
+    { matchNo: 90, home: W(73), away: W(75), from: [73, 75] },
     { matchNo: 91, home: W(76), away: W(78), from: [76, 78] },
     { matchNo: 92, home: W(79), away: W(80), from: [79, 80] },
     { matchNo: 93, home: W(83), away: W(84), from: [83, 84] },
@@ -103,30 +97,18 @@ export function buildRoundOf16Matchups(roundOf32Matchups) {
   ];
 }
 
-/**
- * Build Quarterfinal matchups (QF) from Round of 16 (R16).
- *
- * @param {Array<{matchNo:number}>} r16
- * @returns {Array<{matchNo:number, home:string, away:string, from:number[]}>}
- */
 export function buildQuarterfinalMatchups(r16) {
-  if (!Array.isArray(r16)) {
-    throw new Error("r16 must be an array (output from buildRoundOf16Matchups).");
-  }
-
   const matchNos = new Set(r16.map(m => m.matchNo));
-  const required = Array.from({ length: 8 }, (_, i) => 89 + i); // 89..96
+  const required = [89,90,91,92,93,94,95,96];
   const missing = required.filter(n => !matchNos.has(n));
-  if (missing.length) {
-    throw new Error(`r16 is missing Round of 16 match numbers: ${missing.join(", ")}`);
-  }
+  if (missing.length) throw new Error(`Missing R16 matches: ${missing.join(", ")}`);
 
   const W = (n) => `W${n}`;
 
   return [
-    { matchNo: 97, home: W(89), away: W(90), from: [89, 90] },
-    { matchNo: 98, home: W(93), away: W(94), from: [93, 94] },
-    { matchNo: 99, home: W(91), away: W(92), from: [91, 92] },
+    { matchNo: 97,  home: W(89), away: W(90), from: [89, 90] },
+    { matchNo: 98,  home: W(93), away: W(94), from: [93, 94] },
+    { matchNo: 99,  home: W(91), away: W(92), from: [91, 92] },
     { matchNo: 100, home: W(95), away: W(96), from: [95, 96] },
   ];
 }
@@ -185,5 +167,24 @@ export function buildFinalMatchups(sf) {
     thirdPlace: { matchNo: 103, home: L(101), away: L(102), from: [101, 102] },
     final:      { matchNo: 104, home: W(101), away: W(102), from: [101, 102] },
   };
+}
+
+function orderByNextRound(currentMatches, nextMatches) {
+  const byNo = new Map(currentMatches.map(m => [m.matchNo, m]));
+  const out = [];
+
+  // Gå gjennom neste runde i ønsket rekkefølge, og ta 'from'-matchene i den rekkefølgen
+  nextMatches.forEach(nm => {
+    (nm.from ?? []).forEach(srcNo => {
+      const m = byNo.get(srcNo);
+      if (m) out.push(m);
+    });
+  });
+
+  // fallback: hvis noe mangler (burde ikke), legg til resten
+  const used = new Set(out.map(m => m.matchNo));
+  currentMatches.forEach(m => { if (!used.has(m.matchNo)) out.push(m); });
+
+  return out;
 }
 
