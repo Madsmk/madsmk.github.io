@@ -1,3 +1,35 @@
+/**
+ * Sorterer en runde slik at kampene som møtes i neste runde
+ * står ved siden av hverandre visuelt.
+ *
+ * @param {Array} currentMatches  f.eks. r32
+ * @param {Array} nextMatches     f.eks. r16
+ * @returns {Array} sortert liste av currentMatches
+ */
+function orderByNextRound(currentMatches, nextMatches) {
+  if (!Array.isArray(nextMatches)) return currentMatches;
+
+  const byNo = new Map(currentMatches.map(m => [m.matchNo, m]));
+  const ordered = [];
+
+  // Gå i riktig tre-rekkefølge via "from" i neste runde
+  nextMatches.forEach(nm => {
+    if (!Array.isArray(nm.from)) return;
+    nm.from.forEach(srcNo => {
+      const match = byNo.get(srcNo);
+      if (match) ordered.push(match);
+    });
+  });
+
+  // Fallback: legg til evt. matcher som ikke ble brukt
+  const used = new Set(ordered.map(m => m.matchNo));
+  currentMatches.forEach(m => {
+    if (!used.has(m.matchNo)) ordered.push(m);
+  });
+
+  return ordered;
+}
+
 export function renderPlayoffTree(knockout, resolveName, pickWinnerSide) {
   if (!knockout) return;
 
