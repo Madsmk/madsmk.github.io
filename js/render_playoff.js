@@ -7,6 +7,14 @@ const R32_VISUAL_ORDER = [
   86, 88, 85, 87
 ];
 
+const ROUND_TITLES = {
+  r32: '32. delsfinale',
+  r16: '8. delsfinale',
+  qf: 'Kvartfinale',
+  sf: 'Semifinale',
+  final: 'Finale'
+};
+
 
 /**
  * Sorterer en runde slik at kampene som møtes i neste runde
@@ -56,7 +64,23 @@ export function renderPlayoffTree(knockout, resolveName, pickWinnerSide) {
       console.error('Sluttspill-container mangler i DOM');
       return;
     }
+
     el.innerHTML = '';
+
+    if (ROUND_TITLES[k]) {
+      el.insertAdjacentHTML(
+        'beforeend',
+        `<div class="round-title">${ROUND_TITLES[k]}</div>`
+      );
+
+      if (k === 'final') {
+        el.insertAdjacentHTML(
+          'beforeend',
+          `<div class="round-subtitle">Bronsefinale</div>`
+        );
+      }
+    }
+
   }
 
   const nameOf = seed =>
