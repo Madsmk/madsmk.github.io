@@ -217,22 +217,22 @@ nav ul li a:hover {
 }
 
 /* Flytt-kolonne */
-.cell.flytt {
-  white-space: nowrap;
-}
+/*.cell.flytt {*/
+/*  white-space: nowrap;*/
+/*}*/
 
-.cell.flytt button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #0066cc;
-  font-size: 12px;
-  padding: 0 2px;
-}
+/*.cell.flytt button {*/
+/*  background: none;*/
+/*  border: none;*/
+/*  cursor: pointer;*/
+/*  color: #0066cc;*/
+/*  font-size: 12px;*/
+/*  padding: 0 2px;*/
+/*}
 
-.cell.flytt button:hover {
-  text-decoration: underline;
-}
+/*.cell.flytt button:hover {*/
+/*  text-decoration: underline;*/
+/*}*/
 
 .rangOverskrift, .rad {
     display: table-row;
