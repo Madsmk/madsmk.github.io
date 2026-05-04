@@ -216,24 +216,6 @@ nav ul li a:hover {
   padding-left: 6px;
 }
 
-/* Flytt-kolonne */
-/*.cell.flytt {*/
-/*  white-space: nowrap;*/
-/*}*/
-
-/*.cell.flytt button {*/
-/*  background: none;*/
-/*  border: none;*/
-/*  cursor: pointer;*/
-/*  color: #0066cc;*/
-/*  font-size: 12px;*/
-/*  padding: 0 2px;*/
-/*}
-
-/*.cell.flytt button:hover {*/
-/*  text-decoration: underline;*/
-/*}*/
-
 .rangOverskrift, .rad {
     display: table-row;
 }
@@ -552,21 +534,21 @@ nav ul li a:hover {
     outline: 2;
 }
 
-.rangering button.opp,
-.rangering button.ned {
-  background: none;
-  border: none;
-  padding: 0 4px;
-  margin-left: 4px;
-  color: #176f08;
-  cursor: pointer;
-  font: inherit;
-}
+/*.rangering button.opp,*/
+/*.rangering button.ned {*/
+/*  background: none;*/
+/*  border: none;*/
+/*  padding: 0 4px;*/
+/*  margin-left: 4px;*/
+/*  color: #176f08;*/
+/*  cursor: pointer;*/
+/*  font: inherit;*/
+/*}
 
-.rangering button.opp:hover,
-.rangering button.ned:hover {
-  text-decoration: underline;
-}
+/*.rangering button.opp:hover,*/
+/*.rangering button.ned:hover {*/
+/*  text-decoration: underline;*/
+/*}*/
 
 .match:has(.winner) {
   opacity: 0.9;
@@ -620,9 +602,14 @@ nav ul li a:hover {
 
 /* Én kolonne per runde */
 .sluttspillTreTable .round {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   height: 100%;
-  align-content: space-between;  /* ✅ dette virker NÅ */
+}
+
+.sluttspillTreTable .round-grid {
+  display: grid;
+  flex: 1;                    /* 👈 fyller resten under tittelen */
 }
 
 
