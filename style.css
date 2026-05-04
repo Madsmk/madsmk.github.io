@@ -636,12 +636,12 @@ nav ul li a:hover {
 /* Kampboks – sentrert i sin "tabellrute" */
 .sluttspillTreTable .match {
   align-self: center;
-  justify-self: stretch;
-  background: #fff;
-  border: 1px solid #cfcfcf;
-  border-radius: 10px;
-  padding: 10px 12px;
-  min-height: 56px;
+/*  justify-self: stretch;*/
+/*  background: #fff;*/
+/*  border: 1px solid #cfcfcf;*/
+/*  border-radius: 10px;*/
+/*  padding: 10px 12px;*/
+/*  min-height: 56px;*/
 }
 
 
