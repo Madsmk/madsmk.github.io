@@ -695,3 +695,21 @@ nav ul li a:hover {
 .final .match .winner::after {
   content: "🏆";
 }
+
+.sluttspillTreTable .round-title {
+  text-align: center;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  color: #333;
+}
+
+.sluttspillTreTable .round-subtitle {
+  text-align: center;
+  font-weight: 600;
+  font-size: 12px;
+  margin: 10px 0 6px;
+  color: #666;
+}
