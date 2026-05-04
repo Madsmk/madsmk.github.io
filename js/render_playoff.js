@@ -52,12 +52,14 @@ export function renderPlayoffTree(knockout, resolveName, pickWinnerSide) {
   const qs = sel => document.querySelector(sel);
 
   const containers = {
-    r32:  qs('.sluttspillTreTable .round32'),
-    r16:  qs('.sluttspillTreTable .round16'),
-    qf:   qs('.sluttspillTreTable .quarterfinals'),
-    sf:   qs('.sluttspillTreTable .semifinals'),
-    final:qs('.sluttspillTreTable .final')
+    r32:  qs('.round32 .round-grid'),
+    r16:  qs('.round16 .round-grid'),
+    qf:   qs('.quarterfinals .round-grid'),
+    sf:   qs('.semifinals .round-grid'),
+    final: qs('.final .round-grid'),
+    bronze: qs('.final .round-grid.bronze')
   };
+
 
   for (const el of Object.values(containers)) {
     if (!el) {
@@ -94,14 +96,16 @@ export function renderPlayoffTree(knockout, resolveName, pickWinnerSide) {
    * Vi OPPRETTER grid-rader eksplisitt her.
    * Uten dette får du ALLTID toppjustering.
    */
-  const renderRound = (matches, containerEl, roundKey) => {
-    containerEl.style.gridTemplateRows = `repeat(${matches.length}, 1fr)`;
-    containerEl.style.gridAutoRows = '1fr';
+  const renderRound = (matches, gridEl, roundKey) => {
+    gridEl.innerHTML = '';
+    gridEl.style.display = 'grid';
+    gridEl.style.gridTemplateRows = `repeat(${matches.length}, 1fr)`;
 
     matches.forEach((match, i) => {
-      renderMatch(containerEl, match, i, roundKey, nameOf, winnerSideOf);
+      renderMatch(gridEl, match, i, roundKey, nameOf, winnerSideOf);
     });
   };
+
 
   
   const r32ByNo = new Map(r32.map(m => [m.matchNo, m]));
@@ -116,11 +120,8 @@ export function renderPlayoffTree(knockout, resolveName, pickWinnerSide) {
   renderRound(qfOrdered,  containers.qf,  'qf');
   renderRound(sf,         containers.sf,  'sf');
 
-  containers.final.style.gridTemplateRows = 'repeat(2, 1fr)';
-  containers.final.style.gridAutoRows = '1fr';
-
-  renderMatch(containers.final, fm.final,      0, 'final', nameOf, winnerSideOf);
-  renderMatch(containers.final, fm.thirdPlace, 1, 'final', nameOf, winnerSideOf);
+  renderRound([fm.final], containers.final, 'final');
+  renderRound([fm.thirdPlace], containers.bronze, 'bronze');
 }
 
 /**
