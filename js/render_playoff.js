@@ -52,14 +52,13 @@ export function renderPlayoffTree(knockout, resolveName, pickWinnerSide) {
   const qs = sel => document.querySelector(sel);
 
   const containers = {
-    r32:  qs('.round32 .round-grid'),
-    r16:  qs('.round16 .round-grid'),
-    qf:   qs('.quarterfinals .round-grid'),
-    sf:   qs('.semifinals .round-grid'),
-    final: qs('.final .round-grid'),
-    bronze: qs('.final .round-grid.bronze')
+    r32: qs('.sluttspillTreTable .round32 .round-grid'),
+    r16: qs('.sluttspillTreTable .round16 .round-grid'),
+    qf:  qs('.sluttspillTreTable .quarterfinals .round-grid'),
+    sf:  qs('.sluttspillTreTable .semifinals .round-grid'),
+    final: qs('.sluttspillTreTable .final .round-grid'),
+    bronze: qs('.sluttspillTreTable .final .round-grid.bronze')
   };
-
 
   for (const el of Object.values(containers)) {
     if (!el) {
