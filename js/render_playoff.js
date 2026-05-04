@@ -1,3 +1,13 @@
+
+// FIFA 2026 – visuell rekkefølge for Round of 32
+const R32_VISUAL_ORDER = [
+  73, 74, 75, 76,
+  79, 80, 77, 78,
+  83, 84, 81, 82,
+  86, 88, 85, 87
+];
+
+
 /**
  * Sorterer en runde slik at kampene som møtes i neste runde
  * står ved siden av hverandre visuelt (ekte sluttspilltre).
@@ -69,7 +79,11 @@ export function renderPlayoffTree(knockout, resolveName, pickWinnerSide) {
     });
   };
 
-  const r32Ordered = orderByNextRound(r32, r16);
+  
+  const r32ByNo = new Map(r32.map(m => [m.matchNo, m]));
+  const r32Ordered = R32_VISUAL_ORDER
+    .map(no => r32ByNo.get(no))
+    .filter(Boolean);
   const r16Ordered = orderByNextRound(r16, qf);
   const qfOrdered  = orderByNextRound(qf, sf);
 
