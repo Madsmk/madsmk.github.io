@@ -155,13 +155,13 @@ nav ul li a:hover {
 
 .table .row .cell:nth-child(1),
 .table .row .cell:nth-child(2) {
-    width: 15%;
+    width: 20%;
     text-align: left;
     padding-left: 8px;
 }
 
 .table .row .cell:nth-child(3) {
-    width: 20%;
+    width: 25%;
 }
 
 .table .row .cell:nth-child(4),
@@ -169,7 +169,7 @@ nav ul li a:hover {
 .table .row .cell:nth-child(6),
 .table .row .cell:nth-child(7),
 .table .row .cell:nth-child(8) {
-    width: 10%;
+    width: 7%;
 }
 
 .header, .row {
@@ -471,20 +471,20 @@ nav ul li a:hover {
     margin-bottom: 0;
 }
 
-.tip-option .dot {
-  height: 18px;
-  width: 18px;
-  background: #d9d9d9;
-  border:  4px solid transparent;
-  margin-right: 8px;
-  transition: all 0.2s ease;
-}
+/*.tip-option .dot {/*
+/*  height: 18px;/*
+/*  width: 18px;/*
+/*  background: #d9d9d9;/*
+/*  border:  4px solid transparent;/*
+/*  margin-right: 8px;/*
+/*  transition: all 0.2s ease;/*
+/*}/*
 
 /* Når checkbox er checked, style dot (input ligger rett før .dot) */
-/*.tip-option input:checked ~ .dot {*/
-/*  border-color: #176f08;*/
-/*  background: #176f08;*/
-/*}*/
+.tip-option input:checked ~ .dot {
+  border-color: #176f08;
+  background: #176f08;
+}
 
 /* ---- Modernisert: label-wrap for dobling ---- */
 
