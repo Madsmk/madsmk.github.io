@@ -73,7 +73,7 @@ export function renderGroup(groupLetter, mountId = null) {
       <div class="cell">
         <div class="dobling">
           <label class="double-option">
-            <input type="radio" name="gruppe${groupLetter}" id="${radioId}">
+            <input type="radio" name="gruppe${groupLetter}" id="X${groupLetter}07">
             <span class="double-button">2x</span>
           </label>
         </div>
