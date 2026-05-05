@@ -148,7 +148,28 @@ nav ul li a:hover {
     display: table;
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
+    /*margin-top: 20px;*/
+    table-layout: fixed;
+}
+
+
+.table .row .cell:nth-child(1),
+.table .row .cell:nth-child(2) {
+    width: 15%;
+    text-align: left;
+    padding-left: 8px;
+}
+
+.table .row .cell:nth-child(3) {
+    width: 20%;
+}
+
+.table .row .cell:nth-child(4),
+.table .row .cell:nth-child(5),
+.table .row .cell:nth-child(6),
+.table .row .cell:nth-child(7),
+.table .row .cell:nth-child(8) {
+    width: 10%;
 }
 
 .header, .row {
@@ -167,7 +188,16 @@ nav ul li a:hover {
     border: 1px solid #dddddd;
     padding: 8px;
     text-align: center;
+    vertical-align: middle;
 }
+
+
+.table .cell {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 
 .cell.poeng-h,
 .cell.poeng-u,
@@ -177,15 +207,15 @@ nav ul li a:hover {
 }
 
 /* Selve tallet */
-/*.cell.poeng-h::after,*/
-/*.cell.poeng-u::after,*/
-/*.cell.poeng-b::after,*/
-/*.cell.poeng-bp::after {*/
-/*  content: attr(data-value);*/
-/*  display: inline-block;*/
-/*  font-weight: 600;*/
-/*  transition: transform 0.15s ease;*/
-/*}*/
+.cell.poeng-h::after,
+.cell.poeng-u::after,
+.cell.poeng-b::after,
+.cell.poeng-bp::after {
+  content: attr(data-value);
+  display: inline-block;
+  font-weight: 600;
+  transition: transform 0.15s ease;
+}
 
 /* Positive verdier */
 .cell.poeng-h[data-value]:not([data-value^="-"])::after,
@@ -451,10 +481,10 @@ nav ul li a:hover {
 }
 
 /* Når checkbox er checked, style dot (input ligger rett før .dot) */
-.tip-option input:checked ~ .dot {
-  border-color: #176f08;
-  background: #176f08;
-}
+/*.tip-option input:checked ~ .dot {*/
+/*  border-color: #176f08;*/
+/*  background: #176f08;*/
+/*}*/
 
 /* ---- Modernisert: label-wrap for dobling ---- */
 
