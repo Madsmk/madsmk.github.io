@@ -235,7 +235,7 @@ nav ul li a:hover {
 
 .rangering {
     display: table;
-    width: 50%;
+    width: 40%;
     border-collapse: collapse;
     margin-top: 20px;
 }
@@ -450,20 +450,6 @@ nav ul li a:hover {
     align-items: center;
 }
 
-.tip-option,
-.double-option {
-  display: flex;
-  align-items: center;
-}
-
-.tip-option input {
-  position: absolute;
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.tip-option .dot,
 .double-option .radio {
     display: block;
     flex-shrink: 0;
@@ -471,20 +457,6 @@ nav ul li a:hover {
     margin-bottom: 0;
 }
 
-/*.tip-option .dot {/*
-/*  height: 18px;/*
-/*  width: 18px;/*
-/*  background: #d9d9d9;/*
-/*  border:  4px solid transparent;/*
-/*  margin-right: 8px;/*
-/*  transition: all 0.2s ease;/*
-/*}/*
-
-/* Når checkbox er checked, style dot (input ligger rett før .dot) */
-.tip-option input:checked ~ .dot {
-  border-color: #176f08;
-  background: #176f08;
-}
 
 /* ---- Modernisert: label-wrap for dobling ---- */
 
@@ -510,7 +482,6 @@ nav ul li a:hover {
   background: #176f08;
 }
 
-.tip-option input:checked ~ .utfall,
 .double-option input:checked ~ .utfall {
     font-weight: 600;
 }
@@ -520,49 +491,74 @@ nav ul li a:hover {
     font-size: 0.8em;
 }
 
-.tip-option:has(input:checked) .dot,
 .double-option:has(input:checked) .radio {
     box-shadow: 0 0 0 3pc rgba(23, 111, 8, 0.15);
 }
 
-.tip-option:hover,
 .double-option:hover {
     background-color: #f2f8f2;
     border-radius: 6px;
 }
 
 
-.tip-option,
 .double-option {
     transform: none !important;
 }
 
-.tip-option input:focus,
 .double-option input:focus {
     outline: none;
     box-shadow: none;
 }
 
-.tip-option:has(input:focus-visible),
 .double-option:has(input:focus-visible) {
     outline: 2;
 }
 
-/*.rangering button.opp,*/
-/*.rangering button.ned {*/
-/*  background: none;*/
-/*  border: none;*/
-/*  padding: 0 4px;*/
-/*  margin-left: 4px;*/
-/*  color: #176f08;*/
-/*  cursor: pointer;*/
-/*  font: inherit;*/
-/*}
+.tip-option {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 
-/*.rangering button.opp:hover,*/
-/*.rangering button.ned:hover {*/
-/*  text-decoration: underline;*/
-/*}*/
+  width: 40px;
+  height: 40px;
+
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: #f5f5f5;
+
+  cursor: pointer;
+  user-select: none;
+
+  transition: all 0.15s ease;
+}
+
+/* Skjul dot helt */
+.tip-option .dot {
+  display: none;
+}
+
+/* Teksten (H/U/B) */
+.tip-option .utfall {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* Hover */
+.tip-option:hover {
+  background: #eaeaea;
+}
+
+/* Når valgt */
+.tip-option:has(input:checked) {
+  background: #176f08;
+  color: white;
+  border-color: #176f08;
+}
+
+/* Fokus */
+.tip-option:has(input:focus-visible) {
+  outline: 2px solid #176f08;
+}
 
 .match:has(.winner) {
   opacity: 0.9;
