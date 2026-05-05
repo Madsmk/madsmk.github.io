@@ -60,28 +60,12 @@ export function renderPlayoffTree(knockout, resolveName, pickWinnerSide) {
     bronze: qs('.sluttspillTreTable .final .round-grid.bronze')
   };
 
-  for (const el of Object.values(containers)) {
+  for (const [key, el] of Object.entries(containers)) {
     if (!el) {
-      console.error('Sluttspill-container mangler i DOM');
+      console.error(`Manglende container: ${key}`);
       return;
     }
-
-    el.innerHTML = '';
-
-    if (ROUND_TITLES[k]) {
-      el.insertAdjacentHTML(
-        'beforeend',
-        `<div class="round-title">${ROUND_TITLES[k]}</div>`
-      );
-
-      if (k === 'final') {
-        el.insertAdjacentHTML(
-          'beforeend',
-          `<div class="round-subtitle">Bronsefinale</div>`
-        );
-      }
-    }
-
+    el.innerHTML = ''; 
   }
 
   const nameOf = seed =>
