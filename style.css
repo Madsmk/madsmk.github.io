@@ -680,13 +680,6 @@ nav ul li a:hover {
   margin-top: 2px;
 }
 
-/* Alle runder må fordele samme høyde */
-.sluttspillTreTable .round {
-  display: grid;  
-  height: 100%;
-  align-content: space-between; /* ✅ DENNE manglet */
-}
-
 .final .match .team.winner {
   background: #fff3cd;
   border-left-color: #f4b400;
