@@ -152,7 +152,9 @@ export function renderMatch(
   containerEl.insertAdjacentHTML(
     'beforeend',
     `
-    <div class="match" data-match="${match.matchNo}">
+    <div class="match"
+         data-match="${match.matchNo}"
+         style="grid-row: ${indexInRound + 1};">
       <div class="team home ${homeClass}">
         <div class="team-name">${home.name}</div>
         ${home.rank ? `<div class="team-rank">#${home.rank}</div>` : ''}
@@ -164,4 +166,5 @@ export function renderMatch(
     </div>
     `
   );
+
 }
