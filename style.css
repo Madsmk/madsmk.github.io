@@ -177,15 +177,15 @@ nav ul li a:hover {
 }
 
 /* Selve tallet */
-.cell.poeng-h::after,
-.cell.poeng-u::after,
-.cell.poeng-b::after,
-.cell.poeng-bp::after {
-  content: attr(data-value);
-  display: inline-block;
-  font-weight: 600;
-  transition: transform 0.15s ease;
-}
+/*.cell.poeng-h::after,*/
+/*.cell.poeng-u::after,*/
+/*.cell.poeng-b::after,*/
+/*.cell.poeng-bp::after {*/
+/*  content: attr(data-value);*/
+/*  display: inline-block;*/
+/*  font-weight: 600;*/
+/*  transition: transform 0.15s ease;*/
+/*}*/
 
 /* Positive verdier */
 .cell.poeng-h[data-value]:not([data-value^="-"])::after,
@@ -306,9 +306,9 @@ nav ul li a:hover {
 }
 
 /* Highlighting the first three ranks */
-.rangeringAllTeams .rad:nth-child(2), .rangeringAllTeams .rad:nth-child(3), .rangeringAllTeams .rad:nth-child(4), .rangeringAllTeams .rad:nth-child(5) {
-    background-color: #aaffaa; /* Light green for rank 1 */
-}
+/*.rangeringAllTeams .rad:nth-child(2), .rangeringAllTeams .rad:nth-child(3), .rangeringAllTeams .rad:nth-child(4), .rangeringAllTeams .rad:nth-child(5) {*/
+/*    background-color: #aaffaa; /* Light green for rank 1 */*/
+/*}*/
 
 .instructions {
     flex: 1; /* Takes remaining 50% of the width */
