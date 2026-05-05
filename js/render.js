@@ -49,9 +49,8 @@ export function renderGroup(groupLetter, mountId = null) {
         <div class="cell">
           <div class="dobling">
             <label class="double-option">
-              <input type="radio" name="gruppe${groupLetter}" id="${radioId}" class="radio-option">
-              <span class="radio match${groupLetter}${i}"></span>
-              <span class="utvalgt"></span>
+              <input type="radio" name="gruppe${groupLetter}" id="${radioId}">
+              <span class="double-button">2x</span>
             </label>
           </div>
         </div>
@@ -74,9 +73,8 @@ export function renderGroup(groupLetter, mountId = null) {
       <div class="cell">
         <div class="dobling">
           <label class="double-option">
-            <input type="radio" name="gruppe${groupLetter}" id="X${groupLetter}07" class="radio-option">
-            <span class="radio match${groupLetter}7"></span>
-            <span class="utvalgt"></span>
+            <input type="radio" name="gruppe${groupLetter}" id="${radioId}">
+            <span class="double-button">2x</span>
           </label>
         </div>
       </div>
