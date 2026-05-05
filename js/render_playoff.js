@@ -1,4 +1,3 @@
-
 // FIFA 2026 – visuell rekkefølge for Round of 32
 const R32_VISUAL_ORDER = [
   73, 74, 75, 76,
@@ -6,15 +5,6 @@ const R32_VISUAL_ORDER = [
   83, 84, 81, 82,
   86, 88, 85, 87
 ];
-
-const ROUND_TITLES = {
-  r32: '32. delsfinale',
-  r16: '8. delsfinale',
-  qf: 'Kvartfinale',
-  sf: 'Semifinale',
-  final: 'Finale'
-};
-
 
 /**
  * Sorterer en runde slik at kampene som møtes i neste runde
@@ -42,9 +32,6 @@ function orderByNextRound(currentMatches, nextMatches) {
   return ordered;
 }
 
-/**
- * Renderer hele sluttspilltreet
- */
 export function renderPlayoffTree(knockout, resolveName, pickWinnerSide) {
   if (!knockout) return;
 
@@ -60,12 +47,13 @@ export function renderPlayoffTree(knockout, resolveName, pickWinnerSide) {
     bronze: qs('.sluttspillTreTable .final .round-grid.bronze')
   };
 
+  // ✅ Kun valider + tøm grid-containere
   for (const [key, el] of Object.entries(containers)) {
     if (!el) {
       console.error(`Manglende container: ${key}`);
       return;
     }
-    el.innerHTML = ''; 
+    el.innerHTML = '';
   }
 
   const nameOf = seed =>
@@ -74,11 +62,6 @@ export function renderPlayoffTree(knockout, resolveName, pickWinnerSide) {
   const winnerSideOf = (h, a) =>
     typeof pickWinnerSide === 'function' ? pickWinnerSide(h, a) : null;
 
-  /**
-   * ✅ HELT AVGJØRENDE:
-   * Vi OPPRETTER grid-rader eksplisitt her.
-   * Uten dette får du ALLTID toppjustering.
-   */
   const renderRound = (matches, gridEl, roundKey) => {
     gridEl.innerHTML = '';
     gridEl.style.display = 'grid';
@@ -89,12 +72,11 @@ export function renderPlayoffTree(knockout, resolveName, pickWinnerSide) {
     });
   };
 
-
-  
+  // R32: fast visuell rekkefølge
   const r32ByNo = new Map(r32.map(m => [m.matchNo, m]));
-  const r32Ordered = R32_VISUAL_ORDER
-    .map(no => r32ByNo.get(no))
-    .filter(Boolean);
+  const r32Ordered = R32_VISUAL_ORDER.map(no => r32ByNo.get(no)).filter(Boolean);
+
+  // R16/QF: tre-rekkefølge
   const r16Ordered = orderByNextRound(r16, qf);
   const qfOrdered  = orderByNextRound(qf, sf);
 
@@ -103,27 +85,14 @@ export function renderPlayoffTree(knockout, resolveName, pickWinnerSide) {
   renderRound(qfOrdered,  containers.qf,  'qf');
   renderRound(sf,         containers.sf,  'sf');
 
-  renderRound([fm.final], containers.final, 'final');
+  renderRound([fm.final],      containers.final,  'final');
   renderRound([fm.thirdPlace], containers.bronze, 'bronze');
 }
 
-/**
- * Renderer én kamp korrekt i sin "tabellrute"
- */
-export function renderMatch(
-  containerEl,
-  match,
-  indexInRound,
-  roundKey,
-  nameOf,
-  winnerSideOf
-) {
+export function renderMatch(containerEl, match, indexInRound, roundKey, nameOf, winnerSideOf) {
   const splitNameRank = (text) => {
     const m = /^(.*?)(?:\s*\(#(\d+)\))?$/.exec(text);
-    return {
-      name: m?.[1] ?? text,
-      rank: m?.[2] ?? null
-    };
+    return { name: m?.[1] ?? text, rank: m?.[2] ?? null };
   };
 
   const home = splitNameRank(nameOf(match.home));
@@ -136,9 +105,7 @@ export function renderMatch(
   containerEl.insertAdjacentHTML(
     'beforeend',
     `
-    <div class="match"
-         data-match="${match.matchNo}"
-         style="grid-row: ${indexInRound + 1};">
+    <div class="match" data-match="${match.matchNo}" style="grid-row: ${indexInRound + 1};">
       <div class="team home ${homeClass}">
         <div class="team-name">${home.name}</div>
         ${home.rank ? `<div class="team-rank">#${home.rank}</div>` : ''}
@@ -150,5 +117,4 @@ export function renderMatch(
     </div>
     `
   );
-
 }
