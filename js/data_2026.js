@@ -3,7 +3,7 @@ export const teamMap = {
   teamA2: { name: 'Tsjekkia', group: 'A' },
   teamA3: { name: 'Sør-Korea', group: 'A' },
   teamA4: { name: 'Sør-Afrika', group: 'A' },
-  teamB1: { name: 'Bosnia-Hercegovina', group: 'B' },
+  teamB1: { name: 'Bosnia', group: 'B' },
   teamB2: { name: 'Sveits', group: 'B' },
   teamB3: { name: 'Canada', group: 'B' },
   teamB4: { name: 'Qatar', group: 'B' },
