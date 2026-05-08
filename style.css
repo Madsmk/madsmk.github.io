@@ -144,39 +144,20 @@ nav ul li a:hover {
     color: transparent; /* Fallback for text-fill-color */
 }
 
-.table {
-    display: table;
-    width: 100%;
-    border-collapse: collapse;
-}
+/*.table {*/
+/*    display: table;*/
+/*    width: 100%;*/
+/*    border-collapse: collapse;*/
+/*}*/
 
 /* Kun gruppespill-tabeller */
 .container .table {
     table-layout: fixed;
 }
 
-.table .row .cell:nth-child(1),
-.table .row .cell:nth-child(2) {
-    width: 20%;
-    text-align: left;
-    padding-left: 8px;
-}
-
-.table .row .cell:nth-child(3) {
-    width: 35%;
-}
-
-.table .row .cell:nth-child(4),
-.table .row .cell:nth-child(5),
-.table .row .cell:nth-child(6),
-.table .row .cell:nth-child(7),
-.table .row .cell:nth-child(8) {
-    width: 5%;
-}
-
-.header, .row {
-    display: table-row;
-}
+/*.header, .row {*/
+/*    display: table-row;*/
+/*}*/
 
 .header .cell, .rangOverskrift .cell {
     font-weight: bold; /* Make the text bold */
@@ -185,13 +166,13 @@ nav ul li a:hover {
     text-align: center;
 }
 
-.cell {
-    display: table-cell;
-    border: 1px solid #dddddd;
-    padding: 8px;
-    text-align: center;
-    vertical-align: middle;
-}
+/*.cell {*/
+/*    display: table-cell;*/
+/*    border: 1px solid #dddddd;*/
+/*    padding: 8px;*/
+/*    text-align: center;*/
+/*    vertical-align: middle;*/
+/*}*/
 
 
 .table .cell {
@@ -200,6 +181,73 @@ nav ul li a:hover {
     white-space: nowrap;
 }
 
+/* ===========================
+   GRID-TABELL (gruppespill)
+   =========================== */
+
+/* Kun gruppespill-tabeller: container container-<gruppe> */
+.container .table {
+  display: grid;
+  width: 100%;
+  border-collapse: unset; /* irrelevant i grid, men greit */
+  
+  /* 8 kolonner: Hjemme | Borte | Tips | Dobling | Poeng H | Poeng U | Poeng B | Maks BP */
+  grid-template-columns: 22% 22% 26% 8% 7% 7% 7% 7%;
+  
+  /* litt luft mellom rader/kolonner */
+  gap: 0;
+}
+
+/* La header og rader "slippe gjennom" slik at .cell blir grid-items */
+.container .table .header,
+.container .table .row {
+  display: contents;
+}
+
+/* Cell-stil (gjelder både header og rader) */
+.container .table .cell {
+  border: 1px solid #dddddd;
+  padding: 8px;
+  text-align: center;
+  vertical-align: middle; /* har ingen effekt i grid, men ok */
+  
+  /* viktig for høydejustering */
+  display: flex;
+  align-items: center;     /* ✅ vertikal midtstilling */
+  justify-content: center; /* horisontal midt som standard */
+  
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Header-celler */
+.container .table .header .cell {
+  font-weight: bold;
+  background-color: #f2f2f2;
+}
+
+/* Venstrejuster Hjemmelag/Bortelag */
+.container .table .cell.home,
+.container .table .cell.away {
+  justify-content: flex-start;
+}
+
+/* La Tips-cellen få plass til knapper uten ellipsis */
+.container .table .cell:nth-child(3) {
+  white-space: normal;
+  overflow: visible;
+}
+
+/* Tips- og dobling-innhold midtstilles fint */
+.container .table .tips,
+.container .table .dobling {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
 
 .cell.poeng-h,
 .cell.poeng-u,
