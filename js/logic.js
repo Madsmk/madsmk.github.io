@@ -497,6 +497,7 @@ function getAllTeamsFromGroups() {
 
 export function updateKnockoutRankingTable() {
   const knockoutTeams = [];
+  const EPS = 1e-9;
 
   // 1️⃣ Gruppevinnere og -toere
   GROUPS.forEach(group => {
@@ -525,7 +526,6 @@ export function updateKnockoutRankingTable() {
 
   // 2️⃣ Kvalifiserte tredjeplasser
   const qualifiedThirdGroups = updateThirdPlacedTeamsRanking();
-
   qualifiedThirdGroups.forEach(group => {
     const team = getTeamRankedThreeFromGroup(group);
     if (team) {
@@ -539,26 +539,44 @@ export function updateKnockoutRankingTable() {
     }
   });
 
-  // 3️⃣ Standardsortering (valgfri – poeng synkende)
-  knockoutTeams.sort((a, b) => b.points - a.points);
+  // 3️⃣ Standard sortering: poeng (desc) -> landnavn (asc)
+  knockoutTeams.sort((a, b) => {
+    const dp = b.points - a.points;
+    if (Math.abs(dp) > EPS) return dp;
+    return String(a.team).localeCompare(String(b.team), 'nb');
+  });
 
-  // 4️⃣ Init / sync manuell rekkefølge
+  // 4️⃣ Init / sync manuell rekkefølge (seed-liste)
+  //     Denne brukes kun som tie-break og ved manuell flytting
   if (!knockoutManualOrder || knockoutManualOrder.length !== knockoutTeams.length) {
+    // Start alltid fra standard-sortert rekkefølge
     knockoutManualOrder = knockoutTeams.map(t => t.seed);
   } else {
     const current = new Set(knockoutTeams.map(t => t.seed));
     knockoutManualOrder = knockoutManualOrder.filter(s => current.has(s));
     knockoutTeams.forEach(t => {
-      if (!knockoutManualOrder.includes(t.seed)) {
-        knockoutManualOrder.push(t.seed);
-      }
+      if (!knockoutManualOrder.includes(t.seed)) knockoutManualOrder.push(t.seed);
     });
   }
 
-  const bySeed = new Map(knockoutTeams.map(t => [t.seed, t]));
-  const ordered = knockoutManualOrder.map(s => bySeed.get(s)).filter(Boolean);
+  // Map seed -> "manuell indeks"
+  const manualIndex = new Map(knockoutManualOrder.map((s, i) => [s, i]));
 
-  // 5️⃣ Render tabell
+  // 5️⃣ Endelig rekkefølge:
+  //     - alltid poeng først
+  //     - ved lik poeng: manuell rekkefølge
+  //     - fallback: navn
+  const ordered = [...knockoutTeams].sort((a, b) => {
+    const dp = b.points - a.points;
+    if (Math.abs(dp) > EPS) return dp;
+
+    const mi = (manualIndex.get(a.seed) ?? 1e9) - (manualIndex.get(b.seed) ?? 1e9);
+    if (mi !== 0) return mi;
+
+    return String(a.team).localeCompare(String(b.team), 'nb');
+  });
+
+  // 6️⃣ Render tabell
   const table = document.querySelector('.sluttspillTable');
   if (!table) return ordered;
 
@@ -572,7 +590,16 @@ export function updateKnockoutRankingTable() {
     </div>
   `;
 
+  // Flytting kun ved poenglikhet med nabo
+  const isTie = (i, j) =>
+    i >= 0 && j >= 0 &&
+    i < ordered.length && j < ordered.length &&
+    Math.abs(ordered[i].points - ordered[j].points) < EPS;
+
   ordered.forEach(({ seed, team, points }, index) => {
+    const okUp = index > 0 && isTie(index, index - 1);
+    const okDown = index < ordered.length - 1 && isTie(index, index + 1);
+
     table.innerHTML += `
       <div class="rad">
         <div class="cell plass">${index + 1}</div>
@@ -580,43 +607,49 @@ export function updateKnockoutRankingTable() {
         <div class="cell land">${team}</div>
         <div class="cell poeng">${points.toFixed(1)}</div>
         <div class="cell flytt">
-          <button type="button"
-                  class="opp"
-                  data-index="${index}"
-                  ${index === 0 ? 'disabled' : ''}>(opp)</button>
-          <button type="button"
-                  class="ned"
-                  data-index="${index}"
-                  ${index === ordered.length - 1 ? 'disabled' : ''}>(ned)</button>
+          <button type="button" class="opp" data-index="${index}" ${okUp ? '' : 'disabled'}>(opp)</button>
+          <button type="button" class="ned" data-index="${index}" ${okDown ? '' : 'disabled'}>(ned)</button>
         </div>
       </div>
     `;
   });
 
-  // 6️⃣ Event listeners
+  // 7️⃣ Event listeners: swap i knockoutManualOrder, men basert på seedene i "ordered"
   table.querySelectorAll('button.opp, button.ned').forEach(btn => {
     btn.addEventListener('click', e => {
       const index = parseInt(e.currentTarget.dataset.index, 10);
       if (Number.isNaN(index)) return;
 
-      if (btn.classList.contains('opp') && index > 0) {
-        [knockoutManualOrder[index - 1], knockoutManualOrder[index]] =
-          [knockoutManualOrder[index], knockoutManualOrder[index - 1]];
+      const seedHere = ordered[index]?.seed;
+      const seedUp = ordered[index - 1]?.seed;
+      const seedDown = ordered[index + 1]?.seed;
+
+      if (!seedHere) return;
+
+      if (btn.classList.contains('opp') && index > 0 && seedUp) {
+        const iHere = knockoutManualOrder.indexOf(seedHere);
+        const iUp = knockoutManualOrder.indexOf(seedUp);
+        if (iHere >= 0 && iUp >= 0) {
+          [knockoutManualOrder[iHere], knockoutManualOrder[iUp]] =
+            [knockoutManualOrder[iUp], knockoutManualOrder[iHere]];
+        }
       }
 
-      if (btn.classList.contains('ned') && index < knockoutManualOrder.length - 1) {
-        [knockoutManualOrder[index + 1], knockoutManualOrder[index]] =
-          [knockoutManualOrder[index], knockoutManualOrder[index + 1]];
+      if (btn.classList.contains('ned') && index < ordered.length - 1 && seedDown) {
+        const iHere = knockoutManualOrder.indexOf(seedHere);
+        const iDown = knockoutManualOrder.indexOf(seedDown);
+        if (iHere >= 0 && iDown >= 0) {
+          [knockoutManualOrder[iHere], knockoutManualOrder[iDown]] =
+            [knockoutManualOrder[iDown], knockoutManualOrder[iHere]];
+        }
       }
 
-   updateKnockoutRankingAndTree();
+      updateKnockoutRankingAndTree();
     });
   });
 
   return ordered;
 }
-
-
 
 // -----------------------------
 // Sluttspill: seed -> lag + deltaker-rang (#)
