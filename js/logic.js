@@ -328,6 +328,7 @@ function handleThirdPlaceLinkClick(evt, thirdPlaceTeams) {
 
 export function updateThirdPlacedTeamsRanking() {
   const thirdPlaceTeams = [];
+  const EPS = 1e-9;
 
   // 1) Samle 3.-plass fra hver gruppe
   GROUPS.forEach(group => {
@@ -341,28 +342,54 @@ export function updateThirdPlacedTeamsRanking() {
     }
   });
 
-  // 2) Standard sortering (poeng) – brukes ved første init / når order mangler
-  thirdPlaceTeams.sort((a, b) => b.points - a.points);
+  // 2) Standard sortering: poeng (desc) og deretter landnavn (asc)
+  //    (dette er "riktig" default, i stedet for A->L ved lik poeng)
+  thirdPlaceTeams.sort((a, b) => {
+    const dp = b.points - a.points;
+    if (Math.abs(dp) > EPS) return dp;
+    return String(a.team).localeCompare(String(b.team), 'nb');
+  });
 
-  // 3) Init / sync manuell rekkefølge
-  // Hvis vi ikke har en manuell rekkefølge ennå, start med poengsortert rekkefølge
+  // 3) Init / sync manuell rekkefølge (lagres som grupper)
+  //    Start alltid fra standard-sortert rekkefølge ved første init / lengdeendring
   if (!thirdPlaceManualOrder || thirdPlaceManualOrder.length !== thirdPlaceTeams.length) {
     thirdPlaceManualOrder = thirdPlaceTeams.map(t => t.group);
   } else {
-    // Hvis grupper har endret seg (burde ikke i VM, men greit), synk
+    // synk hvis noe mangler/kommer til
     const current = new Set(thirdPlaceTeams.map(t => t.group));
     thirdPlaceManualOrder = thirdPlaceManualOrder.filter(g => current.has(g));
-    // legg til evt nye grupper bakerst
     thirdPlaceTeams.forEach(t => {
       if (!thirdPlaceManualOrder.includes(t.group)) thirdPlaceManualOrder.push(t.group);
     });
   }
 
-  // 4) Bruk manuell rekkefølge til å lage endelig rekkefølge i tabellen
-  const byGroup = new Map(thirdPlaceTeams.map(t => [t.group, t]));
-  const ordered = thirdPlaceManualOrder.map(g => byGroup.get(g)).filter(Boolean);
+  // 4) Bruk manuell rekkefølge KUN innenfor tie-grupper (poenglikhet)
+  //    - Uten tie: behold standard-sort (poeng + navn)
+  //    - Med tie: sorter kun den tie-blokken etter thirdPlaceManualOrder
+  const manualIndex = new Map(thirdPlaceManualOrder.map((g, i) => [g, i]));
 
-  // 5) Antall som går videre (VM 2026 = 8)
+  const ordered = [];
+  let i = 0;
+  while (i < thirdPlaceTeams.length) {
+    const start = i;
+    const p = thirdPlaceTeams[i].points;
+
+    // finn blokken med samme poeng
+    while (i < thirdPlaceTeams.length && Math.abs(thirdPlaceTeams[i].points - p) < EPS) {
+      i++;
+    }
+
+    const block = thirdPlaceTeams.slice(start, i);
+
+    if (block.length > 1) {
+      // tie-blokk: bruk manuell rekkefølge for gruppene (stabilt)
+      block.sort((a, b) => (manualIndex.get(a.group) ?? 1e9) - (manualIndex.get(b.group) ?? 1e9));
+    }
+
+    ordered.push(...block);
+  }
+
+  // 5) Antall som går videre (VM 2026 = ADVANCEMENT_RULES.bestThirdPlaced)
   const qualifiedCount = ADVANCEMENT_RULES.bestThirdPlaced;
   const qualified = ordered.slice(0, qualifiedCount);
 
@@ -380,11 +407,11 @@ export function updateThirdPlacedTeamsRanking() {
       </div>
     `;
 
-    // Hjelper for å avgjøre om flytting skal tillates (kun ved poenglikhet med nabo)
-    const isTie = (i, j) =>
-      i >= 0 && j >= 0 &&
-      i < ordered.length && j < ordered.length &&
-      Math.abs(ordered[i].points - ordered[j].points) < 1e-9;
+    // Kun tillat flytting ved poenglikhet med nabo (som før)
+    const isTie = (idx1, idx2) =>
+      idx1 >= 0 && idx2 >= 0 &&
+      idx1 < ordered.length && idx2 < ordered.length &&
+      Math.abs(ordered[idx1].points - ordered[idx2].points) < EPS;
 
     ordered.forEach(({ group, team, points }, index) => {
       const okUp = index > 0 && isTie(index, index - 1);
@@ -399,37 +426,45 @@ export function updateThirdPlacedTeamsRanking() {
           <div class="cell land">${team}</div>
           <div class="cell poeng">${points.toFixed(1)}</div>
           <div class="cell flytt">
-            <button type="button" class="move-up" data-index="${index}" ${okUp ? '' : 'disabled'}>
-              (opp)
-            </button>
-            <button type="button" class="move-down" data-index="${index}" ${okDown ? '' : 'disabled'}>
-              (ned)
-            </button>
+            <button type="button" class="move-up" data-index="${index}" ${okUp ? '' : 'disabled'}>(opp)</button>
+            <button type="button" class="move-down" data-index="${index}" ${okDown ? '' : 'disabled'}>(ned)</button>
           </div>
           <div class="cell status">${status}</div>
         </div>
       `;
     });
 
-    // 7) Bind events (buttons)
+    // 7) Bind events (buttons): oppdater manual order (men kun relevant innenfor tie-blokker)
     rankingTable.querySelectorAll('button.move-up, button.move-down').forEach(btn => {
       btn.addEventListener('click', (event) => {
         const b = event.currentTarget;
         const index = parseInt(b.dataset.index, 10);
         if (Number.isNaN(index)) return;
 
-        if (b.classList.contains('move-up') && index > 0) {
-          // swap i tredjeplass-ordren
-          [thirdPlaceManualOrder[index - 1], thirdPlaceManualOrder[index]] =
-            [thirdPlaceManualOrder[index], thirdPlaceManualOrder[index - 1]];
+        // Finn gruppen som står på denne raden i "ordered"
+        const gHere = ordered[index]?.group;
+        const gUp = ordered[index - 1]?.group;
+        const gDown = ordered[index + 1]?.group;
+
+        if (b.classList.contains('move-up') && index > 0 && gHere && gUp) {
+          // swap i manual order mellom disse to gruppene
+          const iHere = thirdPlaceManualOrder.indexOf(gHere);
+          const iUp = thirdPlaceManualOrder.indexOf(gUp);
+          if (iHere >= 0 && iUp >= 0) {
+            [thirdPlaceManualOrder[iHere], thirdPlaceManualOrder[iUp]] =
+              [thirdPlaceManualOrder[iUp], thirdPlaceManualOrder[iHere]];
+          }
         }
 
-        if (b.classList.contains('move-down') && index < thirdPlaceManualOrder.length - 1) {
-          [thirdPlaceManualOrder[index + 1], thirdPlaceManualOrder[index]] =
-            [thirdPlaceManualOrder[index], thirdPlaceManualOrder[index + 1]];
+        if (b.classList.contains('move-down') && index < ordered.length - 1 && gHere && gDown) {
+          const iHere = thirdPlaceManualOrder.indexOf(gHere);
+          const iDown = thirdPlaceManualOrder.indexOf(gDown);
+          if (iHere >= 0 && iDown >= 0) {
+            [thirdPlaceManualOrder[iHere], thirdPlaceManualOrder[iDown]] =
+              [thirdPlaceManualOrder[iDown], thirdPlaceManualOrder[iHere]];
+          }
         }
 
-        // Re-render + oppdater sluttspill
         updateThirdPlacedTeamsRanking();
         updateKnockoutRankingAndTree();
       });
