@@ -186,7 +186,7 @@ nav ul li a:hover {
    =========================== */
 
 .container[class*="container-"] {
-  max-height: 500px;   /* eller hva som passer */
+  max-height: 1500px;   /* eller hva som passer */
   overflow-y: auto;
 }
 
@@ -273,6 +273,8 @@ nav ul li a:hover {
 .rangeringAllTeams,
 .rangering {
   display: table;
+  width: 100%;
+  border-collapse: collapse;
 }
 
 .cell.poeng-h,
