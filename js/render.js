@@ -6,7 +6,7 @@ export function renderGroup(groupLetter, mountId = null) {
     return;
   }
   console.log("renderGroup:", groupLetter, "rootId:", rootId);
-  const containerClass = `container container-${groupLetter}`;
+  const containerClass = `container group-container container-${groupLetter}`;
 
   // Bygg kamp-rader 01-06
   let matchRows = "";
