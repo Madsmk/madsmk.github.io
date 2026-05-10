@@ -169,22 +169,3 @@ export function buildFinalMatchups(sf) {
   };
 }
 
-function orderByNextRound(currentMatches, nextMatches) {
-  const byNo = new Map(currentMatches.map(m => [m.matchNo, m]));
-  const out = [];
-
-  // Gå gjennom neste runde i ønsket rekkefølge, og ta 'from'-matchene i den rekkefølgen
-  nextMatches.forEach(nm => {
-    (nm.from ?? []).forEach(srcNo => {
-      const m = byNo.get(srcNo);
-      if (m) out.push(m);
-    });
-  });
-
-  // fallback: hvis noe mangler (burde ikke), legg til resten
-  const used = new Set(out.map(m => m.matchNo));
-  currentMatches.forEach(m => { if (!used.has(m.matchNo)) out.push(m); });
-
-  return out;
-}
-
