@@ -16,6 +16,7 @@ body {
     align-items: center;
     padding: 10px;
     background: linear-gradient(135deg, #71b7e6, #9b59b6);
+    overflow-x: hidden;
 }
 
 .containerUserDetails {
@@ -125,9 +126,10 @@ nav ul li a:hover {
     max-width: 1100px;
     width: 100%;
     background: #fff;
-    padding: 25px;
+    /*padding: 25px;*/
     border-radius: 15px;
     margin-top: 20px;
+    box-sizing: border-box;
 }
 
 .title {
@@ -144,20 +146,29 @@ nav ul li a:hover {
     color: transparent; /* Fallback for text-fill-color */
 }
 
-/*.table {*/
-/*    display: table;*/
-/*    width: 100%;*/
-/*    border-collapse: collapse;*/
-/*}*/
+/* Base tabell (for ALT som ikke er gruppespill) */
+.table {
+  display: table;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.header, .row {
+  display: table-row;
+}
+
+.cell {
+  display: table-cell;
+  border: 1px solid #dddddd;
+  padding: 8px;
+  text-align: center;
+  vertical-align: middle;
+}
 
 /* Kun gruppespill-tabeller */
 .container .table {
     table-layout: fixed;
 }
-
-/*.header, .row {*/
-/*    display: table-row;*/
-/*}*/
 
 .header .cell, .rangOverskrift .cell {
     font-weight: bold; /* Make the text bold */
@@ -165,15 +176,6 @@ nav ul li a:hover {
     padding: 8px;
     text-align: center;
 }
-
-/*.cell {*/
-/*    display: table-cell;*/
-/*    border: 1px solid #dddddd;*/
-/*    padding: 8px;*/
-/*    text-align: center;*/
-/*    vertical-align: middle;*/
-/*}*/
-
 
 .table .cell {
     overflow: hidden;
@@ -186,7 +188,7 @@ nav ul li a:hover {
    =========================== */
 
 /* Kun gruppespill-tabeller: container container-<gruppe> */
-.[class^="container container-"] .table {
+.container.group-container .table {
   display: grid;
   width: 100%;
   border-collapse: unset; /* irrelevant i grid, men greit */
@@ -199,13 +201,13 @@ nav ul li a:hover {
 }
 
 /* La header og rader "slippe gjennom" slik at .cell blir grid-items */
-.[class^="container container-"] .header,
-.[class^="container container-"] .row {
+.container.group-container .header,
+.container.group-container .row {
   display: contents;
 }
 
 /* Cell-stil (gjelder både header og rader) */
-.[class^="container container-"] .cell {
+.container.group-container .cell {
   border: 1px solid #dddddd;
   padding: 8px;
   text-align: center;
@@ -222,13 +224,13 @@ nav ul li a:hover {
 }
 
 /* Header-celler */
-.[class^="container container-"] .header .cell {
+.container.group-container .header .cell {
   font-weight: bold;
   background-color: #f2f2f2;
 }
 
 /* Sticky header i gruppespill-tabellen */
-.[class^="container container-"] .header .cell {
+.container.group-container .header .cell {
   position: sticky;
   top: 0;
   z-index: 5;
@@ -237,26 +239,26 @@ nav ul li a:hover {
 }
 
 /* Litt skygge for bedre effekt */
-.[class^="container container-"] .header .cell {
+.container.group-container .header .cell {
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   border-bottom: 2px
 }
 
 /* Venstrejuster Hjemmelag/Bortelag */
-.[class^="container container-"] .cell.home,
-.[class^="container container-"] .cell.away {
+.container.group-container .cell.home,
+.container.group-container .cell.away {
   justify-content: flex-start;
 }
 
 /* La Tips-cellen få plass til knapper uten ellipsis */
-.[class^="container container-"] .cell:nth-child(3) {
+.container.group-container .cell:nth-child(3) {
   white-space: normal;
   overflow: visible;
 }
 
 /* Tips- og dobling-innhold midtstilles fint */
-.[class^="container container-"] .table .tips,
-.[class^="container container-"] .table .dobling {
+.container.group-container .table .tips,
+.container.group-container .table .dobling {
   width: 100%;
   display: flex;
   justify-content: center;
