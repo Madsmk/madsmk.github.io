@@ -178,39 +178,34 @@ nav ul li a:hover {
 .table .cell {
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
+    white-space: normal;
 }
 
 /* ===========================
    GRID-TABELL (gruppespill)
    =========================== */
 
-.container[class*="container-"] {
-  max-height: 1500px;   /* eller hva som passer */
-  overflow-y: auto;
-}
-
 /* Kun gruppespill-tabeller: container container-<gruppe> */
-.container[class*="container-"] .table {
+.[class^="container container-"] .table {
   display: grid;
   width: 100%;
   border-collapse: unset; /* irrelevant i grid, men greit */
   
   /* 8 kolonner: Hjemme | Borte | Tips | Dobling | Poeng H | Poeng U | Poeng B | Maks BP */
-  grid-template-columns: 22% 22% 26% 8% 7% 7% 7% 7%;
+  grid-template-columns: 16% 16% 23% 9% 9% 9% 9% 9%;
   
   /* litt luft mellom rader/kolonner */
   gap: 0;
 }
 
 /* La header og rader "slippe gjennom" slik at .cell blir grid-items */
-.container[class*="container-"] .header,
-.container[class*="container-"] .row {
+.[class^="container container-"] .header,
+.[class^="container container-"] .row {
   display: contents;
 }
 
 /* Cell-stil (gjelder både header og rader) */
-.container[class*="container-"] .cell {
+.[class^="container container-"] .cell {
   border: 1px solid #dddddd;
   padding: 8px;
   text-align: center;
@@ -223,17 +218,17 @@ nav ul li a:hover {
   
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 /* Header-celler */
-.container[class*="container-"] .header .cell {
+.[class^="container container-"] .header .cell {
   font-weight: bold;
   background-color: #f2f2f2;
 }
 
 /* Sticky header i gruppespill-tabellen */
-.container[class*="container-"] .header .cell {
+.[class^="container container-"] .header .cell {
   position: sticky;
   top: 0;
   z-index: 5;
@@ -242,26 +237,26 @@ nav ul li a:hover {
 }
 
 /* Litt skygge for bedre effekt */
-.container[class*="container-"] .header .cell {
+.[class^="container container-"] .header .cell {
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   border-bottom: 2px
 }
 
 /* Venstrejuster Hjemmelag/Bortelag */
-.container[class*="container-"] .cell.home,
-.container[class*="container-"] .cell.away {
+.[class^="container container-"] .cell.home,
+.[class^="container container-"] .cell.away {
   justify-content: flex-start;
 }
 
 /* La Tips-cellen få plass til knapper uten ellipsis */
-.container[class*="container-"] .cell:nth-child(3) {
+.[class^="container container-"] .cell:nth-child(3) {
   white-space: normal;
   overflow: visible;
 }
 
 /* Tips- og dobling-innhold midtstilles fint */
-.container[class*="container-"] .table .tips,
-.container[class*="container-"] .table .dobling {
+.[class^="container container-"] .table .tips,
+.[class^="container container-"] .table .dobling {
   width: 100%;
   display: flex;
   justify-content: center;
