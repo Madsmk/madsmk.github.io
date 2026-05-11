@@ -153,11 +153,13 @@ nav ul li a:hover {
   border-collapse: collapse;
 }
 
-.header, .row {
+
+.table .header, 
+.table .row {
   display: table-row;
 }
 
-.cell {
+.table .cell {
   display: table-cell;
   border: 1px solid #dddddd;
   padding: 8px;
@@ -177,7 +179,7 @@ nav ul li a:hover {
     text-align: center;
 }
 
-.table .cell {
+.container.group-container .table .cell {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: normal;
