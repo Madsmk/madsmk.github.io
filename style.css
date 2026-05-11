@@ -146,128 +146,11 @@ nav ul li a:hover {
     color: transparent; /* Fallback for text-fill-color */
 }
 
-/* Base tabell (for ALT som ikke er gruppespill) */
-.table {
-  display: table;
-  width: 100%;
-  border-collapse: collapse;
-}
+/* =======================================================
+   BASE TABELL (GJELDER ALLE TABELLER)
+   ======================================================= */
 
-
-.table .header, 
-.table .row {
-  display: table-row;
-}
-
-.table .cell {
-  display: table-cell;
-  border: 1px solid #dddddd;
-  padding: 8px;
-  text-align: center;
-  vertical-align: middle;
-}
-
-/* Kun gruppespill-tabeller */
-.container .table {
-    table-layout: fixed;
-}
-
-.header .cell, .rangOverskrift .cell {
-    font-weight: bold; /* Make the text bold */
-    background-color: #f2f2f2; /* Light gray background */
-    padding: 8px;
-    text-align: center;
-}
-
-.container.group-container .table .cell {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: normal;
-}
-
-/* ===========================
-   GRID-TABELL (gruppespill)
-   =========================== */
-
-/* Kun gruppespill-tabeller: container container-<gruppe> */
-.container.group-container .table {
-  display: grid;
-  width: 100%;
-  border-collapse: unset; /* irrelevant i grid, men greit */
-  
-  /* 8 kolonner: Hjemme | Borte | Tips | Dobling | Poeng H | Poeng U | Poeng B | Maks BP */
-  grid-template-columns: 16% 16% 23% 9% 9% 9% 9% 9%;
-  
-  /* litt luft mellom rader/kolonner */
-  gap: 0;
-}
-
-/* La header og rader "slippe gjennom" slik at .cell blir grid-items */
-.container.group-container .header,
-.container.group-container .row {
-  display: contents;
-}
-
-/* Cell-stil (gjelder både header og rader) */
-.container.group-container .cell {
-  border: 1px solid #dddddd;
-  padding: 8px;
-  text-align: center;
-  vertical-align: middle; /* har ingen effekt i grid, men ok */
-  
-  /* viktig for høydejustering */
-  display: flex;
-  align-items: center;     /* ✅ vertikal midtstilling */
-  justify-content: center; /* horisontal midt som standard */
-  
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: normal;
-}
-
-/* Header-celler */
-.container.group-container .header .cell {
-  font-weight: bold;
-  background-color: #f2f2f2;
-}
-
-/* Sticky header i gruppespill-tabellen */
-.container.group-container .header .cell {
-  position: sticky;
-  top: 0;
-  z-index: 5;
-
-  background: #f2f2f2;   /* VIKTIG: ellers blir den transparent */
-}
-
-/* Litt skygge for bedre effekt */
-.container.group-container .header .cell {
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  border-bottom: 2px
-}
-
-/* Venstrejuster Hjemmelag/Bortelag */
-.container.group-container .cell.home,
-.container.group-container .cell.away {
-  justify-content: flex-start;
-}
-
-/* La Tips-cellen få plass til knapper uten ellipsis */
-.container.group-container .cell:nth-child(3) {
-  white-space: normal;
-  overflow: visible;
-}
-
-/* Tips- og dobling-innhold midtstilles fint */
-.container.group-container .table .tips,
-.container.group-container .table .dobling {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-}
-
+.table,
 .sluttspillTable,
 .rangeringAllTeams,
 .rangering {
@@ -275,6 +158,202 @@ nav ul li a:hover {
   width: 100%;
   border-collapse: collapse;
 }
+
+.table .header,
+.table .row,
+.sluttspillTable .rangOverskrift,
+.sluttspillTable .rad,
+.rangeringAllTeams .rangOverskrift,
+.rangeringAllTeams .rad,
+.rangering .rangOverskrift,
+.rangering .rad {
+  display: table-row;
+}
+
+.table .cell,
+.sluttspillTable .cell,
+.rangeringAllTeams .cell,
+.rangering .cell {
+  display: table-cell;
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+
+/* =======================================================
+   FELLES STYLING (IKKE LAYOUT)
+   ======================================================= */
+
+.header .cell,
+.rangOverskrift .cell {
+  font-weight: bold;
+  background-color: #f2f2f2;
+}
+
+.cell {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+}
+
+
+/* =======================================================
+   GRUPPESPILL – GRID (ISOLERT!)
+   ======================================================= */
+
+.container.group-container .table {
+  display: grid;
+  grid-template-columns: 16% 16% 23% 9% 9% 9% 9% 9%;
+}
+
+/* Slipp struktur */
+.container.group-container .header,
+.container.group-container .row {
+  display: contents;
+}
+
+/* Overstyr cell KUN for gruppespill */
+.container.group-container .cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Venstrejuster lag */
+.container.group-container .cell.home,
+.container.group-container .cell.away {
+  justify-content: flex-start;
+}
+
+/* Tips/dobling layout */
+.container.group-container .tips,
+.container.group-container .dobling {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+
+/* =======================================================
+   STICKY HEADER (KUN GRUPPESPILL)
+   ======================================================= */
+
+.container.group-container .header .cell {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: #f2f2f2;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+
+/* =======================================================
+   RANGERING TABELL SPESIFIKT
+   ======================================================= */
+
+.rangering {
+  width: 40%;
+}
+
+.rangering .cell.land {
+  text-align: left;
+}
+
+
+/* =======================================================
+   SLUTTSPILL TABELL SPESIFIKT
+   ======================================================= */
+
+.sluttspillTable .rad:nth-child(2),
+.sluttspillTable .rad:nth-child(3),
+.sluttspillTable .rad:nth-child(4) {
+  background-color: #aaffaa;
+}
+
+
+/* =======================================================
+   UI KOMPONENTER (uforandret)
+   ======================================================= */
+
+.tips {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+}
+
+.dobling {
+  display: flex;
+  justify-content: center;
+}
+
+
+/* Tips-knapper */
+.tip-option {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: #f5f5f5;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tip-option .dot {
+  display: none;
+}
+
+.tip-option .utfall {
+  font-weight: 600;
+}
+
+.tip-option:hover {
+  background: #eaeaea;
+}
+
+.tip-option:has(input:checked) {
+  background: #176f08;
+  color: white;
+}
+
+
+/* Dobling */
+.double-option input {
+  display: none;
+}
+
+.double-button {
+  width: 44px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: #f5f5f5;
+  cursor: pointer;
+}
+
+.double-option:has(input:checked) .double-button {
+  background: #176f08;
+  color: white;
+}
+
+
+/* =======================================================
+   GLOBAL FIXES
+   ======================================================= */
+
+/* Fjern side-scroll */
+body {
+  overflow-x: hidden;
+}
+
 
 .cell.poeng-h,
 .cell.poeng-u,
@@ -310,18 +389,18 @@ nav ul li a:hover {
   color: #800000; /* rød */
 }
 
-.rangering {
-    display: table;
-    width: 40%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
+/*.rangering {*/
+/*    display: table;*/
+/*    width: 40%;*/
+/*    border-collapse: collapse;*/
+/*    margin-top: 20px;*/
+/*}*/
 
 /* Venstrejuster landnavn i alle ranking-tabeller */
-.rangering .cell.land {
-  text-align: left;
-  padding-left: 6px;
-}
+/*.rangering .cell.land {*/
+/*  text-align: left;*/
+/*  padding-left: 6px;*/
+/*}*/
 
 .rangOverskrift, .rad {
     display: table-row;
