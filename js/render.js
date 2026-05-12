@@ -103,7 +103,7 @@ export function renderGroup(groupLetter, mountId = null) {
             <div class="cell">Poeng H</div>
             <div class="cell">Poeng U</div>
             <div class="cell">Poeng B</div>
-            <div class="cell">Maks BP*</div>
+            <div class="cell">Maks bonus</div>
           </div>
 
           ${matchRows}
