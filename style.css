@@ -160,20 +160,21 @@ nav ul li a:hover {
 }
 
 .table .header,
-.table .row,
-.sluttspillTable .rangOverskrift,
-.sluttspillTable .rad,
-.rangeringAllTeams .rangOverskrift,
-.rangeringAllTeams .rad,
-.rangering .rangOverskrift,
-.rangering .rad {
+.table .row {
   display: table-row;
 }
 
-.table .cell,
-.sluttspillTable .cell,
-.rangeringAllTeams .cell,
-.rangering .cell {
+.sluttspillTable .rangOverskrift,
+.sluttspillTable .rad {
+  display: table-row;
+}
+
+.rangeringAllTeams .rangOverskrift,
+.rangeringAllTeams .rad {
+  display: table-row;
+}
+
+.table .cell {
   display: table-cell;
   border: 1px solid #ddd;
   padding: 8px;
@@ -181,6 +182,23 @@ nav ul li a:hover {
   vertical-align: middle;
 }
 
+.sluttspillTable .cell {
+  display: table-cell;
+}
+
+.rangeringAllTeams .cell {
+  display: table-cell;
+}
+
+.rangering .cell {
+  display: table-cell;
+}
+
+.rangeringAllTeams,
+.sluttspillTable,
+.rangering {
+  table-layout: fixed;
+}
 
 /* =======================================================
    FELLES STYLING (IKKE LAYOUT)
@@ -424,27 +442,6 @@ body {
   text-decoration: none;
 }
 
-/*.rangOverskrift, .rad {*/
-/*    display: table-row;*/
-/*}*/
-
-/*.rangOverskrift .cell, .rad .cell {*/
-/*    padding: 8px;*/
-/*    text-align: center;*/
-/*}*/
-
-/*.rangOverskrift .plass, .rad .plass {*/
-/*    width: 30%; /* Set a smaller percentage width for the first column */*/
-/*}*/
-
-/*.rangOverskrift .land, .rad .land {*/
-/*    width: 100%; /* Set a wider percentage width for the other columns */*/
-/*}*/
-
-/*.rangOverskrift .poeng, .rad .poeng {*/
-/*    width: 70%; /* Set a wider percentage width for the other columns */*/
-/*}*/
-
 .instructions {
     flex: 1; /* Takes remaining 50% of the width */
     padding: 10px; /* Optional padding */
@@ -514,115 +511,6 @@ body {
     font-size: smaller;
 }
 
-/* ---- Modernisert: label-wrap for tips ---- */
-
-/*.tips {*/
-/*    display: flex;*/
-/*    gap: 12px;*/
-/*    justify-content: center;*/
-/*    align-items: center;*/
-/*}*/
-
-/*.dobling {*/
-/*  display: flex;*/
-/*  justify-content: center;*/
-/*}*/
-
-/*.tip-option {*/
-/*  display: inline-flex;*/
-/*  align-items: center;*/
-/*  justify-content: center;*/
-
-/*  width: 40px;*/
-/*  height: 40px;*/
-
-/*  border: 1px solid #ccc;*/
-/*  border-radius: 8px;*/
-/*  background: #f5f5f5;*/
-
-/*  cursor: pointer;*/
-/*  user-select: none;*/
-
-/*  transition: all 0.15s ease;*/
-/*}*/
-
-/* Skjul dot helt */
-/*.tip-option .dot {*/
-/*  display: none;*/
-/*}*/
-
-/* Teksten (H/U/B) */
-/*.tip-option .utfall {*/
-/*  font-weight: 600;*/
-/*  font-size: 14px;*/
-/*}*/
-
-/* Hover */
-/*.tip-option:hover {*/
-/*  background: #eaeaea;*/
-/*}*/
-
-/* Når valgt */
-/*.tip-option:has(input:checked) {*/
-/*  background: #176f08;*/
-/*  color: white;*/
-/*  border-color: #176f08;*/
-/*}*/
-
-/* Fokus */
-/*.tip-option:has(input:focus-visible) {*/
-/*  outline: 2px solid #176f08;*/
-/*}*/
-
-/*.double-option {*/
-/*  display: inline-flex;*/
-/*  align-items: center;*/
-/*}*/
-
-/* skjul radio */
-/*.double-option input {*/
-/*  display: none;*/
-/*}*/
-
-/* selve knappen */
-/*.double-option .double-button {*/
-/*  width: 44px;*/
-/*  height: 32px;*/
-
-/*  display: flex;*/
-/*  align-items: center;*/
-/*  justify-content: center;*/
-
-/*  border: 1px solid #ccc;*/
-/*  border-radius: 8px;*/
-
-/*  background: #f5f5f5;*/
-/*  font-weight: 600;*/
-/*  font-size: 13px;*/
-/*  color: #333;*/
-
-/*  cursor: pointer;*/
-/*  transition: all 0.15s ease;*/
-/*}*/
-
-/* hover */
-/*.double-option:hover .double-button {*/
-/*  background: #eaeaea;*/
-/*}*/
-
-/* valgt */
-/*.double-option:has(input:checked) .double-button {*/
-/*  background: #176f08;*/
-/*  color: white;*/
-/*  border-color: #176f08;*/
-/*}*/
-
-/* fokus */
-/*.double-option:has(input:focus-visible) .double-button {*/
-/*  outline: 2px solid #176f08;*/
-/*}*/
-
-
 .match:has(.winner) {
   opacity: 0.9;
 }
@@ -630,7 +518,6 @@ body {
 .match:has(.loser) {
   opacity: 0.85;
 }
-
 
 #bracket-lines {
   position: absolute;
