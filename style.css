@@ -150,18 +150,12 @@ nav ul li a:hover {
    BASE TABELL (GJELDER ALLE TABELLER)
    ======================================================= */
 
-.table,
 .sluttspillTable,
 .rangeringAllTeams,
 .rangering {
   display: table;
   width: 100%;
   border-collapse: collapse;
-}
-
-.table .header,
-.table .row {
-  display: table-row;
 }
 
 .sluttspillTable .rangOverskrift,
@@ -172,14 +166,6 @@ nav ul li a:hover {
 .rangeringAllTeams .rangOverskrift,
 .rangeringAllTeams .rad {
   display: table-row;
-}
-
-.table .cell {
-  display: table-cell;
-  border: 1px solid #ddd;
-  padding: 8px;
-  text-align: center;
-  vertical-align: middle;
 }
 
 .sluttspillTable .cell {
@@ -198,6 +184,54 @@ nav ul li a:hover {
 .sluttspillTable,
 .rangering {
   table-layout: fixed;
+}
+
+/* ✅ Rangeringstabell - struktur */
+.rangering {
+  display: table;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.rangering .rangOverskrift,
+.rangering .rad {
+  display: table-row;
+}
+
+.rangering .cell {
+  display: table-cell;
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.rangeringAllTeams {
+  display: table;
+  width: 100%;
+}
+
+.rangeringAllTeams .rangOverskrift,
+.rangeringAllTeams .rad {
+  display: table-row;
+}
+
+.rangeringAllTeams .cell {
+  display: table-cell;
+}
+
+.sluttspillTable {
+  display: table;
+  width: 100%;
+}
+
+.sluttspillTable .rangOverskrift,
+.sluttspillTable .rad {
+  display: table-row;
+}
+
+.sluttspillTable .cell {
+  display: table-cell;
 }
 
 /* =======================================================
