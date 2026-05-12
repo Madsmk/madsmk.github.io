@@ -159,6 +159,16 @@ nav ul li a:hover {
   border-collapse: collapse;
 }
 
+.rangering::before {
+  content: "";
+  display: table-header-group;
+}
+
+.rangering::after {
+  content: "";
+  display: table-row-group;
+}
+
 .table .header,
 .table .row {
   display: table-row;
@@ -200,13 +210,6 @@ nav ul li a:hover {
   table-layout: fixed;
 }
 
-/* ✅ Rangeringstabell - struktur */
-.rangering {
-  display: table;
-  width: 100%;
-  border-collapse: collapse;
-}
-
 .rangering .rangOverskrift,
 .rangering .rad {
   display: table-row;
@@ -238,6 +241,14 @@ nav ul li a:hover {
 .rangeringAllTeams .rad,
 .sluttspillTable .rad {
   display: table-row !important;
+}
+
+.rangering .rangOverskrift {
+  display: table-header-group;
+}
+
+.rangering .rad {
+  display: table-row;
 }
 
 /* =======================================================
@@ -693,4 +704,12 @@ body {
   font-size: 12px;
   margin: 10px 0 6px;
   color: #666;
+}
+
+
+/* 💥 Reset for rangeringstabeller */
+.rangering .cell,
+.rangeringAllTeams .cell,
+.sluttspillTable .cell {
+  display: table-cell !important;
 }
