@@ -517,6 +517,13 @@ body {
   text-decoration: none;
 }
 
+.rangeringAllTeams .plass   { width: 10%; }
+.rangeringAllTeams .gruppe  { width: 10%; }
+.rangeringAllTeams .land    { width: 40%; text-align: left; }
+.rangeringAllTeams .poeng   { width: 15%; }
+.rangeringAllTeams .flytt   { width: 15%; }
+.rangeringAllTeams .status  { width: 10%; }
+
 .instructions {
     flex: 1; /* Takes remaining 50% of the width */
     padding: 10px; /* Optional padding */
@@ -569,6 +576,12 @@ body {
     margin-top: 20px;
     /*table-layout: fixed;  Set table layout to fixed */
 }
+
+.sluttspillTable .plass { width: 10%; }
+.sluttspillTable .seed  { width: 15%; }
+.sluttspillTable .land  { width: 45%; text-align: left; }
+.sluttspillTable .poeng { width: 15%; }
+.sluttspillTable .flytt { width: 15%; }
 
 /* Winner and loser styles */
 .winner {
