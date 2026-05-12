@@ -261,18 +261,6 @@ nav ul li a:hover {
   text-align: left;
 }
 
-
-/* =======================================================
-   SLUTTSPILL TABELL SPESIFIKT
-   ======================================================= */
-
-/*.sluttspillTable .rad:nth-child(2),*/
-/*.sluttspillTable .rad:nth-child(3),*/
-/*.sluttspillTable .rad:nth-child(4) {*/
-/*  background-color: #aaffaa;*/
-/*}*/
-
-
 /* =======================================================
    UI KOMPONENTER (uforandret)
    ======================================================= */
@@ -388,40 +376,6 @@ body {
 .cell.poeng-bp[data-value^="-"]::after {
   color: #800000; /* rød */
 }
-
-/*.rangering {*/
-/*    display: table;*/
-/*    width: 40%;*/
-/*    border-collapse: collapse;*/
-/*    margin-top: 20px;*/
-/*}*/
-
-/* Venstrejuster landnavn i alle ranking-tabeller */
-/*.rangering .cell.land {*/
-/*  text-align: left;*/
-/*  padding-left: 6px;*/
-/*}*/
-
-.rangOverskrift, .rad {
-    display: table-row;
-}
-
-.rangOverskrift .cell, .rad .cell {
-    padding: 8px;
-    text-align: center;
-}
-
-.rangOverskrift .plass, .rad .plass {
-    width: 15%; /* Set a smaller percentage width for the first column */
-}
-
-.rangOverskrift .land, .rad .land {
-    width: 50%; /* Set a wider percentage width for the other columns */
-}
-
-.rangOverskrift .poeng, .rad .poeng {
-    width: 35%; /* Set a wider percentage width for the other columns */
-}
     
 .containerThirdPlaceRanking {
     max-width: 1100px;
@@ -470,30 +424,25 @@ body {
   text-decoration: none;
 }
 
-.rangOverskrift, .rad {
-    display: table-row;
-}
+/*.rangOverskrift, .rad {*/
+/*    display: table-row;*/
+/*}*/
 
-.rangOverskrift .cell, .rad .cell {
-    padding: 8px;
-    text-align: center;
-}
+/*.rangOverskrift .cell, .rad .cell {*/
+/*    padding: 8px;*/
+/*    text-align: center;*/
+/*}*/
 
-.rangOverskrift .plass, .rad .plass {
-    width: 30%; /* Set a smaller percentage width for the first column */
-}
+/*.rangOverskrift .plass, .rad .plass {*/
+/*    width: 30%; /* Set a smaller percentage width for the first column */*/
+/*}*/
 
-.rangOverskrift .land, .rad .land {
-    width: 100%; /* Set a wider percentage width for the other columns */
-}
+/*.rangOverskrift .land, .rad .land {*/
+/*    width: 100%; /* Set a wider percentage width for the other columns */*/
+/*}*/
 
-.rangOverskrift .poeng, .rad .poeng {
-    width: 70%; /* Set a wider percentage width for the other columns */
-}
-
-/* Highlighting the first three ranks */
-/*.rangeringAllTeams .rad:nth-child(2), .rangeringAllTeams .rad:nth-child(3), .rangeringAllTeams .rad:nth-child(4), .rangeringAllTeams .rad:nth-child(5) {*/
-/*    background-color: #aaffaa; /* Light green for rank 1 */*/
+/*.rangOverskrift .poeng, .rad .poeng {*/
+/*    width: 70%; /* Set a wider percentage width for the other columns */*/
 /*}*/
 
 .instructions {
@@ -549,38 +498,6 @@ body {
     /*table-layout: fixed;  Set table layout to fixed */
 }
 
-.rangOverskrift, .rad {
-    display: table-row;
-}
-
-.rangOverskrift .cell, .rad .cell {
-    padding: 8px;
-    text-align: center;
-}
-
-.rangOverskrift .plass, .rad .plass {
-    width: 30%; /* Set a smaller percentage width for the first column */
-}
-
-.rangOverskrift .land, .rad .land {
-    width: 100%; /* Set a wider percentage width for the other columns */
-}
-
-.rangOverskrift .poeng, .rad .poeng {
-    width: 70%; /* Set a wider percentage width for the other columns */
-}
-
-/* Highlighting the first three ranks */
-.sluttspillTable .rad:nth-child(2), .sluttspillTable .rad:nth-child(3), .sluttspillTable .rad:nth-child(4) {
-    background-color: #aaffaa; /* Light green for rank 1 */
-}
-
-.instructions {
-    flex: 1; /* Takes remaining 50% of the width */
-    padding: 10px; /* Optional padding */
-    background-color: #f9f9f9; /* Optional styling for instructions */
-}
-
 /* Winner and loser styles */
 .winner {
     font-weight: bold;
@@ -599,111 +516,111 @@ body {
 
 /* ---- Modernisert: label-wrap for tips ---- */
 
-.tips {
-    display: flex;
-    gap: 12px;
-    justify-content: center;
-    align-items: center;
-}
+/*.tips {*/
+/*    display: flex;*/
+/*    gap: 12px;*/
+/*    justify-content: center;*/
+/*    align-items: center;*/
+/*}*/
 
-.dobling {
-  display: flex;
-  justify-content: center;
-}
+/*.dobling {*/
+/*  display: flex;*/
+/*  justify-content: center;*/
+/*}*/
 
-.tip-option {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+/*.tip-option {*/
+/*  display: inline-flex;*/
+/*  align-items: center;*/
+/*  justify-content: center;*/
 
-  width: 40px;
-  height: 40px;
+/*  width: 40px;*/
+/*  height: 40px;*/
 
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background: #f5f5f5;
+/*  border: 1px solid #ccc;*/
+/*  border-radius: 8px;*/
+/*  background: #f5f5f5;*/
 
-  cursor: pointer;
-  user-select: none;
+/*  cursor: pointer;*/
+/*  user-select: none;*/
 
-  transition: all 0.15s ease;
-}
+/*  transition: all 0.15s ease;*/
+/*}*/
 
 /* Skjul dot helt */
-.tip-option .dot {
-  display: none;
-}
+/*.tip-option .dot {*/
+/*  display: none;*/
+/*}*/
 
 /* Teksten (H/U/B) */
-.tip-option .utfall {
-  font-weight: 600;
-  font-size: 14px;
-}
+/*.tip-option .utfall {*/
+/*  font-weight: 600;*/
+/*  font-size: 14px;*/
+/*}*/
 
 /* Hover */
-.tip-option:hover {
-  background: #eaeaea;
-}
+/*.tip-option:hover {*/
+/*  background: #eaeaea;*/
+/*}*/
 
 /* Når valgt */
-.tip-option:has(input:checked) {
-  background: #176f08;
-  color: white;
-  border-color: #176f08;
-}
+/*.tip-option:has(input:checked) {*/
+/*  background: #176f08;*/
+/*  color: white;*/
+/*  border-color: #176f08;*/
+/*}*/
 
 /* Fokus */
-.tip-option:has(input:focus-visible) {
-  outline: 2px solid #176f08;
-}
+/*.tip-option:has(input:focus-visible) {*/
+/*  outline: 2px solid #176f08;*/
+/*}*/
 
-.double-option {
-  display: inline-flex;
-  align-items: center;
-}
+/*.double-option {*/
+/*  display: inline-flex;*/
+/*  align-items: center;*/
+/*}*/
 
 /* skjul radio */
-.double-option input {
-  display: none;
-}
+/*.double-option input {*/
+/*  display: none;*/
+/*}*/
 
 /* selve knappen */
-.double-option .double-button {
-  width: 44px;
-  height: 32px;
+/*.double-option .double-button {*/
+/*  width: 44px;*/
+/*  height: 32px;*/
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/*  display: flex;*/
+/*  align-items: center;*/
+/*  justify-content: center;*/
 
-  border: 1px solid #ccc;
-  border-radius: 8px;
+/*  border: 1px solid #ccc;*/
+/*  border-radius: 8px;*/
 
-  background: #f5f5f5;
-  font-weight: 600;
-  font-size: 13px;
-  color: #333;
+/*  background: #f5f5f5;*/
+/*  font-weight: 600;*/
+/*  font-size: 13px;*/
+/*  color: #333;*/
 
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
+/*  cursor: pointer;*/
+/*  transition: all 0.15s ease;*/
+/*}*/
 
 /* hover */
-.double-option:hover .double-button {
-  background: #eaeaea;
-}
+/*.double-option:hover .double-button {*/
+/*  background: #eaeaea;*/
+/*}*/
 
 /* valgt */
-.double-option:has(input:checked) .double-button {
-  background: #176f08;
-  color: white;
-  border-color: #176f08;
-}
+/*.double-option:has(input:checked) .double-button {*/
+/*  background: #176f08;*/
+/*  color: white;*/
+/*  border-color: #176f08;*/
+/*}*/
 
 /* fokus */
-.double-option:has(input:focus-visible) .double-button {
-  outline: 2px solid #176f08;
-}
+/*.double-option:has(input:focus-visible) .double-button {*/
+/*  outline: 2px solid #176f08;*/
+/*}*/
 
 
 .match:has(.winner) {
