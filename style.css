@@ -234,6 +234,12 @@ nav ul li a:hover {
   display: table-cell;
 }
 
+.rangering .rad,
+.rangeringAllTeams .rad,
+.sluttspillTable .rad {
+  display: table-row !important;
+}
+
 /* =======================================================
    FELLES STYLING (IKKE LAYOUT)
    ======================================================= */
@@ -261,10 +267,11 @@ nav ul li a:hover {
 }
 
 /* Slipp struktur */
-.container.group-container .header,
-.container.group-container .row {
+.container.group-container .table > .header,
+.container.group-container .table > .row {
   display: contents;
 }
+
 
 /* Overstyr cell KUN for gruppespill */
 .container.group-container .cell {
