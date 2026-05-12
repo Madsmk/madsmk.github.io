@@ -337,6 +337,23 @@ nav ul li a:hover {
   border-top: 2
 }
 
+.rangering .cell.plass {
+  width: 13%;
+}
+
+.rangering .cell.land {
+  width: 40%;
+  text-align: left;
+}
+
+.rangering .cell.poeng {
+  width: 24%;
+}
+
+.rangering .cell.flytt {
+  width: 24%;
+}
+
 /* =======================================================
    UI KOMPONENTER (uforandret)
    ======================================================= */
@@ -482,7 +499,7 @@ body {
 }
 
 .rangeringAllTeamsWrapper {
-    flex: 1; /* Takes 50% of the width */
+    flex: 2; /* Takes 50% of the width */
     padding: 10px; /* Optional padding */
 }
 
