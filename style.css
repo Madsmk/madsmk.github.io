@@ -234,20 +234,6 @@ nav ul li a:hover {
   display: table-cell;
 }
 
-.sluttspillTable {
-  display: table;
-  width: 100%;
-}
-
-.sluttspillTable .rangOverskrift,
-.sluttspillTable .rad {
-  display: table-row;
-}
-
-.sluttspillTable .cell {
-  display: table-cell;
-}
-
 /* =======================================================
    FELLES STYLING (IKKE LAYOUT)
    ======================================================= */
