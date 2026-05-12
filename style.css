@@ -471,7 +471,7 @@ body {
 }
     
 .containerThirdPlaceRanking {
-    max-width: 1100px;
+    max-width: 1200px;
     width: 100%;
     background: #fff;
     padding: 25px;
@@ -537,7 +537,7 @@ body {
 }
 
 .containerSluttspill {
-    max-width: 1100px;
+    max-width: 1200px;
     width: 100%;
     background: #fff;
     padding: 25px;
@@ -565,7 +565,7 @@ body {
 }
 
 .sluttspillTableWrapper {
-    flex: 1; /* Takes 50% of the width */
+    flex: 2; /* Takes 50% of the width */
     padding: 10px; /* Optional padding */
 }
 
@@ -631,7 +631,7 @@ body {
    ===================================================== */
 
 .containerSluttspillTre {
-  max-width: 1100px;
+  max-width: 1200px;
   width: 100%;
   background: #fff;
   padding: 25px;
